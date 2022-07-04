@@ -17,23 +17,26 @@
         <nav class="navbar">
             <div class="container-xxl">
                 <a class="navbar-brand" href="{% url "home" %}">Proofreader</a>
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle"
-                       href="#"
-                       role="button"
-                       data-bs-toggle="dropdown"><i class="bi bi-person-circle" style="font-size: 26px"></i></a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="#">Профиль</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">Выход</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">Войти</a>
-                        </li>
-                    </ul>
-                </div>
+                {% if user.is_authenticated %}
+                    <p>Hi {{ user.username }}!</p>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle"
+                           href="#"
+                           role="button"
+                           data-bs-toggle="dropdown"><i class="bi bi-person-circle fs-3"></i></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="#">Профиль</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url "logout" %}">Выход</a>
+                            </li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{% url "login" %}">Войти</a>
+                    <a href="{% url "login" %}">Зарегистрироваться</a>
+                {% endif %}
             </div>
         </nav>
         {% block content %}

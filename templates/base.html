@@ -3,7 +3,11 @@
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <title>Bootstrap demo</title>
+        <title>
+            {% block title %}
+                Proofreader
+            {% endblock title %}
+        </title>
         <meta name="description" content="Proofreading tool"/>
         <meta name="keywords" content="Proofreader"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
@@ -35,7 +39,7 @@
                     </div>
                 {% else %}
                     <a href="{% url "login" %}">Войти</a>
-                    <a href="{% url "login" %}">Зарегистрироваться</a>
+                    <a href="{% url "signup" %}">Зарегистрироваться</a>
                 {% endif %}
             </div>
         </nav>

@@ -5,4 +5,9 @@
         Чтобы приступить к вычитке зарегистрируйтесь на сайте.
         Готовые книги находятся на сайте <a href="https://comtext.space">comtext.space</a>.
     </div>
+    {% if user.is_authenticated %}
+        <div class="container my-5">
+            Для вычитки перейдите в <a href="{% url "book_list" %}">список книг</a>.
+        </div>
+    {% endif %}
 {% endblock content %}

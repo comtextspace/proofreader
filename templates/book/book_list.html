@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}
+    Книги
+{% endblock title %}
+{% block content %}
+    <div class="container-xxl my-5">
+        <h2>Список книг</h2>
+        <table class="table my-5 table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Название</th>
+                    <th scope="col">Автор</th>
+                    <th scope="col">Кол-во страниц</th>
+                    <th scope="col">Прогресс (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in object_list %}
+                    <tr>
+                        <th scope="row"></th>
+                        <td>
+                            <a href="{% url "book_detail" book.id %}">{{ book.name }}</a>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock content %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}
+    Страницы
+{% endblock title %}
+{% block content %}
+    <div class="container-xxl my-5">
+        <h2>Список книг</h2>
+        <table class="table my-5 table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Статус</th>
+                    <th scope="col">Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for page in object_list %}
+                    <tr>
+                        <th scope="row"></th>
+                        <td>
+                            <a href="{% url "page_detail" page.book.id page.id %}">{{ page.number }}</a>
+                        </td>
+                        <number>
+                    </td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

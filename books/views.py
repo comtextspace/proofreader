@@ -22,6 +22,10 @@ class PageListView(ListView):
     model = Page
     template_name = "book/page_list.html"
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(book_id=self.kwargs["id"])
+
 
 class PageView(DetailView):
     model = Page

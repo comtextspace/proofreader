@@ -25,6 +25,9 @@ class Page(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     number = models.IntegerField()
 
+    def __str__(self) -> str:
+        return f"{self.book.name} ({self.number})"
+
     class Meta:
         constraints = [
             models.UniqueConstraint(

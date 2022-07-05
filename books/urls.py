@@ -7,5 +7,9 @@ urlpatterns = [
     path("book", BookListView.as_view(), name="book_list"),
     path("book/<uuid:id>", BookView.as_view(), name="book_detail"),
     path("book/<uuid:id>/page", PageListView.as_view(), name="page_list"),
-    #  path("book/<int:id>/page/<idt:id>", HomePageView.as_view(), name="page_detail"),
+    path(
+        "book/<uuid:book_id>/page/<uuid:page_id>",
+        HomePageView.as_view(),
+        name="page_detail",
+    ),
 ]

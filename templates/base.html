@@ -19,15 +19,14 @@
     </head>
     <body>
         <nav class="navbar">
-            <div class="container-xxl">
+            <div class="container-xxl justify-content-between">
                 <a class="navbar-brand" href="{% url "home" %}">Proofreader</a>
                 {% if user.is_authenticated %}
-                    <p>Hi {{ user.username }}!</p>
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle"
                            href="#"
                            role="button"
-                           data-bs-toggle="dropdown"><i class="bi bi-person-circle fs-3"></i></a>
+                           data-bs-toggle="dropdown">{{ user.username }}</a>
                         <ul class="dropdown-menu">
                             <li>
                                 <a class="dropdown-item" href="#">Профиль</a>
@@ -38,8 +37,14 @@
                         </ul>
                     </div>
                 {% else %}
-                    <a href="{% url "login" %}">Войти</a>
-                    <a href="{% url "signup" %}">Зарегистрироваться</a>
+                    <div class="row justify-content-between">
+                        <div class="col">
+                            <a href="{% url "login" %}">Войти</a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url "signup" %}">Зарегистрироваться</a>
+                        </div>
+                    </div>
                 {% endif %}
             </div>
         </nav>

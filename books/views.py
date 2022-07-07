@@ -1,7 +1,8 @@
 from django.shortcuts import render
+from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView
 
-from .models import Book, Page
+from .models import Book, Page, PageText
 
 
 class HomePageView(TemplateView):
@@ -27,6 +28,16 @@ class PageListView(ListView):
         return qs.filter(book_id=self.kwargs["id"])
 
 
-class PageView(DetailView):
-    model = Page
-    template_name = "book/page.html"
+class PageView(View):
+    def get(self, request, book_id, page_id):
+
+        page = Page.objects.get(id=page_id)
+        texts = PageText.objects.filter(page=page_id)
+        cur_text = PageText.objects.filter(page=page_id).latest("date")
+
+        context = {
+            "page": page,
+            "texts": texts,
+            "cur_text": cur_text,
+        }
+        return render(request, "book/page.html", context)

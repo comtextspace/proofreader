@@ -9,7 +9,7 @@ urlpatterns = [
     path("book/<uuid:id>/page", PageListView.as_view(), name="page_list"),
     path(
         "book/<uuid:book_id>/page/<uuid:page_id>",
-        HomePageView.as_view(),
+        PageView.as_view(),
         name="page_detail",
     ),
 ]

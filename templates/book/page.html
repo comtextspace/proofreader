@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}
+    Страница
+{% endblock title %}
+{% block head %}
+    <link rel="stylesheet"
+          src="https://cdn.jsdelivr.net/gh/cotton123236/zoomist@latest/dist/zoomist.min.css"/>
+{% endblock head %}
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/gh/cotton123236/zoomist@latest/dist/zoomist.min.js"></script>
+    <script>new Zoomist('#page-image')</script>
+{% endblock script %}
+{% block content %}
+    <div class="container-xxl my-5">
+        <h2 class="my-5">Страница</h2>
+        <div class="container_fluid">
+            <div class="row justify-content-between">
+                <div class="col">
+                    <img src="{{ page.image_url }}" alt="" id="page-image" class="img-fluid"/>
+                </div>
+                <div class="col">
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="40">{{ cur_text.text }}</textarea>
+                </div>
+            </div>
+        </div>
+        <h2 class="my-5">Последние изменения</h2>
+        <table class="table my-5 table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Дата изменения</th>
+                    <th scope="col">Редактор</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for text in texts %}
+                    <tr>
+                        <td></td>
+                        <td>
+                            <a href="">{{ text.date }}</a>
+                        </td>
+                        <td>{{ text.editor.username }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock content %}

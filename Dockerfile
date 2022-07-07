@@ -8,6 +8,6 @@ FROM python:3.9
 WORKDIR /code
 COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
-COPY ./app /code/app
+COPY ./ /code/
 CMD ["gunicorn", "proofreader.wsgi:application", "-b", "0.0.0.0:5000"]
 

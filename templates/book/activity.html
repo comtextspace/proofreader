@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}
+    Активность
+{% endblock title %}
+{% block content %}
+    <div class="container-xxl my-5">
+        <h2>Активность</h2>
+        <table class="table my-5 table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Книга</th>
+                    <th scope="col">Страница</th>
+                    <th scope="col">Редактор</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for text in object_list %}
+                    <tr>
+                        <td scope="row"></td>
+                        <td>{{ text.date }}</td>
+                        <td>{{ text.book.name }}</td>
+                        <td>{{ text.page.number }}</td>
+                        <td>{{ text.editor.username }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock content %}

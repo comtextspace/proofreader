@@ -41,3 +41,12 @@ class PageView(View):
             "cur_text": cur_text,
         }
         return render(request, "book/page.html", context)
+
+
+class ActivityView(ListView):
+    model = PageText
+    template_name = "book/activity.html"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.order_by("-date")

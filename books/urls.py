@@ -1,6 +1,13 @@
 from django.urls import path
 
-from .views import HomePageView, BookListView, BookView, PageListView, PageView
+from .views import (
+    HomePageView,
+    BookListView,
+    BookView,
+    PageListView,
+    PageView,
+    ActivityView,
+)
 
 urlpatterns = [
     path("", HomePageView.as_view(), name="home"),
@@ -12,4 +19,5 @@ urlpatterns = [
         PageView.as_view(),
         name="page_detail",
     ),
+    path("activity", ActivityView.as_view(), name="activity"),
 ]

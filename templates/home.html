@@ -7,7 +7,7 @@
     </div>
     {% if user.is_authenticated %}
         <div class="container my-5">
-            Для вычитки перейдите в <a href="{% url "book_list" %}">список книг</a>.
+            Для вычитки перейдите в <a href="{% url "book_list" %}">список книг</a>. <a href="{% url "activity" %}">Последние изменения</a>.
         </div>
     {% endif %}
 {% endblock content %}

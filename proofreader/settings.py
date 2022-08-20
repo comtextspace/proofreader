@@ -92,6 +92,7 @@ DATABASES = {
         "PASSWORD": "postgres",
         "HOST": "db",
         "PORT": 5432,
+        "OPTIONS": {"options": "-c search_path=django"},
     }
 }
 

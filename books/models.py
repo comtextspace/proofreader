@@ -12,6 +12,9 @@ class Author(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        db_table = '"book"."author"'
+
 
 class Book(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -20,6 +23,9 @@ class Book(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        db_table = '"book"."book"'
 
 
 class Page(models.Model):
@@ -38,6 +44,9 @@ class Page(models.Model):
             )
         ]
 
+    class Meta:
+        db_table = '"book"."page"'
+
 
 class PageText(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -49,6 +58,9 @@ class PageText(models.Model):
 
     def __str__(self):
         return f"Text for page {self.page.number} of {self.book.name}"
+
+    class Meta:
+        db_table = '"book"."page_text"'
 
 
 # for future

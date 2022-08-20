@@ -13,6 +13,7 @@ whitenoise = "^6.2.0"
 gunicorn = "^20.1.0"
 psycopg2 = "^2.9.3"
 platformdirs = "^2.5.2"
+django-tz-detect = "^0.4.0"
 
 
 [tool.poetry.dev-dependencies]

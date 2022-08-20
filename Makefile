@@ -2,7 +2,13 @@ shell:
 	poetry shell
 
 develop:
-	poetry run python manage.py runserver
+	docker-compose up -d --build
+
+stop:
+	docker-compose down
+
+logs:
+	docker-compose logs
 
 test:
-	poetry run python manage.py test
+	docker-compose exec web python manage.py test

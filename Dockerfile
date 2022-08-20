@@ -1,13 +1,19 @@
-FROM python:3.9 as requirements-stage
-WORKDIR /tmp
-RUN pip install poetry
-COPY ./pyproject.toml ./poetry.lock* /tmp/
-RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
+FROM python:3.10
 
-FROM python:3.9
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+ENV POETRY_VERSION=1.1.13
+RUN python -m pip install poetry==$POETRY_VERSION
+
 WORKDIR /code
-COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
-COPY ./ /code/
-CMD ["gunicorn", "proofreader.wsgi:application", "-b", "0.0.0.0:5000"]
+
+COPY poetry.lock pyproject.toml /code/
+
+RUN poetry config virtualenvs.create false --local
+RUN poetry install --no-dev
+
+COPY . /code/
+CMD python manage.py runserver 0.0.0.0:8000 
+# ["gunicorn", "proofreader.wsgi:application", "-b", "0.0.0.0:5000"]
 

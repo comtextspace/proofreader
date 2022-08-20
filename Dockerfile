@@ -14,6 +14,5 @@ RUN poetry config virtualenvs.create false --local
 RUN poetry install --no-dev
 
 COPY . /code/
-CMD python manage.py runserver 0.0.0.0:8000 
-# ["gunicorn", "proofreader.wsgi:application", "-b", "0.0.0.0:5000"]
+CMD python manage.py runserver 0.0.0.0:8000
 

@@ -145,7 +145,6 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 AUTH_USER_MODEL = "accounts.CustomUser"
 
-
 # Celery
 # ------------------------------------------------------------------------------
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html
@@ -162,3 +161,9 @@ CELERY_RESULT_EXTENDED = True
 CELERY_RESULT_EXPIRES = 60 * 60 * 24 * 7
 
 REDIS_URL = env('REDIS_URL', default='redis://redis:6379/1')
+
+# Media files
+MEDIA_URL = env('DJANGO_MEDIA_URL', default='/media/')
+MEDIA_ROOT = str(BASE_DIR / 'media')
+
+FILE_UPLOAD_PERMISSIONS = 0o644

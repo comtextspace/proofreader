@@ -18,6 +18,7 @@ django-environ = "^0.10.0"
 celery = "^5.3.1"
 django-celery-results = "^2.5.1"
 django-celery-beat = "^2.5.0"
+django-lifecycle = "^1.0.0"
 
 
 [tool.poetry.dev-dependencies]

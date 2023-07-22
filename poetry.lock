@@ -341,6 +341,21 @@ docs = ["furo (>=2021.8.17b43,<2021.9.dev0)", "sphinx (>=3.5.0)", "sphinx-notfou
 testing = ["coverage[toml] (>=5.0a4)", "pytest (>=4.6.11)"]
 
 [[package]]
+name = "django-lifecycle"
+version = "1.0.0"
+description = "Declarative model lifecycle hooks."
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-lifecycle-1.0.0.tar.gz", hash = "sha256:136c48e65d439cc34a6cb9a10d6d17611a9a5223f8249ee9c190ca5c7a67e9c1"},
+]
+
+[package.dependencies]
+Django = ">=2.0"
+packaging = ">=21.0"
+urlman = ">=1.2.0"
+
+[[package]]
 name = "django-timezone-field"
 version = "5.1"
 description = "A Django app providing DB, form, and REST framework fields for zoneinfo and pytz timezone objects."
@@ -522,6 +537,17 @@ python-versions = "*"
 files = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
+]
+
+[[package]]
+name = "packaging"
+version = "23.1"
+description = "Core utilities for Python packages"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "packaging-23.1-py3-none-any.whl", hash = "sha256:994793af429502c4ea2ebf6bf664629d07c1a9fe974af92966e4b8d2df7edc61"},
+    {file = "packaging-23.1.tar.gz", hash = "sha256:a392980d2b6cffa644431898be54b0045151319d1e7ec34f0cfed48767dd334f"},
 ]
 
 [[package]]
@@ -840,6 +866,17 @@ files = [
 ]
 
 [[package]]
+name = "urlman"
+version = "2.0.1"
+description = "Django URL pattern helpers"
+optional = false
+python-versions = "*"
+files = [
+    {file = "urlman-2.0.1-py2.py3-none-any.whl", hash = "sha256:909177485ddbbeada15a21f80155762faf70fc53be31890ff7288e21803f06c7"},
+    {file = "urlman-2.0.1.tar.gz", hash = "sha256:3b9c5ac4e447b1e29fa259dc76953d46d711c84b296a0c66c34870e248eb1205"},
+]
+
+[[package]]
 name = "vine"
 version = "5.0.0"
 description = "Promises, promises, promises."
@@ -893,4 +930,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "b1b570e941a5bc6bfdd42d046da8571e9effedbd9cdfc5272440861c73fea7f9"
+content-hash = "c3aa315907164cd9e74b58d36ffeed56e572b95cf0f144be6e36bcd3467d8134"

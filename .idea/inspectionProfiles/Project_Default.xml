@@ -1,0 +1,417 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="AssertInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="CssRedundantUnit" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="DjangoUnresolvedTagInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="HtmlDeprecatedAttribute" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="HttpUrlsUsage" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyAttributeOutsideInitInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyBroadExceptionInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyCompatibilityInspection" enabled="false" level="WARNING" enabled_by_default="false">
+      <option name="ourVersions">
+        <value>
+          <list size="3">
+            <item index="0" class="java.lang.String" itemvalue="3.6" />
+            <item index="1" class="java.lang.String" itemvalue="3.7" />
+            <item index="2" class="java.lang.String" itemvalue="3.8" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyDictCreationInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyMethodMayBeStaticInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyMethodParametersInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="107">
+            <item index="0" class="java.lang.String" itemvalue="djchoices" />
+            <item index="1" class="java.lang.String" itemvalue="environ" />
+            <item index="2" class="java.lang.String" itemvalue="decouple" />
+            <item index="3" class="java.lang.String" itemvalue="celery" />
+            <item index="4" class="java.lang.String" itemvalue="amqp" />
+            <item index="5" class="java.lang.String" itemvalue="ipython" />
+            <item index="6" class="java.lang.String" itemvalue="py" />
+            <item index="7" class="java.lang.String" itemvalue="kombu" />
+            <item index="8" class="java.lang.String" itemvalue="vine" />
+            <item index="9" class="java.lang.String" itemvalue="billiard" />
+            <item index="10" class="java.lang.String" itemvalue="redis" />
+            <item index="11" class="java.lang.String" itemvalue="jedi" />
+            <item index="12" class="java.lang.String" itemvalue="parso" />
+            <item index="13" class="java.lang.String" itemvalue="faker" />
+            <item index="14" class="java.lang.String" itemvalue="prompt-toolkit" />
+            <item index="15" class="java.lang.String" itemvalue="packaging" />
+            <item index="16" class="java.lang.String" itemvalue="traitlets" />
+            <item index="17" class="java.lang.String" itemvalue="decorator" />
+            <item index="18" class="java.lang.String" itemvalue="pytest-sugar" />
+            <item index="19" class="java.lang.String" itemvalue="factory-boy" />
+            <item index="20" class="java.lang.String" itemvalue="ptyprocess" />
+            <item index="21" class="java.lang.String" itemvalue="pytest" />
+            <item index="22" class="java.lang.String" itemvalue="pytest-django" />
+            <item index="23" class="java.lang.String" itemvalue="atomicwrites" />
+            <item index="24" class="java.lang.String" itemvalue="pickleshare" />
+            <item index="25" class="java.lang.String" itemvalue="text-unidecode" />
+            <item index="26" class="java.lang.String" itemvalue="termcolor" />
+            <item index="27" class="java.lang.String" itemvalue="ipython-genutils" />
+            <item index="28" class="java.lang.String" itemvalue="backcall" />
+            <item index="29" class="java.lang.String" itemvalue="pyparsing" />
+            <item index="30" class="java.lang.String" itemvalue="argparse" />
+            <item index="31" class="java.lang.String" itemvalue="boto3" />
+            <item index="32" class="java.lang.String" itemvalue="botocore" />
+            <item index="33" class="java.lang.String" itemvalue="phonenumbers" />
+            <item index="34" class="java.lang.String" itemvalue="cffi" />
+            <item index="35" class="java.lang.String" itemvalue="maxminddb" />
+            <item index="36" class="java.lang.String" itemvalue="yarl" />
+            <item index="37" class="java.lang.String" itemvalue="sendgrid" />
+            <item index="38" class="java.lang.String" itemvalue="django-extensions" />
+            <item index="39" class="java.lang.String" itemvalue="coverage" />
+            <item index="40" class="java.lang.String" itemvalue="more-itertools" />
+            <item index="41" class="java.lang.String" itemvalue="asgiref" />
+            <item index="42" class="java.lang.String" itemvalue="blessed" />
+            <item index="43" class="java.lang.String" itemvalue="wcwidth" />
+            <item index="44" class="java.lang.String" itemvalue="prometheus-client" />
+            <item index="45" class="java.lang.String" itemvalue="django-prometheus" />
+            <item index="46" class="java.lang.String" itemvalue="pytest-forked" />
+            <item index="47" class="java.lang.String" itemvalue="appdirs" />
+            <item index="48" class="java.lang.String" itemvalue="certifi" />
+            <item index="49" class="java.lang.String" itemvalue="itypes" />
+            <item index="50" class="java.lang.String" itemvalue="lxml" />
+            <item index="51" class="java.lang.String" itemvalue="django-model-utils" />
+            <item index="52" class="java.lang.String" itemvalue="pytz" />
+            <item index="53" class="java.lang.String" itemvalue="urllib3" />
+            <item index="54" class="java.lang.String" itemvalue="inflection" />
+            <item index="55" class="java.lang.String" itemvalue="substrateinterface" />
+            <item index="56" class="java.lang.String" itemvalue="django" />
+            <item index="57" class="java.lang.String" itemvalue="diff-match-patch" />
+            <item index="58" class="java.lang.String" itemvalue="channels" />
+            <item index="59" class="java.lang.String" itemvalue="babel" />
+            <item index="60" class="java.lang.String" itemvalue="cryptography" />
+            <item index="61" class="java.lang.String" itemvalue="daphne" />
+            <item index="62" class="java.lang.String" itemvalue="fcm-django" />
+            <item index="63" class="java.lang.String" itemvalue="pyfcm" />
+            <item index="64" class="java.lang.String" itemvalue="sorl-thumbnail" />
+            <item index="65" class="java.lang.String" itemvalue="plaid-python" />
+            <item index="66" class="java.lang.String" itemvalue="flake8" />
+            <item index="67" class="java.lang.String" itemvalue="sqlparse" />
+            <item index="68" class="java.lang.String" itemvalue="django-admin-sortable" />
+            <item index="69" class="java.lang.String" itemvalue="django-countries" />
+            <item index="70" class="java.lang.String" itemvalue="Pygments" />
+            <item index="71" class="java.lang.String" itemvalue="ruamel.yaml.clib" />
+            <item index="72" class="java.lang.String" itemvalue="django-json-widget" />
+            <item index="73" class="java.lang.String" itemvalue="django-multiselectfield" />
+            <item index="74" class="java.lang.String" itemvalue="django-phonenumber-field" />
+            <item index="75" class="java.lang.String" itemvalue="djangorestframework" />
+            <item index="76" class="java.lang.String" itemvalue="django-cors-headers" />
+            <item index="77" class="java.lang.String" itemvalue="django-simple-history" />
+            <item index="78" class="java.lang.String" itemvalue="django-celery-beat" />
+            <item index="79" class="java.lang.String" itemvalue="jsmin" />
+            <item index="80" class="java.lang.String" itemvalue="six" />
+            <item index="81" class="java.lang.String" itemvalue="django-celery-results" />
+            <item index="82" class="java.lang.String" itemvalue="twisted" />
+            <item index="83" class="java.lang.String" itemvalue="tablib" />
+            <item index="84" class="java.lang.String" itemvalue="ruamel.yaml" />
+            <item index="85" class="java.lang.String" itemvalue="django-import-export" />
+            <item index="86" class="java.lang.String" itemvalue="django-debug-toolbar" />
+            <item index="87" class="java.lang.String" itemvalue="django-modeltranslation" />
+            <item index="88" class="java.lang.String" itemvalue="flower" />
+            <item index="89" class="java.lang.String" itemvalue="jmespath" />
+            <item index="90" class="java.lang.String" itemvalue="pyyaml" />
+            <item index="91" class="java.lang.String" itemvalue="elastic-apm" />
+            <item index="92" class="java.lang.String" itemvalue="djangorestframework-xml" />
+            <item index="93" class="java.lang.String" itemvalue="django-filter" />
+            <item index="94" class="java.lang.String" itemvalue="django-redis" />
+            <item index="95" class="java.lang.String" itemvalue="django-twilio" />
+            <item index="96" class="java.lang.String" itemvalue="openpyxl" />
+            <item index="97" class="java.lang.String" itemvalue="pluggy" />
+            <item index="98" class="java.lang.String" itemvalue="psycopg2-binary" />
+            <item index="99" class="java.lang.String" itemvalue="pillow" />
+            <item index="100" class="java.lang.String" itemvalue="rest_framework" />
+            <item index="101" class="java.lang.String" itemvalue="model_utils" />
+            <item index="102" class="java.lang.String" itemvalue="geopy" />
+            <item index="103" class="java.lang.String" itemvalue="socketio" />
+            <item index="104" class="java.lang.String" itemvalue="storages" />
+            <item index="105" class="java.lang.String" itemvalue="blake2b-py" />
+            <item index="106" class="java.lang.String" itemvalue="hubspot" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="W292" />
+          <option value="E731" />
+          <option value="E122" />
+          <option value="E203" />
+          <option value="E231" />
+          <option value="E701" />
+          <option value="W605" />
+          <option value="E712" />
+          <option value="E131" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N813" />
+          <option value="N806" />
+          <option value="N802" />
+        </list>
+      </option>
+      <option name="ignoredBaseClasses">
+        <list>
+          <option value="unittest.TestCase" />
+          <option value="unittest.case.TestCase" />
+          <option value="residences.feed.serializers.RoomLeasebreakSerializer" />
+          <option value="residences.feed.serializers.LeasebreakItemSerializer" />
+          <option value="residences.feed.serializers.LeasebreakBasicDetailSerializer" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyProtectedMemberInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyShadowingBuiltinsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredNames">
+        <list>
+          <option value="id" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="project.settings.base.assets.PROJECT_DIR" />
+          <option value="project.settings.base.assets.BASE_DIR" />
+          <option value="project.settings.base.cache.PRODUCTION" />
+          <option value="project.settings.base.debug_toolbar.INSTALLED_APPS" />
+          <option value="project.settings.base.debug_toolbar.DEBUG" />
+          <option value="project.settings.base.debug_toolbar.MIDDLEWARE" />
+          <option value="project.settings.base.logging.BASE_DIR" />
+          <option value="project.settings.base.rest.DEBUG" />
+          <option value="project.settings.base.i18n.PROJECT_DIR" />
+          <option value="project.settings.base.session.PRODUCTION" />
+          <option value="project.settings.base.template.PROJECT_DIR" />
+          <option value="project.settings.base.template.DEBUG" />
+          <option value="pytest.*" />
+          <option value="project.api.accounts.authentication.RegionUser.roles_expanded" />
+          <option value="project.apps.permissions.PermissionsProcessor.roles_expanded" />
+          <option value="project.api.register_structure_constructor.viewsets.field_constructor.FieldConstructorViewSet.register_structure_constructor" />
+          <option value="project.api.tariffs.viewsets.tariff.TariffViewSet.tariff_agreement" />
+          <option value="object.initial" />
+          <option value="object.get_serializer_context" />
+          <option value="users.models.User.guest_set" />
+          <option value="users.models.User.users" />
+          <option value="datetime.utcnow" />
+          <option value="object.clean" />
+          <option value="project.apps.proxy_models.DateFormatValidatorMixin.field_to_compare" />
+          <option value="project.apps.proxy_models.DateFormatValidatorMixin.substance_name" />
+          <option value="project.apps.proxy_models.DateFormatValidatorMixin.field_value" />
+          <option value="project.apps.proxy_models.DateFormatValidatorModelMixin.field_to_compare" />
+          <option value="project.apps.proxy_models.DateFormatValidatorModelMixin.substance_name" />
+          <option value="project.apps.proxy_models.DateFormatValidatorModelMixin.field_value" />
+          <option value="object.validate" />
+          <option value="super.save" />
+          <option value="django.db.models.fields.related.ForeignKey.zendesk_profile" />
+          <option value="django.db.models.fields.related.ForeignKey.current_reservation" />
+          <option value="guest.serializers.guest._" />
+          <option value="simple_history.models.HistoricalRecords.filter" />
+          <option value="django.db.models.fields.related.OneToOneField.first_name" />
+          <option value="project.settings.base.debug_toolbar.DEBUG_TOOLBAR" />
+          <option value="guest.serializers.guest.create.*" />
+          <option value="django.db.models.fields.related.ForeignKey.title" />
+          <option value="residences.filters.DateRangeField.lower" />
+          <option value="residences.filters.DateRangeField.upper" />
+          <option value="residences.fields.DateRangeField.lower" />
+          <option value="residences.fields.DateRangeField.upper" />
+          <option value="residences.models.residence.Residence.features" />
+          <option value="residences.models.rooms.room.Room.features" />
+          <option value="staff.models._" />
+          <option value="django.utils.six.moves" />
+          <option value="notification.api_views._" />
+          <option value="users.models._" />
+          <option value="project.settings.base.env.PRODUCTION_DEFAULT" />
+          <option value="project.settings.base.env.*" />
+          <option value="project.settings.base.cache.REDIS_URL_DEFAULT" />
+          <option value="project.settings.base.db.*" />
+          <option value="project.settings.base.security.*" />
+          <option value="project.settings.base.sentry.SENTRY_DSN_DEFAULT" />
+          <option value="project.settings.base.kmis_region.KMIS_REGION_USERNAME_DEFAULT" />
+          <option value="project.settings.base.kmis_region.*" />
+          <option value="project.settings.base.timezone.TIME_ZONE_DEFAULT" />
+          <option value="staff.models.service._" />
+          <option value="lead.models._" />
+          <option value="residences.models.residence._" />
+          <option value="django.db.models.fields.related.ManyToManyField.all" />
+          <option value="lead.models.CalendlyTour._old_values" />
+          <option value="residences.api_views.residence._" />
+          <option value="django.db.models.fields.related.ForeignKey.email" />
+          <option value="django.db.models.fields.related.ForeignKey.notification_settings" />
+          <option value="residences.utils._" />
+          <option value="residences.models.rooms.room._" />
+          <option value="residences.feed.api_views.AvailableForPromoRoomsMixin.get_serializer_class" />
+          <option value="residences.feed.api_views.AvailableForPromoRoomsMixin.get_serializer_context" />
+          <option value="residences.feed.api_views.AvailableForPromoRoomsMixin.get_queryset" />
+          <option value="residences.models.rooms.reservation._" />
+          <option value="object.get_queryset" />
+          <option value="project.settings.base.logging.DEBUG" />
+          <option value="common.mixins.DynamicFieldsMixin.context" />
+          <option value="common.mixins.DynamicFieldsMixin.fields" />
+          <option value="common.mixins.DynamicFieldsMixin.Meta" />
+          <option value="common.mixins.FlattenMixin.context" />
+          <option value="django.core.serializers.python" />
+          <option value="django.apps" />
+          <option value="nsi.models.FiasHouse" />
+          <option value="common.validators.BaseValidatorMixin.create" />
+          <option value="common.validators.BaseValidatorMixin.update" />
+          <option value="monitoring.mixins.LogMixin.request" />
+          <option value="django.db.models.fields.related.OneToOneField.email" />
+          <option value="residenz.xml_utils.CommonRenderMixin._to_xml" />
+          <option value="type.without_ui" />
+          <option value="type.with_ui" />
+          <option value="tensorflow.Session" />
+          <option value="django.db.models.fields.related.OneToOneField.keys" />
+          <option value="staff.models.service.AbstractMembership.manager" />
+          <option value="staff.models.service.AbstractMembership.mamager" />
+          <option value="lead.forms._" />
+          <option value="staff.forms._" />
+          <option value="staff.admin.AddManagerToResidencesInCityMixin.membership" />
+          <option value="staff.admin.AddManagerToResidencesInCityMixin.model" />
+          <option value="staff.admin.AddManagerToResidencesInCityMixin.opts" />
+          <option value="object.*" />
+          <option value="staff.admin.AddManagerToResidencesInCityMixin.url_name" />
+          <option value="staff.admin.AddManagerToResidencesInCityMixin.exclude_from_creation" />
+          <option value="staff.admin.AddManagerToResidencesInCityMixin.exclude_from_creation_as_main" />
+          <option value="staff.admin.AddManagerToResidencesInCityMixin.exclude_from_creation_as_secondary" />
+          <option value="staff.admin.AddManagerToResidencesInCityMixin.redirect_url" />
+          <option value="services.models._" />
+          <option value="residences.admin_forms._" />
+          <option value="residences.models.landlord._" />
+          <option value="residences.models.post_acquisition._" />
+          <option value="lead.admin._" />
+          <option value="project.power_sets.power_set.HashTable.seek_slot" />
+          <option value="django.db.models.fields.related.ForeignKey.reservations" />
+          <option value="functools.cached_property" />
+          <option value="lead.models.Lead.save_main_application" />
+          <option value="django.db.models.fields.related.ForeignKey.residence" />
+          <option value="django.db.models.fields.related.ForeignKey.system_name" />
+          <option value="list.get" />
+          <option value="list.list" />
+          <option value="int.*" />
+          <option value="residences.models.rooms.room.Room.closest_reservation_id" />
+          <option value="django.db.models.query.QuerySet.calculate_holding_rent" />
+          <option value="list.array" />
+          <option value="list.result" />
+          <option value="residences.helptext._" />
+          <option value="frontend_messages.models._" />
+          <option value="core.admin_filter._" />
+          <option value="residences.admin_filters.BaseMovingFilter.search_param" />
+          <option value="core.admin_filter.MultipleSelectFieldListFilterMixin.used_parameters" />
+          <option value="core.admin_filter.MultipleSelectFieldListFilterMixin.value" />
+          <option value="core.admin_filter.MultipleSelectFieldListFilterMixin.lookup_kwarg" />
+          <option value="core.admin_filter.MultipleSelectFieldListFilterMixin.lookup_choices" />
+          <option value="project.apps.rules_driver.models.subject.Subject.field" />
+          <option value="lead.views._" />
+          <option value="lead.models.Lead.field" />
+          <option value="residences.models.residence.Residence.field" />
+          <option value="lead.views.TourAfterTourMessagesMixin.request" />
+          <option value="django.db.models.query.QuerySet.get_price_in_winter" />
+          <option value="residences.models.mixins.IsTestQuerySetMixin.filter" />
+          <option value="residences.models.mixins.IsTestModelMixin.is_test" />
+          <option value="residences.models.mixins.IsTestModelMixin.enabled" />
+          <option value="residences.models.mixins._" />
+          <option value="django.contrib.auth.models.User.phone" />
+          <option value="str.save" />
+          <option value="django.db.models.query.QuerySet.with_nearest_available" />
+          <option value="lead.admin_forms._" />
+          <option value="platform_feeds.mixins.RoomFeedBaseView.platform_name" />
+          <option value="django.db.models.fields.related.ForeignKey.groups" />
+          <option value="communications.admin.VoiceMailAdminMixin.request" />
+          <option value="dict.*" />
+          <option value="lead.serializers.serializers._" />
+          <option value="profiles.models._" />
+          <option value="lead.managers.LeadManager.filter" />
+          <option value="django.db.models.fields.related.OneToOneField.title" />
+          <option value="lead.mixins.LeadValidatorMixin.instance" />
+          <option value="lead.mixins.LeadValidatorMixin.cleaned_data" />
+          <option value="acquisition_deal.models._" />
+          <option value="residences.models.residence.Residence.platform_features" />
+          <option value="utils.admin_filters._" />
+          <option value="staff.admin.AddRemoveManagerToResidencesInCityMixin.*" />
+          <option value="staff.admin_forms._" />
+          <option value="lead.mixins._" />
+          <option value="history.admin._" />
+          <option value="django.db.models.fields.related.ForeignKey.role" />
+          <option value="visits.models.HomeVisit.room_id" />
+          <option value="support.forms._" />
+          <option value="communications.api_views._" />
+          <option value="residences.models.rooms.application._" />
+          <option value="visits.forms.CleanVisitFormMixin.cleaned_data" />
+          <option value="django.db.models.fields.related.OneToOneField.accepted_referrals" />
+          <option value="project.medical_webiomed.models.ModelsDatasetMixin.instance" />
+          <option value="project.medical_webiomed.models.DocumentBody.__getitem__" />
+          <option value="lead.status_handler._" />
+          <option value="support.models.Ticket.field" />
+          <option value="listings.models.listing.BaseListing.tracker" />
+          <option value="listings.models.listing.BaseListing.additional_data" />
+          <option value="listings.admin.listings.BaseRemovedListingAdminMixin.search_preset" />
+          <option value="listings.admin.listings.BaseRemovedListingAdminMixin.model" />
+          <option value="listings.api_views.SearchPresetMixin.queryset" />
+          <option value="listings.api_views.SearchPresetMixin.request" />
+          <option value="notification.models.notification.BasePushNotification.type" />
+          <option value="notification.models.notification.BasePushNotification.user" />
+          <option value="notification.models.notification.BasePushNotification.user_id" />
+          <option value="notification.models.notification.BaseNotificationText.get_type_display" />
+          <option value="project.medical_webiomed.models.AbstractTask.tracker" />
+          <option value="project.medical_webiomed.models.BaseTask.tracker" />
+          <option value="working_on_errors.clean_architecture_in_django.EntityDoesNotExist" />
+          <option value="working_on_errors.clean_architecture_in_django.ORMProduct" />
+          <option value="working_on_errors.clean_architecture_in_django.HttpResponse" />
+          <option value="working_on_errors.clean_architecture_in_django.json" />
+          <option value="working_on_errors.clean_architecture_in_django.ProductCacheRepo" />
+          <option value="working_on_errors.clean_architecture_in_django.View" />
+          <option value="working_on_errors.clean_architecture_in_django.url" />
+          <option value="lead.wizard_forms.journey._" />
+          <option value="django_adaptation.EntityDoesNotExist" />
+          <option value="django_adaptation.ORMPerson" />
+          <option value="django_adaptation.View" />
+          <option value="django_adaptation.HttpResponse" />
+          <option value="django_adaptation.json" />
+          <option value="django_adaptation.url" />
+          <option value="django_adaptation.PersonCacheRepo" />
+          <option value="settings.base.rest.DEBUG" />
+          <option value="collections_app.models._" />
+          <option value="residences.admin_filters.reservation._" />
+          <option value="lead.models.CalendlyTour.lead_data" />
+          <option value="django.db.models.query.QuerySet.with_as_entire" />
+          <option value="app.prediction_models.AVM.AVM.price_estimator_entire_features" />
+          <option value="app.prediction_models.AVM.AVM.price_estimator_features" />
+          <option value="collections_app.admin._" />
+          <option value="acquisition_deal.models.deals._" />
+          <option value="acquisition_deal.models.post_acquisition._" />
+          <option value="acquisition_deal.admin_forms._" />
+          <option value="acquisition_deal.models.checklist._" />
+          <option value="acquisition_deal.models.checklist_other._" />
+          <option value="platform_feeds.base_view.RoomFeedBaseView.platform_name" />
+          <option value="_importlib_modulespec.ModuleType.*" />
+          <option value="collections_app.admin_badges._" />
+          <option value="lead.badges._" />
+          <option value="acquisition_deal.models.deals.BaseAcquisitionDeal.rooms_information" />
+          <option value="experience_system.views.ClientOnlyOrSuperuserMixin.request" />
+          <option value="googleapiclient.discovery.Resource.spreadsheets" />
+          <option value="acquisition_deal.models.pac_steps._" />
+          <option value="acquisition_deal.models.pac_other._" />
+          <option value="str.*" />
+          <option value="platform_feeds.mixins.RoomFeedBaseListMixin.get_serializer" />
+          <option value="rest_framework.mixins.ListModelMixin.get_serializer_context" />
+          <option value="core.base_classes.models.ParentModelMixin._meta" />
+          <option value="socketio.exceptions" />
+          <option value="type.objects" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnusedLocalInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="RegExpRedundantEscape" enabled="false" level="WARNING" enabled_by_default="false" />
+  </profile>
+</component>

@@ -11,6 +11,27 @@ services:
       - 8000:8000
     depends_on:
       - db
+      - ampq
+      - redis
+
+  celery_worker:
+    command: celery -A taskapp.celery:app worker --loglevel=info -c 4
+    ports:
+      - "8080:9090"
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - amqp
+      - redis
+
+  celery_beat:
+    command: celery -A taskapp.celery:app beat --loglevel=info
+    depends_on:
+      - celery_worker
+      - amqp
+      - db
+
   db:
     image: postgres:14
     volumes:
@@ -19,6 +40,19 @@ services:
       - 6055:5432
     environment:
       - "POSTGRES_HOST_AUTH_METHOD=trust"
+  amqp:
+    image: rabbitmq
+    ports:
+      - "5672:5672"
+
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    entrypoint: redis-server --appendonly yes
+    restart: always
 
 volumes:
   postgres_data:

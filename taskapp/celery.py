@@ -15,7 +15,7 @@ if not settings.configured:
     # set the default Django settings module for the 'celery' program.
     print(
         'Celery settings module is {}'.format(
-            os.environ.setdefault('DJANGO_SETTINGS_MODULE', env('DJANGO_SETTINGS_MODULE', default='project.settings'))
+            os.environ.setdefault('DJANGO_SETTINGS_MODULE', env('DJANGO_SETTINGS_MODULE', default='proofreader.settings'))
         )
     )
 

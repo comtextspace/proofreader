@@ -1,8 +1,10 @@
-from django.contrib.auth import get_user_model
-
-from statistics import mode
-from django.db import models
 import uuid
+
+from django.contrib.auth import get_user_model
+from django.db import models
+from django_lifecycle import LifecycleModelMixin, hook, AFTER_CREATE
+
+from .tasks import split_pdf_to_pages
 
 
 class Author(models.Model):
@@ -16,24 +18,30 @@ class Author(models.Model):
         db_table = '"book"."author"'
 
 
-class Book(models.Model):
+class Book(LifecycleModelMixin, models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     author = models.ForeignKey(Author, on_delete=models.PROTECT, related_name="books")
     pdf = models.FileField(upload_to="pdfs/", null=True, blank=True)
 
+    class Meta:
+        db_table = '"book"."book"'
+
     def __str__(self):
         return self.name
 
-    class Meta:
-        db_table = '"book"."book"'
+    @hook(AFTER_CREATE, on_commit=True, when="pdf", is_not=None)
+    def split_to_pages(self):
+        print("split_to_pages")
+        split_pdf_to_pages.delay(self.id)
 
 
 class Page(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     number = models.IntegerField()
-    image_url = models.TextField()
+    image_url = models.TextField(blank=True)
+    image = models.FileField(upload_to="pages/", null=True, blank=True)
 
     def __str__(self) -> str:
         return f"{self.book.name} ({self.number})"
@@ -62,7 +70,6 @@ class PageText(models.Model):
 
     class Meta:
         db_table = '"book"."page_text"'
-
 
 # for future
 

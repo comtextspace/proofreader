@@ -167,3 +167,9 @@ MEDIA_URL = env('DJANGO_MEDIA_URL', default='/media/')
 MEDIA_ROOT = str(BASE_DIR / 'media')
 
 FILE_UPLOAD_PERMISSIONS = 0o644
+
+if env.bool('LOCAL', default=False):
+    # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-always-eager
+    CELERY_TASK_ALWAYS_EAGER = True
+    # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-eager-propagates
+    CELERY_TASK_EAGER_PROPAGATES = True

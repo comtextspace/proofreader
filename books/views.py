@@ -1,11 +1,8 @@
-from tkinter import Widget
 from django.urls import reverse_lazy
-from django.shortcuts import render
-from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView, CreateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic.edit import UpdateView
 
-from .models import Book, Page, PageText
+from .models import Book, Page
 
 
 class HomePageView(TemplateView):
@@ -31,8 +28,8 @@ class PageListView(ListView):
         return qs.filter(book_id=self.kwargs["id"])
 
 
-class PageView(CreateView):
-    model = PageText
+class PageView(UpdateView):
+    model = Page
     fields = ["text"]  # "__all__"  #
     # form_class = PageTextForm
     template_name = "book/page.html"
@@ -59,8 +56,8 @@ class PageView(CreateView):
         page_id = self.kwargs["page_id"]
 
         page = Page.objects.get(id=page_id)
-        texts = PageText.objects.filter(page=page_id).order_by("-date")
-
+        # texts = PageText.objects.filter(page=page_id).order_by("-date")
+        texts = []
         ctx = super().get_context_data(**kwargs)
         ctx["page"] = page
         ctx["texts"] = texts
@@ -70,7 +67,7 @@ class PageView(CreateView):
     def get_initial(self):
         book_id = self.kwargs["book_id"]
         page_id = self.kwargs["page_id"]
-        current_text = PageText.objects.filter(page=page_id).latest("date")
+        current_text = Page.objects.filter(id=page_id).first()
 
         initial = super().get_initial()
 
@@ -82,7 +79,7 @@ class PageView(CreateView):
 
 
 class ActivityView(ListView):
-    model = PageText
+    model = Page
     template_name = "book/activity.html"
 
     def get_queryset(self):

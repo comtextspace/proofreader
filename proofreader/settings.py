@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "tz_detect",
     'django_celery_beat',
     'django_celery_results',
+    'simple_history',
     # This project
     "books.apps.BooksConfig",
     "accounts.apps.AccountsConfig",
@@ -64,6 +65,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # 3rd party
     "tz_detect.middleware.TimezoneMiddleware",
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = "proofreader.urls"

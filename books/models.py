@@ -1,10 +1,11 @@
 import uuid
 
-from django.contrib.auth import get_user_model
 from django.db import models
+from django_extensions.db.models import TimeStampedModel
 from django_lifecycle import LifecycleModelMixin, hook, AFTER_CREATE
+from simple_history.models import HistoricalRecords
 
-from .tasks import split_pdf_to_pages
+from .tasks import split_pdf_to_pages_task, extract_text_from_image_task
 
 
 class Author(models.Model):
@@ -32,44 +33,45 @@ class Book(LifecycleModelMixin, models.Model):
 
     @hook(AFTER_CREATE, on_commit=True, when="pdf", is_not=None)
     def split_to_pages(self):
-        print("split_to_pages")
-        split_pdf_to_pages.delay(self.id)
+        split_pdf_to_pages_task.delay(self.id)
 
 
-class Page(models.Model):
+class Page(LifecycleModelMixin, TimeStampedModel, models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     number = models.IntegerField()
     image_url = models.TextField(blank=True)
     image = models.FileField(upload_to="pages/", null=True, blank=True)
+    text = models.TextField(blank=True)
+    processed = models.BooleanField(default=False)
+
+    history = HistoricalRecords()
 
     def __str__(self) -> str:
         return f"{self.book.name} ({self.number})"
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["book", "number"], name="unique_book_number"
-            )
-        ]
-
-    class Meta:
         db_table = '"book"."page"'
 
+    @hook(AFTER_CREATE, on_commit=True, when="image", is_not=None)
+    def extract_text_from_image(self):
+        extract_text_from_image_task.delay(self.id)
 
-class PageText(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    page = models.ForeignKey(Page, on_delete=models.PROTECT)
-    editor = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
-    text = models.TextField()
-    date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Text for page {self.page.number} of {self.book.name}"
-
-    class Meta:
-        db_table = '"book"."page_text"'
+# class PageText(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     book = models.ForeignKey(Book, on_delete=models.CASCADE)
+#     page = models.ForeignKey(Page, on_delete=models.PROTECT)
+#     editor = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
+#     text = models.TextField()
+#     date = models.DateTimeField(auto_now_add=True)
+#
+#     history = HistoricalRecords()
+#
+#     def __str__(self):
+#         return f"Text for page {self.page.number} of {self.book.name}"
+#
+#     class Meta:
+#         db_table = '"book"."page_text"'
 
 # for future
 

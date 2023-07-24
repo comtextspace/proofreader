@@ -420,6 +420,17 @@ packaging = ">=21.0"
 urlman = ">=1.2.0"
 
 [[package]]
+name = "django-simple-history"
+version = "3.3.0"
+description = "Store model history and view/revert changes from admin site."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "django-simple-history-3.3.0.tar.gz", hash = "sha256:2313d2d346f15a1e7a92adb3b6696b226f1cd0c1d920869ec40c4c4076614c41"},
+    {file = "django_simple_history-3.3.0-py3-none-any.whl", hash = "sha256:dc1f98e558a0a1e0b6371c3b8efb85f86e02a6db56e83d0ec198343b7408d00a"},
+]
+
+[[package]]
 name = "django-timezone-field"
 version = "5.1"
 description = "A Django app providing DB, form, and REST framework fields for zoneinfo and pytz timezone objects."
@@ -1308,4 +1319,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2eebacbc134c269be5a340991294d376b43945dab407658be766116ff52a805b"
+content-hash = "06281adbbe59a5e09c09e33f220363354196e3a5bbf2ce2e1e475c88b7ec6927"

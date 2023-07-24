@@ -18,6 +18,5 @@ def split_pdf_to_pages(pdf_file, name):
             images[0].save(image_bytes, format='PNG')
             image_name = f"{name}_page_{page_number}.png"
 
-            result.append((page_number, image_bytes.getvalue(), image_name))
+            yield page_number, image_bytes.getvalue(), image_name
 
-    return result

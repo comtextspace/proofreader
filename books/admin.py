@@ -12,7 +12,7 @@ admin.site.register(Book)
 
 @admin.register(Page)
 class PageAdmin(SimpleHistoryAdmin):
-    list_display = ["number", "book", "modified"]
+    list_display = ["number", "book", "modified", "processed"]
     history_list_display = ["text"]
     readonly_fields = ['book', 'logo_preview', 'number']
     fieldsets = (

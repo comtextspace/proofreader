@@ -21,6 +21,9 @@ django-celery-beat = "^2.5.0"
 django-lifecycle = "^1.0.0"
 pypdf2 = "^3.0.1"
 pdf2image = "^1.16.3"
+pytesseract = "^0.3.10"
+django-extensions = "^3.2.3"
+ipython = "^8.14.0"
 
 
 [tool.poetry.dev-dependencies]

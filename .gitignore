@@ -4,3 +4,6 @@ __pycache__
 config.env
 # Media folder
 media
+data
+.idea
+.DS_Store

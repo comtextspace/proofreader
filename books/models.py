@@ -37,14 +37,20 @@ class Book(LifecycleModelMixin, models.Model):
 
 
 class Page(LifecycleModelMixin, TimeStampedModel, models.Model):
+    class Status(models.TextChoices):
+        PROCESSING = "processing", "Идет распознавание"
+        READY = "redy", "Готово к вычитке"
+        IN_PROGRESS = "in_progress", "В процессе вычитки"
+        DONE = "done", "Вычитано"
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="pages")
     number = models.IntegerField()
     image_url = models.TextField(blank=True)
     image = models.FileField(upload_to="pages/", null=True, blank=True)
     text = models.TextField(blank=True)
-    processed = models.BooleanField(default=False)
     text_size = models.IntegerField(null=True, blank=True, default=12)
+    status = models.CharField(max_length=100, choices=Status.choices, default=Status.PROCESSING)
 
     history = HistoricalRecords()
 

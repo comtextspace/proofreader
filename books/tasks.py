@@ -24,5 +24,5 @@ def extract_text_from_image_task(page_id):
 
     page = Page.objects.get(id=page_id)
     page.text = extract_text_from_image(page.image)
-    page.processed = True
+    page.status = Page.Status.READY
     page.save()

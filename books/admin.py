@@ -1,15 +1,69 @@
 from django import forms
 from django.contrib import admin
+from django.db import models
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from simple_history.admin import SimpleHistoryAdmin
 
+from core.admin_utils import custom_titled_filter
 from .models import Author, Book, Page
 
-admin.site.register(Author)
-admin.site.register(Book)
 
+@admin.register(Author)
+class AuthrAdmin(admin.ModelAdmin):
+    list_display = ["name"]
+    search_fields = ['name']
+
+
+@admin.register(Book)
+class BookAdmin(admin.ModelAdmin):
+    list_display = ["name", "author", 'status', 'pages_count', 'pages_processing_count', 'pages_ready_count',
+                    'pages_in_progress_count', 'pages_done_count']
+    list_filter = ['author']
+    search_fields = ['name', 'author__name']
+    readonly_fields = ['status', 'pages_count', 'pages_processing_count', 'pages_ready_count',
+                       'pages_in_progress_count', 'pages_done_count']
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'author', 'pdf')
+        }),
+    )
+    autocomplete_fields = ['author']
+
+    def get_queryset(self, request):
+        # annotate pages count for each page status
+        return super().get_queryset(request).annotate(
+            pages_count=models.Count('pages'),
+            pages_processing_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.PROCESSING)),
+            pages_ready_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.READY)),
+            pages_in_progress_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.IN_PROGRESS)),
+            pages_done_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.DONE)),
+        )
+
+    def status(self, obj):
+        if obj.pages_ready_count < obj.pages_count:
+            return 'Идет распознавание'
+        elif obj.pages_done_count == obj.pages_count:
+            return 'Вычитано'
+        else:
+            return 'В процессе вычитки'
+
+    def pages_count(self, obj):
+        return obj.pages_count
+
+    def pages_processing_count(self, obj):
+        return obj.pages_processing_count
+
+    def pages_ready_count(self, obj):
+        return obj.pages_ready_count
+
+    def pages_in_progress_count(self, obj):
+        return obj.pages_in_progress_count
+
+    def pages_done_count(self, obj):
+        return obj.pages_done_count
+    
 
 class PageAdminForm(forms.ModelForm):
     text = forms.CharField(
@@ -31,18 +85,18 @@ class PageAdminForm(forms.ModelForm):
 class PageAdmin(SimpleHistoryAdmin):
     form = PageAdminForm
     change_form_template = "admin/page_change_form.html"
-    list_display = ["number", "book", "modified", "processed"]
+    list_display = ["number", "book", "modified", 'status']
     history_list_display = ["text"]
     readonly_fields = ['book', 'page', 'number']
     fieldsets = (
         (None, {
-            'fields': ('book', 'number', 'text_size')
+            'fields': ('book', 'number', 'status', 'text_size')
         }),
         ('Редактирование', {
             'fields': (('text', 'page'),)
         }),
     )
-    list_filter = ('book',)
+    list_filter = [('book__name', custom_titled_filter('Book')), 'status']
 
     def page(self, obj):
         if obj.image:

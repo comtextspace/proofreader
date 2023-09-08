@@ -16,8 +16,6 @@ def split_pdf_to_pages_task(book_id):
     for page_number, page_image, image_name in split_pdf_to_pages(book.pdf, book.name):
         page = Page(book=book, number=page_number)
         page.image.save(image_name, ContentFile(page_image), save=True)
-        if page_number > 10:
-            break
 
 
 @app.task

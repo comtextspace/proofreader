@@ -1,0 +1,20 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+{% block extrahead %}
+    {{ block.super }}
+    <!-- Add these links to your admin template's head section -->
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/resize_textarea.js' %}"></script>
+{% endblock %}
+{% block submit_buttons_bottom %}
+    {{ block.super }}
+    {% if prev_page_exists %}
+    <input type="submit" value="<- Предыдущая страница" class="default" name="back_page">
+    {% endif %}
+    {% if next_page_exists %}
+    <input type="submit" value="Следующая страница ->" class="default" name="next_page">
+    {% endif %}
+{% endblock %}

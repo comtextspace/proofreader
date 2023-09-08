@@ -7,3 +7,4 @@ media
 data
 .idea
 .DS_Store
+/staticfiles

@@ -44,6 +44,7 @@ class Page(LifecycleModelMixin, TimeStampedModel, models.Model):
     image = models.FileField(upload_to="pages/", null=True, blank=True)
     text = models.TextField(blank=True)
     processed = models.BooleanField(default=False)
+    text_size = models.IntegerField(null=True, blank=True, default=12)
 
     history = HistoricalRecords()
 

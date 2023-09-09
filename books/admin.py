@@ -9,6 +9,7 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from core.admin_utils import custom_titled_filter
 from .models import Author, Book, Page
+from .services.book_export import export_book
 
 
 @admin.register(Author)
@@ -19,8 +20,7 @@ class AuthorAdmin(admin.ModelAdmin):
 
 def download_as_text_file(modeladmin, request, queryset):
     book = queryset.first()  # Assuming you want to download pages for one book at a time
-    pages = Page.objects.filter(book=book).order_by('number')
-    text = "\n".join(page.text for page in pages)
+    text = export_book(book)
     response = HttpResponse(text, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename="{book.name}.txt"'
     return response
@@ -82,7 +82,8 @@ class BookAdmin(admin.ModelAdmin):
 class PageAdminForm(forms.ModelForm):
     text = forms.CharField(
         widget=forms.Textarea(attrs={'class': 'resizeable-textarea', 'rows': 60, 'cols': 80}),
-        label='Your Text'
+        label='Your Text',
+        strip=False,
     )
 
     text_size = forms.IntegerField(

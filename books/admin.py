@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.db import models
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -11,13 +12,26 @@ from .models import Author, Book, Page
 
 
 @admin.register(Author)
-class AuthrAdmin(admin.ModelAdmin):
+class AuthorAdmin(admin.ModelAdmin):
     list_display = ["name"]
     search_fields = ['name']
 
 
+def download_as_text_file(modeladmin, request, queryset):
+    book = queryset.first()  # Assuming you want to download pages for one book at a time
+    pages = Page.objects.filter(book=book)
+    text = "\n".join(page.text for page in pages)
+    response = HttpResponse(text, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="{book.name}.txt"'
+    return response
+
+
+download_as_text_file.short_description = "Скачать книгу текстовым файлом"
+
+
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
+    actions = [download_as_text_file]
     list_display = ["name", "author", 'status', 'pages_count', 'pages_processing_count', 'pages_ready_count',
                     'pages_in_progress_count', 'pages_done_count']
     list_filter = ['author']
@@ -63,7 +77,7 @@ class BookAdmin(admin.ModelAdmin):
 
     def pages_done_count(self, obj):
         return obj.pages_done_count
-    
+
 
 class PageAdminForm(forms.ModelForm):
     text = forms.CharField(

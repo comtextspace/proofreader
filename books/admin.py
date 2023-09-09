@@ -19,7 +19,7 @@ class AuthorAdmin(admin.ModelAdmin):
 
 def download_as_text_file(modeladmin, request, queryset):
     book = queryset.first()  # Assuming you want to download pages for one book at a time
-    pages = Page.objects.filter(book=book)
+    pages = Page.objects.filter(book=book).order_by('number')
     text = "\n".join(page.text for page in pages)
     response = HttpResponse(text, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename="{book.name}.txt"'

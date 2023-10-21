@@ -13,7 +13,7 @@ services:
     volumes:
       - .:/code
     ports:
-      - "8000:8000"
+      - "8000"
     depends_on:
       - db
       - amqp
@@ -72,6 +72,15 @@ services:
       - redis_data:/data  # Corrected volume name
     entrypoint: redis-server --appendonly yes
     restart: always
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - web
 
 volumes:
   postgres_data:

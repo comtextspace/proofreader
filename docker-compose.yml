@@ -3,7 +3,7 @@ version: '3.7'
 services:
   web:
     build: .
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: gunicorn proofreader.wsgi:application --bind 0.0.0.0:8000 --workers 3
     environment:
       - LOGLEVEL=INFO
       - DATABASE_URL=db://postgres:postgres@db:5432/postgres

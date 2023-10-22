@@ -81,9 +81,10 @@ class BookAdmin(admin.ModelAdmin):
 
 class PageAdminForm(forms.ModelForm):
     text = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'resizeable-textarea', 'rows': 60, 'cols': 80}),
-        label='Your Text',
+        widget=forms.Textarea(attrs={'class': 'resizeable-textarea', 'rows': 60, 'cols': 90}),
+        label='Text',
         strip=False,
+        required=False,
     )
 
     text_size = forms.IntegerField(
@@ -102,13 +103,13 @@ class PageAdmin(SimpleHistoryAdmin):
     change_form_template = "admin/page_change_form.html"
     list_display = ["number", "book", "modified", 'status']
     history_list_display = ["text"]
-    readonly_fields = ['book', 'page', 'number']
+    readonly_fields = ['book', 'page', 'number', 'text_size']
     fieldsets = (
-        (None, {
-            'fields': ('book', 'number', 'status', 'text_size')
-        }),
         ('Редактирование', {
             'fields': (('text', 'page'),)
+        }),
+        (None, {
+            'fields': (('book', 'number', 'status', 'text_size', 'number_in_book'),)
         }),
     )
     list_filter = [('book__name', custom_titled_filter('Book')), 'status']
@@ -117,8 +118,11 @@ class PageAdmin(SimpleHistoryAdmin):
         if obj.image:
             image_url = obj.image.url
             return mark_safe(
-                f'<a href="{image_url}" data-fancybox="images" data-caption="page">'
-                f'<img src="{image_url}" width="600" /></a>'
+                f"""
+<div>
+    <img src="{image_url}" alt="Description" id="image" width="750" height="970">
+</div>
+"""
             )
         return '-'
 
@@ -132,6 +136,7 @@ class PageAdmin(SimpleHistoryAdmin):
         return extra_context
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
+        self.request = request
         extra_context = extra_context or {}
         extra_context.update(self._get_context(request, object_id))
         return self.changeform_view(request, object_id, form_url, extra_context)
@@ -147,3 +152,7 @@ class PageAdmin(SimpleHistoryAdmin):
             return redirect(reverse("admin:books_page_change", args=(next_page.id,)))
 
         return super().changeform_view(request, object_id, form_url, extra_context)  # noqa
+
+    @admin.display(description='Размер текста')
+    def text_size(self, obj):
+        return self.request.user.text_size

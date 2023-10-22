@@ -1,16 +1,24 @@
-// static/js/resize_textarea.js
+function correct(str) {
+    str = str.replace(/(?<!\n)\n(?!($|\n))/g, ' ');
+    return str;
+}
 
 $(document).ready(function () {
-    $("#text-size-input").on("input", function () {
-        // Get the current font size from the "Text Size (px)" input field
-        var fontSize = $(this).val() + "px";
+    var initialTextareaHeight = $(".resizeable-textarea").height();
+    var initialTextareaWidth = $(".resizeable-textarea").width();
+    var fontSize = $("#page_form > div > fieldset:nth-child(2) > div > div > div:nth-child(4) > div > div").text() + "px";
 
-        // Apply the font size to the textarea with class "resizeable-textarea"
-        $(".resizeable-textarea").css("font-size", fontSize);
+    // Set font size and line height
+    $(".resizeable-textarea").css({
+        "font-size": fontSize,
+        "line-height": parseFloat(fontSize) * 1.5 + "px",
+        "height": initialTextareaHeight + "px", // Set the textarea to its initial height
+        "width": initialTextareaWidth + "px" // Set the textarea to its initial width
+    });
 
-        // Calculate and set the line-height to maintain the original textarea size
-        var lineHeight = parseFloat(fontSize) * 1.5; // You can adjust the multiplier as needed
-        $(".resizeable-textarea").css("line-height", lineHeight + "px");
+    document.getElementById('correctTextButton').addEventListener('click', function () {
+        console.log("Correcting text...");
+        var textarea = document.querySelector('.resizeable-textarea');
+        textarea.value = correct(textarea.value);
     });
 });
-

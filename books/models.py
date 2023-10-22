@@ -44,13 +44,13 @@ class Page(LifecycleModelMixin, TimeStampedModel, models.Model):
         DONE = "done", "Вычитано"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="pages")
-    number = models.IntegerField()
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="pages", verbose_name="Книга")
+    number = models.IntegerField(verbose_name="Порядковй номер страницы")
     image_url = models.TextField(blank=True)
     image = models.FileField(upload_to="pages/", null=True, blank=True)
     text = models.TextField(blank=True)
-    text_size = models.IntegerField(null=True, blank=True, default=12)
-    status = models.CharField(max_length=100, choices=Status.choices, default=Status.PROCESSING)
+    status = models.CharField(max_length=100, choices=Status.choices, default=Status.PROCESSING, verbose_name="Статус")
+    number_in_book = models.CharField(null=True, blank=True, verbose_name="Номер страницы в книге", max_length=100)
 
     history = HistoricalRecords()
 

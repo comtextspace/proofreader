@@ -11,7 +11,7 @@ services:
       - CELERY_BROKER_URL=amqp://guest:@amqp:5672/
     env_file: ./docker.env
     volumes:
-      - .:/code
+      -  ./media:/media
     ports:
       - "8000"
     depends_on:
@@ -55,7 +55,7 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the init.sql script
       - ./data/postgres:/var/lib/postgresql/data
     ports:
-      - "5432:5432"  # Corrected port mapping
+      - "5432:5432"
     environment:
       - "POSTGRES_HOST_AUTH_METHOD=trust"
 
@@ -67,9 +67,9 @@ services:
   redis:
     image: redis:6.2
     ports:
-      - "6379:6379"  # Corrected port mapping
+      - "6379:6379"
     volumes:
-      - redis_data:/data  # Corrected volume name
+      - redis_data:/data
     entrypoint: redis-server --appendonly yes
     restart: always
 
@@ -84,4 +84,4 @@ services:
 
 volumes:
   postgres_data:
-  redis_data:  # Added volume definition for Redis
+  redis_data:

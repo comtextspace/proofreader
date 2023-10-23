@@ -92,7 +92,7 @@ WSGI_APPLICATION = "proofreader.wsgi.application"
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 DATABASES = {
     "default": {
-        **env.db('DATABASE_URL', default='db://postgres:@db:5432/postgres'),
+        **env.db('DATABASE_URL', default='db://postgres:postgres@db:5432/postgres'),
         "ENGINE": "django.db.backends.postgresql",
         "OPTIONS": {"options": "-c search_path=django"},
     }

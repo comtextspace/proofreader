@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.db import models
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -10,6 +10,7 @@ from simple_history.admin import SimpleHistoryAdmin
 from core.admin_utils import custom_titled_filter
 from .models import Author, Book, Page
 from .services.book_export import export_book
+from .tasks import extract_text_from_image_task
 
 
 @admin.register(Author)
@@ -29,9 +30,18 @@ def download_as_text_file(modeladmin, request, queryset):
 download_as_text_file.short_description = "Скачать книгу текстовым файлом"
 
 
+def process_unprocessed_pages(modeladmin, request, queryset):
+    for page in Page.objects.filter(status=Page.Status.PROCESSING, book__in=queryset):
+        extract_text_from_image_task.delaay(page.id)
+    messages.add_message(request, messages.INFO, 'Задачи по распознаванию текста запущены')
+
+
+process_unprocessed_pages.short_description = "Повторно запустить задачи по распознаванию текста"
+
+
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    actions = [download_as_text_file]
+    actions = [download_as_text_file, process_unprocessed_pages]
     list_display = ["name", "author", 'status', 'pages_count', 'pages_processing_count', 'pages_ready_count',
                     'pages_in_progress_count', 'pages_done_count']
     list_filter = ['author']
@@ -113,6 +123,9 @@ class PageAdmin(SimpleHistoryAdmin):
         }),
     )
     list_filter = [('book__name', custom_titled_filter('Book')), 'status']
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).order_by('book__name', 'number')
 
     def page(self, obj):
         if obj.image:

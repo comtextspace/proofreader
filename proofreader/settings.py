@@ -14,6 +14,9 @@ import os
 from pathlib import Path
 
 import environ
+import sentry_sdk
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -175,3 +178,13 @@ if env.bool('LOCAL', default=False):
     CELERY_TASK_ALWAYS_EAGER = True
     # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-eager-propagates
     CELERY_TASK_EAGER_PROPAGATES = True
+
+
+sentry_sdk.set_tag("server", 'develop' if DEBUG else 'production')
+if sentry_dsn := env("SENTRY_DSN", default=''):
+    sentry_sdk.init(
+        dsn=sentry_dsn,
+        traces_sample_rate=0.1,
+        integrations=[DjangoIntegration(), CeleryIntegration()],
+        send_default_pii=True,
+    )

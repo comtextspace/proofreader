@@ -25,6 +25,7 @@ pytesseract = "^0.3.10"
 django-extensions = "^3.2.3"
 ipython = "^8.14.0"
 django-simple-history = "^3.3.0"
+sentry-sdk = "^1.32.0"
 
 
 [tool.poetry.dev-dependencies]

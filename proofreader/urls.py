@@ -18,11 +18,16 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
-urlpatterns = [
-    path("home/", admin.site.urls),
-    path("accounts/", include("accounts.urls")),
-    path("accounts/", include("django.contrib.auth.urls")),
 
-    path("tz_detect/", include("tz_detect.urls")),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+def trigger_error(request):
+    division_by_zero = 1 / 0
+
+
+urlpatterns = [
+                  path("home/", admin.site.urls),
+                  path("accounts/", include("accounts.urls")),
+                  path("accounts/", include("django.contrib.auth.urls")),
+                  path('sentry-debug/', trigger_error),
+                  path("tz_detect/", include("tz_detect.urls")),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 print(urlpatterns)

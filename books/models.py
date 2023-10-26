@@ -1,8 +1,11 @@
-from django.contrib.auth import get_user_model
-
-from statistics import mode
-from django.db import models
 import uuid
+
+from django.db import models
+from django_extensions.db.models import TimeStampedModel
+from django_lifecycle import LifecycleModelMixin, hook, AFTER_CREATE
+from simple_history.models import HistoricalRecords
+
+from .tasks import split_pdf_to_pages_task, extract_text_from_image_task
 
 
 class Author(models.Model):
@@ -16,52 +19,66 @@ class Author(models.Model):
         db_table = '"book"."author"'
 
 
-class Book(models.Model):
+class Book(LifecycleModelMixin, models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     author = models.ForeignKey(Author, on_delete=models.PROTECT, related_name="books")
-
-    def __str__(self):
-        return self.name
+    pdf = models.FileField(upload_to="pdfs/", null=True, blank=True)
 
     class Meta:
         db_table = '"book"."book"'
 
+    def __str__(self):
+        return self.name
 
-class Page(models.Model):
+    @hook(AFTER_CREATE, on_commit=True, when="pdf", is_not=None)
+    def split_to_pages(self):
+        split_pdf_to_pages_task.delay(self.id)
+
+
+class Page(LifecycleModelMixin, TimeStampedModel, models.Model):
+    class Status(models.TextChoices):
+        PROCESSING = "processing", "Идет распознавание"
+        READY = "redy", "Готово к вычитке"
+        IN_PROGRESS = "in_progress", "В процессе вычитки"
+        DONE = "done", "Вычитано"
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    number = models.IntegerField()
-    image_url = models.TextField()
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="pages", verbose_name="Книга")
+    number = models.IntegerField(verbose_name="Порядковй номер страницы")
+    image_url = models.TextField(blank=True)
+    image = models.FileField(upload_to="pages/", null=True, blank=True)
+    text = models.TextField(blank=True)
+    status = models.CharField(max_length=100, choices=Status.choices, default=Status.PROCESSING, verbose_name="Статус")
+    number_in_book = models.CharField(null=True, blank=True, verbose_name="Номер страницы в книге", max_length=100)
+
+    history = HistoricalRecords()
 
     def __str__(self) -> str:
         return f"{self.book.name} ({self.number})"
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["book", "number"], name="unique_book_number"
-            )
-        ]
-
-    class Meta:
         db_table = '"book"."page"'
 
+    @hook(AFTER_CREATE, on_commit=True, when="image", is_not=None)
+    def extract_text_from_image(self):
+        extract_text_from_image_task.delay(self.id)
 
-class PageText(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    page = models.ForeignKey(Page, on_delete=models.PROTECT)
-    editor = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
-    text = models.TextField()
-    date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Text for page {self.page.number} of {self.book.name}"
-
-    class Meta:
-        db_table = '"book"."page_text"'
-
+# class PageText(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     book = models.ForeignKey(Book, on_delete=models.CASCADE)
+#     page = models.ForeignKey(Page, on_delete=models.PROTECT)
+#     editor = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
+#     text = models.TextField()
+#     date = models.DateTimeField(auto_now_add=True)
+#
+#     history = HistoricalRecords()
+#
+#     def __str__(self):
+#         return f"Text for page {self.page.number} of {self.book.name}"
+#
+#     class Meta:
+#         db_table = '"book"."page_text"'
 
 # for future
 

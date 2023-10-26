@@ -3,22 +3,90 @@ version: '3.7'
 services:
   web:
     build: .
-    # entrypoint: /code/docker-entrypoint.sh
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn proofreader.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    environment:
+      - SENTRY_DSN=https://068d46f1d057c6dc3154519ab00a82ed@o4506100246708224.ingest.sentry.io/4506100248608768
+      - LOGLEVEL=INFO
+      - DATABASE_URL=db://postgres:postgres@db:5432/postgres
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=amqp://guest:@amqp:5672/
+    env_file: ./docker.env
     volumes:
-      - .:/code
+      - ./media:/code/media
     ports:
-      - 8000:8000
+      - "8000"
     depends_on:
       - db
+      - amqp
+      - redis
+
+  celery_worker:
+    build: .
+    command: celery -A taskapp.celery:app worker --loglevel=info -c 4
+    environment:
+      - SENTRY_DSN=https://068d46f1d057c6dc3154519ab00a82ed@o4506100246708224.ingest.sentry.io/4506100248608768
+      - LOGLEVEL=INFO
+      - DATABASE_URL=db://postgres:postgres@db:5432/postgres
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=amqp://guest:@amqp:5672/
+    env_file: ./docker.env
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - amqp
+      - redis
+
+  celery_beat:
+    build: .
+    command: celery -A taskapp.celery:app beat --loglevel=info
+    environment:
+      - SENTRY_DSN=https://068d46f1d057c6dc3154519ab00a82ed@o4506100246708224.ingest.sentry.io/4506100248608768
+      - LOGLEVEL=INFO
+      - DATABASE_URL=db://postgres:postgres@db:5432/postgres
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=amqp://guest:@amqp:5672/
+    env_file: ./docker.env
+    depends_on:
+      - celery_worker
+      - amqp
+      - db
+
   db:
     image: postgres:14
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the init.sql script
+      - ./data/postgres:/var/lib/postgresql/data
     ports:
-      - 6055:5432
+      - "5432:5432"
     environment:
-      - "POSTGRES_HOST_AUTH_METHOD=trust"
+      POSTGRES_PASSWORD: "postgres"
+
+  amqp:
+    image: rabbitmq
+    ports:
+      - "5672:5672"
+    volumes:
+      - ./rabbitmq_data:/var/lib/rabbitmq
+
+
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    entrypoint: redis-server --appendonly yes
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - web
 
 volumes:
-  postgres_data:
+  redis_data:

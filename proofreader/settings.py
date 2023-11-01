@@ -189,9 +189,9 @@ if sentry_dsn := env("SENTRY_DSN", default=''):
     )
 
 # Admin styles for different environments:
-# if LOCAL_DEVELOP:
-#     ADMIN_SETTINGS = {'title': 'Proofreader Local', 'header_color': '#000000', 'breadcrumbs_color': '#e81a9b'}
-# elif DEBUG:
-#     ADMIN_SETTINGS = {'title': 'Proofreader DEV', 'header_color': '#53ab70', 'breadcrumbs_color': '#206d22'}
-# else:
-ADMIN_SETTINGS = {'title': 'Proofreader', 'header_color': '#fd5e60', 'breadcrumbs_color': '#e8736a'}
+if LOCAL_DEVELOP:
+    ADMIN_SETTINGS = {'title': 'Proofreader Local', 'header_color': '#000000', 'breadcrumbs_color': '#e81a9b'}
+elif DEBUG:
+    ADMIN_SETTINGS = {'title': 'Proofreader DEV', 'header_color': '#53ab70', 'breadcrumbs_color': '#206d22'}
+else:
+    ADMIN_SETTINGS = {'title': 'Proofreader', 'header_color': '#fd5e60', 'breadcrumbs_color': '#e8736a'}

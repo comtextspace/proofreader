@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 import environ
@@ -23,15 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 env.read_env(str(BASE_DIR / 'config.env'))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-w$z((s_-9p#@o7qhdppz6!&_$nsh)_=%o0*$++auotml^ns+8z"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=True)
 
+LOCAL_DEVELOP = DEBUG and (
+    'runserver' in sys.argv or 'pydevconsole' in sys.argv[0]  # run locally  # run from console locally
+)
 ALLOWED_HOSTS = ["*"]
 
 # Application definition
@@ -84,6 +83,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'core.context_processors.custom_settings',
             ],
         },
     },
@@ -143,7 +143,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = "book_list"
-LOGOUT_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/home"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
@@ -179,7 +179,6 @@ if env.bool('LOCAL', default=False):
     # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-eager-propagates
     CELERY_TASK_EAGER_PROPAGATES = True
 
-
 sentry_sdk.set_tag("server", 'develop' if DEBUG else 'production')
 if sentry_dsn := env("SENTRY_DSN", default=''):
     sentry_sdk.init(
@@ -188,3 +187,11 @@ if sentry_dsn := env("SENTRY_DSN", default=''):
         integrations=[DjangoIntegration(), CeleryIntegration()],
         send_default_pii=True,
     )
+
+# Admin styles for different environments:
+# if LOCAL_DEVELOP:
+#     ADMIN_SETTINGS = {'title': 'Proofreader Local', 'header_color': '#000000', 'breadcrumbs_color': '#e81a9b'}
+# elif DEBUG:
+#     ADMIN_SETTINGS = {'title': 'Proofreader DEV', 'header_color': '#53ab70', 'breadcrumbs_color': '#206d22'}
+# else:
+ADMIN_SETTINGS = {'title': 'Proofreader', 'header_color': '#fd5e60', 'breadcrumbs_color': '#e8736a'}

@@ -14,6 +14,7 @@ services:
     env_file: ./docker.env
     volumes:
       - ./media:/code/media
+      - ./staticfiles:/code/staticfiles
     ports:
       - "8000"
     depends_on:

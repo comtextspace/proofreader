@@ -22,5 +22,5 @@ rebuild:
 rebuild-prod:
 	docker-compose -f docker-compose.prod.yml down
 	docker-compose -f docker-compose.prod.yml up -d --build
-	docker-compose exec web python3 manage.py migrate
-	docker-compose exec web python3 manage.py collectstatic --force
+	docker-compose -f docker-compose.prod.yml exec web python3 manage.py migrate
+	docker-compose -f docker-compose.prod.yml exec web python3 manage.py collectstatic --force

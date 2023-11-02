@@ -34,7 +34,7 @@ services:
       - DEBUG=False
     env_file: ./docker.env
     volumes:
-      - .:/code
+      - ./media:/code/media
     depends_on:
       - db
       - amqp

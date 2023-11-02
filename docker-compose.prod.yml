@@ -13,8 +13,8 @@ services:
       - DEBUG=False
     env_file: ./docker.env
     volumes:
-      - ./media:/code/media
-      - ./staticfiles:/code/staticfiles
+      - ./media:/media
+      - ./staticfiles:/staticfiles
     ports:
       - "8000"
     depends_on:
@@ -34,7 +34,8 @@ services:
       - DEBUG=False
     env_file: ./docker.env
     volumes:
-      - ./media:/code/media
+      - ./media:/media
+      - ./staticfiles:/staticfiles
     depends_on:
       - db
       - amqp
@@ -87,8 +88,8 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./media:/code/media
-      - ./staticfiles:/code/staticfiles
+      - ./media:/media
+      - ./staticfiles:/staticfiles
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - web

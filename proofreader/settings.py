@@ -135,7 +135,6 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -195,3 +194,12 @@ elif DEBUG:
     ADMIN_SETTINGS = {'title': 'Proofreader DEV', 'header_color': '#53ab70', 'breadcrumbs_color': '#206d22'}
 else:
     ADMIN_SETTINGS = {'title': 'Proofreader', 'header_color': '#fd5e60', 'breadcrumbs_color': '#e8736a'}
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}

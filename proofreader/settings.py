@@ -195,3 +195,9 @@ elif DEBUG:
     ADMIN_SETTINGS = {'title': 'Proofreader DEV', 'header_color': '#53ab70', 'breadcrumbs_color': '#206d22'}
 else:
     ADMIN_SETTINGS = {'title': 'Proofreader', 'header_color': '#fd5e60', 'breadcrumbs_color': '#e8736a'}
+
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}

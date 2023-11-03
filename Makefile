@@ -20,11 +20,11 @@ rebuild:
 	docker-compose exec web python3 manage.py collectstatic --force
 
 rebuild-prod:
-	sdocker-compose -f docker-compose.prod.yml down
+	docker-compose -f docker-compose.prod.yml down
 	docker-compose -f docker-compose.prod.yml up -d --build
 	docker-compose -f docker-compose.prod.yml exec web python3 manage.py migrate
 	docker-compose -f docker-compose.prod.yml exec web python3 manage.py collectstatic --force
 
 restart-prod:
-	sdocker-compose -f docker-compose.prod.yml down
-	sdocker-compose -f docker-compose.prod.yml up
+	docker-compose -f docker-compose.prod.yml down
+	docker-compose -f docker-compose.prod.yml up

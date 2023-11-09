@@ -80,7 +80,7 @@ class BookAdmin(admin.ModelAdmin):
         )
 
     def status(self, obj):
-        if obj.pages_ready_count < obj.pages_count:
+        if obj.pages_processing_count > 0:
             return 'Идет распознавание'
         elif obj.pages_done_count == obj.pages_count:
             return 'Вычитано'

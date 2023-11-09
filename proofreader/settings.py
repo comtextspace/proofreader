@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import os
 import sys
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -35,6 +36,7 @@ ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -49,11 +51,41 @@ INSTALLED_APPS = [
     "tz_detect",
     'django_celery_beat',
     'django_celery_results',
+    'django_extensions',
     'simple_history',
+    'rest_framework',
+    'django_filters',
+    'drf_yasg',
     # This project
     "books.apps.BooksConfig",
     "accounts.apps.AccountsConfig",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
+    'NON_FIELD_ERRORS_KEY': 'detail',
+    'HTML_SELECT_CUTOFF': 5,
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+}
+
+SWAGGER_SETTINGS = {
+    'LOGOUT_URL': 'admin:logout',
+    'LOGIN_URL': 'admin:login',
+    'JSON_EDITOR': True,
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=2),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+}
 
 INSTALLED_APPS += ['taskapp.celery.CeleryAppConfig']
 
@@ -173,7 +205,7 @@ MEDIA_ROOT = str(BASE_DIR / 'media')
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-if env.bool('LOCAL', default=False):
+if LOCAL_DEVELOP:
     # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-always-eager
     CELERY_TASK_ALWAYS_EAGER = True
     # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-eager-propagates

@@ -1,5 +1,6 @@
-from PyPDF2 import PdfReader
+from django.conf import settings
 from django.core.files.base import ContentFile
+from PyPDF2 import PdfReader
 
 from books.services.image_actions import extract_text_from_image
 from books.services.pdf_actions import split_pdf_to_pages
@@ -8,14 +9,18 @@ from taskapp.celery import app
 
 @app.task
 def split_pdf_to_pages_task(book_id):
-    from books.models import Book
-    from books.models import Page
+    from books.models import Book, Page
+
     book = Book.objects.get(id=book_id)
-    pdf = PdfReader(book.pdf)
+    PdfReader(book.pdf)
 
     for page_number, page_image, image_name in split_pdf_to_pages(book.pdf, book.name):
         page = Page(book=book, number=page_number)
         page.image.save(image_name, ContentFile(page_image), save=True)
+
+        # Limits for local development
+        if settings.LOCAL_DEVELOP and page_number == 10:
+            break
 
 
 @app.task

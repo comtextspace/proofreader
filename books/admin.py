@@ -23,7 +23,7 @@ def download_as_text_file(modeladmin, request, queryset):
     book = queryset.first()  # Assuming you want to download pages for one book at a time
     text = export_book(book)
     response = HttpResponse(text, content_type='text/plain')
-    response['Content-Disposition'] = f'attachment; filename="{book.name}.txt"'
+    response['Content-Disposition'] = f'attachment; filename="{book.name}.md"'
     return response
 
 

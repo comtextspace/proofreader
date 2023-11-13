@@ -147,3 +147,30 @@ def generate_cache_key(text_input, prefix: str = '', key_length=16):
     cache_key = base64.urlsafe_b64encode(shortened_hash).decode('utf-8')
 
     return prefix + cache_key
+
+
+def get_htm_differences(string1, string2):
+    import difflib
+
+    # Create a Differ object
+    d = difflib.Differ()
+
+    # Calculate the differences
+    diff = list(d.compare(string1.split(), string2.split()))
+
+    # Prepare the highlighted result
+    highlighted_diff = []
+    for word in diff:
+        if word.startswith("+ "):
+            # Highlight additions with green
+            highlighted_diff.append(f'<span style="color:green;">{word[2:]}</span>')
+        elif word.startswith("- "):
+            # Highlight deletions with red
+            highlighted_diff.append(f'<span style="color:red; text-decoration: line-through;">{word[2:]}</span>')
+        else:
+            highlighted_diff.append(word[2:])
+
+    # Join the result into a single string with HTML formatting
+    result_html = " ".join(highlighted_diff)
+
+    return result_html

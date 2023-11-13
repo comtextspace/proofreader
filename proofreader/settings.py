@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     # This project
     "books.apps.BooksConfig",
     "accounts.apps.AccountsConfig",
+    "core.apps.CoreConfig",
 ]
 
 REST_FRAMEWORK = {

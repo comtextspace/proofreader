@@ -5,9 +5,8 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from simple_history.admin import SimpleHistoryAdmin
 
-from core.admin_utils import custom_titled_filter
+from core.admin_utils import CustomHistoryAdmin, custom_titled_filter
 from .models import Author, Book, Page
 from .services.book_export import export_book
 from .tasks import extract_text_from_image_task
@@ -23,7 +22,7 @@ def download_as_text_file(modeladmin, request, queryset):
     book = queryset.first()  # Assuming you want to download pages for one book at a time
     text = export_book(book)
     response = HttpResponse(text, content_type='text/plain')
-    response['Content-Disposition'] = f'attachment; filename="{book.name}.txt"'
+    response['Content-Disposition'] = f'attachment; filename="{book.name}.md"'
     return response
 
 
@@ -122,11 +121,11 @@ class PageAdminForm(forms.ModelForm):
 
 
 @admin.register(Page)
-class PageAdmin(SimpleHistoryAdmin):
+class PageAdmin(CustomHistoryAdmin):
     form = PageAdminForm
     change_form_template = "admin/page_change_form.html"
     list_display = ["number", "book", "modified", 'status']
-    history_list_display = ["text"]
+    history_list_display = ["text", "status"]
     readonly_fields = ['book', 'page', 'number', 'text_size']
     fieldsets = (
         ('Редактирование', {'fields': (('text', 'page'),)}),

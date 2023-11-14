@@ -161,16 +161,19 @@ def get_htm_differences(string1, string2):
     # Prepare the highlighted result
     highlighted_diff = []
     for word in diff:
+        print(word)
         if word.startswith("+ "):
             # Highlight additions with green
             highlighted_diff.append(f'<span style="color:green;">{word[2:]}</span>')
         elif word.startswith("- "):
             # Highlight deletions with red
             highlighted_diff.append(f'<span style="color:red; text-decoration: line-through;">{word[2:]}</span>')
+        elif word.startswith("? "):
+            pass
         else:
             highlighted_diff.append(word[2:])
 
     # Join the result into a single string with HTML formatting
-    result_html = " ".join(highlighted_diff)
+    result_html = " ".join(highlighted_diff).replace('^', '')
 
     return result_html

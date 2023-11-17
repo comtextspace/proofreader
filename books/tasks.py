@@ -7,7 +7,14 @@ from books.services.pdf_actions import split_pdf_to_pages
 from taskapp.celery import app
 
 
-@app.task
+@app.task(
+    acks_late=True,
+    retry_backoff=True,
+    retry_backoff_max=60,
+    retry_jitter=True,
+    retry_kwargs={'max_retries': 3},
+    trail=False,
+)
 def split_pdf_to_pages_task(book_id):
     from books.models import Book, Page
 
@@ -23,7 +30,14 @@ def split_pdf_to_pages_task(book_id):
             break
 
 
-@app.task
+@app.task(
+    acks_late=True,
+    retry_backoff=True,
+    retry_backoff_max=60,
+    retry_jitter=True,
+    retry_kwargs={'max_retries': 3},
+    trail=False,
+)
 def extract_text_from_image_task(page_id):
     from books.models import Page
 

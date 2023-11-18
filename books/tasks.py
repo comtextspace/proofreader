@@ -8,11 +8,6 @@ from taskapp.celery import app
 
 
 @app.task(
-    acks_late=True,
-    retry_backoff=True,
-    retry_backoff_max=60,
-    retry_jitter=True,
-    retry_kwargs={'max_retries': 3},
     trail=False,
 )
 def split_pdf_to_pages_task(book_id):

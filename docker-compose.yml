@@ -15,8 +15,6 @@ services:
     volumes:
       - project-static:/code/staticfiles
       - project-media:/code/media
-    ports:
-      - "8000"
     depends_on:
       - db
       - amqp
@@ -62,23 +60,17 @@ services:
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the init.sql script
       - ./data/postgres:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_PASSWORD: "postgres"
 
   amqp:
     image: rabbitmq
-    ports:
-      - "5672:5672"
     volumes:
       - ./rabbitmq_data:/var/lib/rabbitmq
 
 
   redis:
     image: redis:6.2
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     entrypoint: redis-server --appendonly yes

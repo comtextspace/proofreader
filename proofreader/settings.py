@@ -102,6 +102,7 @@ MIDDLEWARE = [
     # 3rd party
     "tz_detect.middleware.TimezoneMiddleware",
     'simple_history.middleware.HistoryRequestMiddleware',
+    'admin_auto_filters',
 ]
 
 ROOT_URLCONF = "proofreader.urls"

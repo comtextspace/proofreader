@@ -1,5 +1,4 @@
 from admin_auto_filters.filters import AutocompleteFilter
-from django import forms
 from django.contrib import admin, messages
 from django.db import models
 from django.http import HttpResponse
@@ -8,6 +7,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from core.admin_utils import CustomHistoryAdmin
+from .admin_forms import ActionValueForm, PageAdminForm
 from .models import Author, Book, Page
 from .services.book_export import export_book
 from .tasks import extract_text_from_image_task, split_pdf_to_pages_task
@@ -114,24 +114,6 @@ class BookAdmin(admin.ModelAdmin):
         return obj.pages_done_count
 
 
-class PageAdminForm(forms.ModelForm):
-    text = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'resizeable-textarea', 'rows': 60, 'cols': 90}),
-        label='Text',
-        strip=False,
-        required=False,
-    )
-
-    text_size = forms.IntegerField(
-        label='Text Size (px)',
-        widget=forms.NumberInput(attrs={'id': 'text-size-input'}),
-    )
-
-    class Meta:
-        model = Page
-        fields = '__all__'
-
-
 class BookFilter(AutocompleteFilter):
     title = 'Книга'  # display title
     field_name = 'book'  # name of the foreign key field
@@ -139,7 +121,12 @@ class BookFilter(AutocompleteFilter):
 
 def numerate_pages(modeladmin, request, queryset):
     page = queryset.first()
-    start_number = 0
+
+    try:
+        start_number = int(request.POST.get('action_value')) - 1
+    except ValueError:
+        messages.add_message(request, messages.ERROR, 'Введите целое число')
+        return
 
     # numerate pages start from given
     for page in Page.objects.filter(book=page.book, number__gte=page.number).order_by('number'):
@@ -157,6 +144,7 @@ numerate_pages.short_description = "Запустить задачу по нум�
 class PageAdmin(CustomHistoryAdmin):
     form = PageAdminForm
     actions = [numerate_pages]
+    action_form = ActionValueForm
     change_form_template = "admin/page_change_form.html"
     list_display = ["number", "book", "modified", 'status']
     history_list_display = ["text", "status"]

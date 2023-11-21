@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'drf_yasg',
+    'admin_auto_filters',
     # This project
     "books.apps.BooksConfig",
     "accounts.apps.AccountsConfig",
@@ -102,7 +103,6 @@ MIDDLEWARE = [
     # 3rd party
     "tz_detect.middleware.TimezoneMiddleware",
     'simple_history.middleware.HistoryRequestMiddleware',
-    'admin_auto_filters',
 ]
 
 ROOT_URLCONF = "proofreader.urls"

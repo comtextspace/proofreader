@@ -51,7 +51,7 @@ continue_pages_splittings.short_description = "Повторно запустит
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    actions = [download_as_text_file, process_unprocessed_pages]
+    actions = [download_as_text_file, process_unprocessed_pages, continue_pages_splittings]
     list_display = [
         "name",
         "author",

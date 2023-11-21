@@ -10,13 +10,14 @@ from taskapp.celery import app
 @app.task(
     trail=False,
 )
-def split_pdf_to_pages_task(book_id):
+def split_pdf_to_pages_task(book_id, start_page=1):
     from books.models import Book, Page
 
     book = Book.objects.get(id=book_id)
-    PdfReader(book.pdf)
+    book.total_pages_in_pdf = len(PdfReader(book.pdf).pages)
+    book.save()
 
-    for page_number, page_image, image_name in split_pdf_to_pages(book.pdf, book.name):
+    for page_number, page_image, image_name in split_pdf_to_pages(book.pdf, book.name, start_page=start_page):
         page = Page(book=book, number=page_number)
         page.image.save(image_name, ContentFile(page_image), save=True)
 

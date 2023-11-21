@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'drf_yasg',
+    'admin_auto_filters',
     # This project
     "books.apps.BooksConfig",
     "accounts.apps.AccountsConfig",

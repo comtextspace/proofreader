@@ -1,3 +1,4 @@
+from admin_auto_filters.filters import AutocompleteFilter
 from django import forms
 from django.contrib import admin, messages
 from django.db import models
@@ -6,10 +7,10 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from core.admin_utils import CustomHistoryAdmin, custom_titled_filter
+from core.admin_utils import CustomHistoryAdmin
 from .models import Author, Book, Page
 from .services.book_export import export_book
-from .tasks import extract_text_from_image_task
+from .tasks import extract_text_from_image_task, split_pdf_to_pages_task
 
 
 @admin.register(Author)
@@ -38,13 +39,24 @@ def process_unprocessed_pages(modeladmin, request, queryset):
 process_unprocessed_pages.short_description = "Повторно запустить задачи по распознаванию текста"
 
 
+def continue_pages_splittings(modeladmin, request, queryset):
+    for book in queryset:
+        last_page = book.pages.order_by('-number').first().values_list('number', flat=True)
+        split_pdf_to_pages_task.delay(book.id, start_page=last_page + 1)
+    messages.add_message(request, messages.INFO, 'Задачи по разделению страниц запущены')
+
+
+continue_pages_splittings.short_description = "Повторно запустить задачи по разделению страниц"
+
+
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    actions = [download_as_text_file, process_unprocessed_pages]
+    actions = [download_as_text_file, process_unprocessed_pages, continue_pages_splittings]
     list_display = [
         "name",
         "author",
         'status',
+        'total_pages_in_pdf',
         'pages_count',
         'pages_processing_count',
         'pages_ready_count',
@@ -120,9 +132,31 @@ class PageAdminForm(forms.ModelForm):
         fields = '__all__'
 
 
+class BookFilter(AutocompleteFilter):
+    title = 'Книга'  # display title
+    field_name = 'book'  # name of the foreign key field
+
+
+def numerate_pages(modeladmin, request, queryset):
+    page = queryset.first()
+    start_number = 0
+
+    # numerate pages start from given
+    for page in Page.objects.filter(book=page.book, number__gte=page.number).order_by('number'):
+        page.number_in_book = start_number + 1
+        start_number += 1
+        page.save(update_fields=['number_in_book'])
+
+    messages.add_message(request, messages.INFO, 'Задача по нумерации страниц запущена')
+
+
+numerate_pages.short_description = "Запустить задачу по нумерации страниц"
+
+
 @admin.register(Page)
 class PageAdmin(CustomHistoryAdmin):
     form = PageAdminForm
+    actions = [numerate_pages]
     change_form_template = "admin/page_change_form.html"
     list_display = ["number", "book", "modified", 'status']
     history_list_display = ["text", "status"]
@@ -131,7 +165,7 @@ class PageAdmin(CustomHistoryAdmin):
         ('Редактирование', {'fields': (('text', 'page'),)}),
         (None, {'fields': (('book', 'number', 'status', 'text_size', 'number_in_book'),)}),
     )
-    list_filter = [('book__name', custom_titled_filter('Book')), 'status']
+    list_filter = [BookFilter, 'status']
 
     def get_queryset(self, request):
         return super().get_queryset(request).order_by('book__name', 'number')

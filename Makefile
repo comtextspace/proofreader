@@ -28,3 +28,19 @@ rebuild-prod:
 restart-prod:
 	docker compose -f docker-compose.prod.yml down
 	docker compose -f docker-compose.prod.yml up -d
+
+v-rebuild:
+	vagrant up
+	vagrant ssh -c 'docker compose -f /proofreader/docker-compose.test.yml down'
+	vagrant ssh -c 'docker compose -f /proofreader/docker-compose.test.yml up -d --build'
+	vagrant ssh -c 'docker compose -f /proofreader/docker-compose.test.yml exec web python3 manage.py migrate'
+	vagrant ssh -c 'docker compose -f /proofreader/docker-compose.test.yml exec web python3 manage.py collectstatic --force'
+
+v-stop:
+	vagrant halt
+
+v-destroy:
+	vagrant destroy
+
+v-test:
+	vagrant ssh -c 'docker compose -f /proofreader/docker-compose.test.yml exec web python3 manage.py test'

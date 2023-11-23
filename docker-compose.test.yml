@@ -59,14 +59,14 @@ services:
     image: postgres:14
     volumes:
       - ./conf/init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the init.sql script
-      - ./data/postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: "postgres"
 
   amqp:
     image: rabbitmq
     volumes:
-      - ./rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_data:/var/lib/rabbitmq
 
 
   redis:
@@ -89,7 +89,7 @@ services:
 
 volumes:
   project-media:
-    name: project-media
   project-static:
-    name: project-static
   redis_data:
+  rabbitmq_data:
+  postgres_data:

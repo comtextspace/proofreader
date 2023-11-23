@@ -10,3 +10,4 @@ config_example.env
 /.dockerignore
 .pytest_cache
 .git
+.vagrant

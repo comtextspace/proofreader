@@ -22,7 +22,7 @@
     <body>
         <nav class="navbar">
             <div class="container-xxl justify-content-between">
-                <a class="navbar-brand" href="{% url "home" %}">Proofreader</a>
+                <a class="navbar-brand" href="{% url "home" %}">Proofreade v:{{ APP_VERSION }}</a>
                 {% if user.is_authenticated %}
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle"

@@ -9,6 +9,7 @@ import secrets
 from io import BytesIO
 from urllib.parse import urljoin
 
+import toml
 from django.conf import settings
 from django.core.files import File
 from django.core.files.storage import default_storage
@@ -177,3 +178,15 @@ def get_htm_differences(string1, string2):
     result_html = " ".join(highlighted_diff).replace('^', '')
 
     return result_html
+
+
+def get_app_version():
+    # Load the contents of the pyproject.toml file
+    with open('pyproject.toml', 'r') as file:
+        pyproject_contents = toml.load(file)
+
+    # Extract the version value
+    # Adjust the path ['tool']['poetry']['version'] according to your file's structure
+    version = pyproject_contents['tool']['poetry']['version']
+
+    return version

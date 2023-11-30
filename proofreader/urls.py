@@ -20,8 +20,7 @@ from django.urls import include, path, re_path
 
 urlpatterns = [
     path("home/", admin.site.urls),
-    path("accounts/", include("accounts.urls")),
-    path("accounts/", include("django.contrib.auth.urls")),
+    path("", include("accounts.urls")),
     path("tz_detect/", include("tz_detect.urls")),
     re_path(r'^api/v1/', include('proofreader.api_urls', namespace='v1')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

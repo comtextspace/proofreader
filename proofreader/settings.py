@@ -238,3 +238,4 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
+SIMPLE_HISTORY_ENFORCE_HISTORY_MODEL_PERMISSIONS = True

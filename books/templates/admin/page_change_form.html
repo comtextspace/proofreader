@@ -15,12 +15,13 @@
 
 
 {% block submit_buttons_bottom %}
-    {{ block.super }}
+    <input type="submit" value="Сохранить" class="default" name="_continue">
     {% if prev_page_exists %}
         <input type="submit" value="<- Предыдущая страница" class="default" name="back_page">
     {% endif %}
     {% if next_page_exists %}
         <input type="submit" value="Следующая страница ->" class="default" name="next_page">
+        <input type="submit" value="Сохранить и перейти к следующей странице ->" class="default" name="_save">
     {% endif %}
 {% endblock %}
 

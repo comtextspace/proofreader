@@ -92,11 +92,11 @@ class BookAdmin(admin.ModelAdmin):
 
     def status(self, obj):
         if obj.pages_processing_count > 0:
-            return 'Идет распознавание'
-        elif obj.pages_done_count == obj.pages_count:
-            return 'Вычитано'
+            return 'Распознавание'
+        elif obj.pages_done_count == obj.total_pages_in_pdf:
+            return 'Завершено'
         else:
-            return 'В процессе вычитки'
+            return 'Вычитка'
 
     def pages_count(self, obj):
         return obj.pages_count
@@ -154,6 +154,7 @@ class PageAdmin(CustomHistoryAdmin):
         (None, {'fields': (('book', 'number', 'status', 'text_size', 'number_in_book'),)}),
     )
     list_filter = [BookFilter, 'status']
+    search_fields = ['number']
 
     def get_queryset(self, request):
         return super().get_queryset(request).order_by('book__name', 'number')
@@ -184,6 +185,13 @@ class PageAdmin(CustomHistoryAdmin):
         extra_context = extra_context or {}
         extra_context.update(self._get_context(request, object_id))
         return self.changeform_view(request, object_id, form_url, extra_context)
+
+    def response_change(self, request, obj):
+        # Redirect to Steps:
+        if '_save' in request.POST:
+            next_page = Page.objects.filter(book=obj.book, number=obj.number + 1).last()
+            return redirect(reverse("admin:books_page_change", args=(next_page.id,)))
+        return super().response_change(request, obj)  # noqa
 
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         current_page = self.get_object(request, object_id)

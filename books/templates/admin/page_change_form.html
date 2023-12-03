@@ -3,8 +3,9 @@
 {% block extrahead %}
     {{ block.super }}
     <!-- Add these links to your admin template's head section -->
-        <link rel="stylesheet" type="text/css" href="{% static 'css/reader.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/ckeditor5-dark.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/reader.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/ckeditor5-dark.css' %}">
+    <style>.form-row p{font-size: inherit;}</style>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" rel="stylesheet">
 {% endblock %}
 

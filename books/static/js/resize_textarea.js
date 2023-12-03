@@ -29,6 +29,9 @@ $(document).ready(function () {
 	ClassicEditor.create(document.querySelector('textarea.resizeable-textarea'), config).then(editor => {
 		document.querySelector('.ck.ck-editor').style.width = initialTextareaWidth + "px";
 		document.querySelector('textarea.resizeable-textarea').setAttribute('ClassicEditor', 'yes');
+		editor.editing.view.change(writer => {
+			writer.setStyle('font-size', fontSize, editor.editing.view.document.getRoot());
+		});
 		window.editor = editor;
 		/*console.log(editor);*/
 	}).catch(error => {

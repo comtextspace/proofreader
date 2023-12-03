@@ -1,16 +1,16 @@
-from django import forms
+from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib import admin, messages
 from django.db import models
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from simple_history.admin import SimpleHistoryAdmin
 
-from core.admin_utils import custom_titled_filter
+from core.admin_utils import CustomHistoryAdmin
+from .admin_forms import ActionValueForm, PageAdminForm
 from .models import Author, Book, Page
 from .services.book_export import export_book
-from .tasks import extract_text_from_image_task
+from .tasks import extract_text_from_image_task, split_pdf_to_pages_task
 
 
 @admin.register(Author)
@@ -23,7 +23,7 @@ def download_as_text_file(modeladmin, request, queryset):
     book = queryset.first()  # Assuming you want to download pages for one book at a time
     text = export_book(book)
     response = HttpResponse(text, content_type='text/plain')
-    response['Content-Disposition'] = f'attachment; filename="{book.name}.txt"'
+    response['Content-Disposition'] = f'attachment; filename="{book.name}.md"'
     return response
 
 
@@ -32,46 +32,71 @@ download_as_text_file.short_description = "Скачать книгу текст�
 
 def process_unprocessed_pages(modeladmin, request, queryset):
     for page in Page.objects.filter(status=Page.Status.PROCESSING, book__in=queryset):
-        extract_text_from_image_task.delaay(page.id)
+        extract_text_from_image_task.delay(page.id)
     messages.add_message(request, messages.INFO, 'Задачи по распознаванию текста запущены')
 
 
 process_unprocessed_pages.short_description = "Повторно запустить задачи по распознаванию текста"
 
 
+def continue_pages_splittings(modeladmin, request, queryset):
+    for book in queryset:
+        last_page = book.pages.order_by('-number').first().values_list('number', flat=True)
+        split_pdf_to_pages_task.delay(book.id, start_page=last_page + 1)
+    messages.add_message(request, messages.INFO, 'Задачи по разделению страниц запущены')
+
+
+continue_pages_splittings.short_description = "Повторно запустить задачи по разделению страниц"
+
+
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    actions = [download_as_text_file, process_unprocessed_pages]
-    list_display = ["name", "author", 'status', 'pages_count', 'pages_processing_count', 'pages_ready_count',
-                    'pages_in_progress_count', 'pages_done_count']
+    actions = [download_as_text_file, process_unprocessed_pages, continue_pages_splittings]
+    list_display = [
+        "name",
+        "author",
+        'status',
+        'total_pages_in_pdf',
+        'pages_count',
+        'pages_processing_count',
+        'pages_ready_count',
+        'pages_in_progress_count',
+        'pages_done_count',
+    ]
     list_filter = ['author']
     search_fields = ['name', 'author__name']
-    readonly_fields = ['status', 'pages_count', 'pages_processing_count', 'pages_ready_count',
-                       'pages_in_progress_count', 'pages_done_count']
-    fieldsets = (
-        (None, {
-            'fields': ('name', 'author', 'pdf')
-        }),
-    )
+    readonly_fields = [
+        'status',
+        'pages_count',
+        'pages_processing_count',
+        'pages_ready_count',
+        'pages_in_progress_count',
+        'pages_done_count',
+    ]
+    fieldsets = ((None, {'fields': ('name', 'author', 'pdf')}),)
     autocomplete_fields = ['author']
 
     def get_queryset(self, request):
         # annotate pages count for each page status
-        return super().get_queryset(request).annotate(
-            pages_count=models.Count('pages'),
-            pages_processing_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.PROCESSING)),
-            pages_ready_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.READY)),
-            pages_in_progress_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.IN_PROGRESS)),
-            pages_done_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.DONE)),
+        return (
+            super()
+            .get_queryset(request)
+            .annotate(
+                pages_count=models.Count('pages'),
+                pages_processing_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.PROCESSING)),
+                pages_ready_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.READY)),
+                pages_in_progress_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.IN_PROGRESS)),
+                pages_done_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.DONE)),
+            )
         )
 
     def status(self, obj):
-        if obj.pages_ready_count < obj.pages_count:
-            return 'Идет распознавание'
-        elif obj.pages_done_count == obj.pages_count:
-            return 'Вычитано'
+        if obj.pages_processing_count > 0:
+            return 'Распознавание'
+        elif obj.pages_done_count == obj.total_pages_in_pdf:
+            return 'Завершено'
         else:
-            return 'В процессе вычитки'
+            return 'Вычитка'
 
     def pages_count(self, obj):
         return obj.pages_count
@@ -89,40 +114,47 @@ class BookAdmin(admin.ModelAdmin):
         return obj.pages_done_count
 
 
-class PageAdminForm(forms.ModelForm):
-    text = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'resizeable-textarea', 'rows': 60, 'cols': 90}),
-        label='Text',
-        strip=False,
-        required=False,
-    )
+class BookFilter(AutocompleteFilter):
+    title = 'Книга'  # display title
+    field_name = 'book'  # name of the foreign key field
 
-    text_size = forms.IntegerField(
-        label='Text Size (px)',
-        widget=forms.NumberInput(attrs={'id': 'text-size-input'}),
-    )
 
-    class Meta:
-        model = Page
-        fields = '__all__'
+def numerate_pages(modeladmin, request, queryset):
+    page = queryset.first()
+
+    try:
+        start_number = int(request.POST.get('action_value')) - 1
+    except ValueError:
+        messages.add_message(request, messages.ERROR, 'Введите целое число')
+        return
+
+    # numerate pages start from given
+    for page in Page.objects.filter(book=page.book, number__gte=page.number).order_by('number'):
+        page.number_in_book = start_number + 1
+        start_number += 1
+        page.save(update_fields=['number_in_book'])
+
+    messages.add_message(request, messages.INFO, 'Задача по нумерации страниц запущена')
+
+
+numerate_pages.short_description = "Запустить задачу по нумерации страниц"
 
 
 @admin.register(Page)
-class PageAdmin(SimpleHistoryAdmin):
+class PageAdmin(CustomHistoryAdmin):
     form = PageAdminForm
+    actions = [numerate_pages]
+    action_form = ActionValueForm
     change_form_template = "admin/page_change_form.html"
     list_display = ["number", "book", "modified", 'status']
-    history_list_display = ["text"]
+    history_list_display = ["text", "status"]
     readonly_fields = ['book', 'page', 'number', 'text_size']
     fieldsets = (
-        ('Редактирование', {
-            'fields': (('text', 'page'),)
-        }),
-        (None, {
-            'fields': (('book', 'number', 'status', 'text_size', 'number_in_book'),)
-        }),
+        ('Редактирование', {'fields': (('text', 'page'),)}),
+        (None, {'fields': (('book', 'number', 'status', 'text_size', 'number_in_book'),)}),
     )
-    list_filter = [('book__name', custom_titled_filter('Book')), 'status']
+    list_filter = [BookFilter, 'status']
+    search_fields = ['number']
 
     def get_queryset(self, request):
         return super().get_queryset(request).order_by('book__name', 'number')
@@ -154,13 +186,20 @@ class PageAdmin(SimpleHistoryAdmin):
         extra_context.update(self._get_context(request, object_id))
         return self.changeform_view(request, object_id, form_url, extra_context)
 
+    def response_change(self, request, obj):
+        # Redirect to Steps:
+        if '_save' in request.POST:
+            next_page = Page.objects.filter(book=obj.book, number=obj.number + 1).last()
+            return redirect(reverse("admin:books_page_change", args=(next_page.id,)))
+        return super().response_change(request, obj)  # noqa
+
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         current_page = self.get_object(request, object_id)
-        if f'back_page' in request.POST:
+        if 'back_page' in request.POST:
             prev_page = Page.objects.filter(book=current_page.book, number=current_page.number - 1).last()
             return redirect(reverse("admin:books_page_change", args=(prev_page.id,)))
 
-        elif f'next_page' in request.POST:
+        elif 'next_page' in request.POST:
             next_page = Page.objects.filter(book=current_page.book, number=current_page.number + 1).last()
             return redirect(reverse("admin:books_page_change", args=(next_page.id,)))
 

@@ -2,10 +2,10 @@ import uuid
 
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
-from django_lifecycle import LifecycleModelMixin, hook, AFTER_CREATE
+from django_lifecycle import AFTER_CREATE, LifecycleModelMixin, hook
 from simple_history.models import HistoricalRecords
 
-from .tasks import split_pdf_to_pages_task, extract_text_from_image_task
+from .tasks import extract_text_from_image_task, split_pdf_to_pages_task
 
 
 class Author(models.Model):
@@ -24,6 +24,7 @@ class Book(LifecycleModelMixin, models.Model):
     name = models.CharField(max_length=100)
     author = models.ForeignKey(Author, on_delete=models.PROTECT, related_name="books")
     pdf = models.FileField(upload_to="pdfs/", null=True, blank=True)
+    total_pages_in_pdf = models.IntegerField(null=True, blank=True)
 
     class Meta:
         db_table = '"book"."book"'
@@ -38,14 +39,16 @@ class Book(LifecycleModelMixin, models.Model):
 
 class Page(LifecycleModelMixin, TimeStampedModel, models.Model):
     class Status(models.TextChoices):
-        PROCESSING = "processing", "Идет распознавание"
-        READY = "redy", "Готово к вычитке"
-        IN_PROGRESS = "in_progress", "В процессе вычитки"
-        DONE = "done", "Вычитано"
+        PROCESSING = "processing", "Распознавание"
+        READY = "redy", "Распознано"
+        IN_PROGRESS = "in_progress", "Вычитка"
+        FORMATTING = "formatting", "Форматирование"
+        CHECK = "check", "Проверка"
+        DONE = "done", "Завершено"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="pages", verbose_name="Книга")
-    number = models.IntegerField(verbose_name="Порядковй номер страницы")
+    number = models.IntegerField(verbose_name="Порядковый номер страницы")
     image_url = models.TextField(blank=True)
     image = models.FileField(upload_to="pages/", null=True, blank=True)
     text = models.TextField(blank=True)
@@ -63,6 +66,7 @@ class Page(LifecycleModelMixin, TimeStampedModel, models.Model):
     @hook(AFTER_CREATE, on_commit=True, when="image", is_not=None)
     def extract_text_from_image(self):
         extract_text_from_image_task.delay(self.id)
+
 
 # class PageText(models.Model):
 #     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

@@ -1,0 +1,12 @@
+/static
+/media
+/docker/volumes
+.gitignore
+/docker-compose*
+/install_git_hooks.sh
+/package.sh
+/git_hooks
+config_example.env
+/.dockerignore
+.pytest_cache
+.git

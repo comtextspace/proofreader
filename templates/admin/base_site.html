@@ -1,6 +1,18 @@
 {% extends "admin/base.html" %}
 {% load i18n static %}
 
+{% block extrahead %}{{ block.super }}
+  <style type="text/css">
+{#    {% admin_shortcuts_css %}#}
+    #header {
+      background: {{ ADMIN_SETTINGS.header_color }};
+    }
+    div.breadcrumbs {
+      background: {{ ADMIN_SETTINGS.breadcrumbs_color }};
+    }
+  </style>
+{% endblock %}
+
 {% block branding %}
-<h1 id="site-name">{% trans "Вычитыватель" %}</h1>
+<h1 id="site-name">{{ ADMIN_SETTINGS.title }} ver: {{ APP_VERSION }}</h1>
 {% endblock %}

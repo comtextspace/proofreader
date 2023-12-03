@@ -1,0 +1,95 @@
+version: '3.7'
+
+services:
+  web:
+    build: .
+    command: gunicorn proofreader.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    environment:
+      - SENTRY_DSN=https://068d46f1d057c6dc3154519ab00a82ed@o4506100246708224.ingest.sentry.io/4506100248608768
+      - LOGLEVEL=INFO
+      - DATABASE_URL=db://postgres:postgres@db:5432/postgres
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=amqp://guest:@amqp:5672/
+      - DEBUG=False
+    env_file: ./docker.env
+    volumes:
+      - project-static:/code/staticfiles
+      - project-media:/code/media
+    depends_on:
+      - db
+      - amqp
+      - redis
+
+  celery_worker:
+    build: .
+    command: celery -A taskapp.celery:app worker --loglevel=info -c 4
+    environment:
+      - SENTRY_DSN=https://068d46f1d057c6dc3154519ab00a82ed@o4506100246708224.ingest.sentry.io/4506100248608768
+      - LOGLEVEL=INFO
+      - DATABASE_URL=db://postgres:postgres@db:5432/postgres
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=amqp://guest:@amqp:5672/
+      - DEBUG=False
+    env_file: ./docker.env
+    volumes:
+      - project-media:/code/media
+      - project-static:/code/staticfiles
+    depends_on:
+      - db
+      - amqp
+      - redis
+
+  celery_beat:
+    build: .
+    command: celery -A taskapp.celery:app beat --loglevel=info
+    environment:
+      - SENTRY_DSN=https://068d46f1d057c6dc3154519ab00a82ed@o4506100246708224.ingest.sentry.io/4506100248608768
+      - LOGLEVEL=INFO
+      - DATABASE_URL=db://postgres:postgres@db:5432/postgres
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=amqp://guest:@amqp:5672/
+      - DEBUG=False
+    env_file: ./docker.env
+    depends_on:
+      - celery_worker
+      - amqp
+      - db
+
+  db:
+    image: postgres:14
+    volumes:
+      - ./conf/init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the init.sql script
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+
+  amqp:
+    image: rabbitmq
+    volumes:
+      - ./rabbitmq_data:/var/lib/rabbitmq
+
+
+  redis:
+    image: redis:6.2
+    volumes:
+      - redis_data:/data
+    entrypoint: redis-server --appendonly yes
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - project-media:/media
+      - project-static:/staticfiles
+      - ./conf/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - web
+
+volumes:
+  project-media:
+    name: project-media
+  project-static:
+    name: project-static
+  redis_data:

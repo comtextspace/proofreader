@@ -1,24 +1,39 @@
-from PyPDF2 import PdfReader
+from django.conf import settings
 from django.core.files.base import ContentFile
+from PyPDF2 import PdfReader
 
 from books.services.image_actions import extract_text_from_image
 from books.services.pdf_actions import split_pdf_to_pages
 from taskapp.celery import app
 
 
-@app.task
-def split_pdf_to_pages_task(book_id):
-    from books.models import Book
-    from books.models import Page
-    book = Book.objects.get(id=book_id)
-    pdf = PdfReader(book.pdf)
+@app.task(
+    trail=False,
+)
+def split_pdf_to_pages_task(book_id, start_page=1):
+    from books.models import Book, Page
 
-    for page_number, page_image, image_name in split_pdf_to_pages(book.pdf, book.name):
+    book = Book.objects.get(id=book_id)
+    book.total_pages_in_pdf = len(PdfReader(book.pdf).pages)
+    book.save()
+
+    for page_number, page_image, image_name in split_pdf_to_pages(book.pdf, book.name, start_page=start_page):
         page = Page(book=book, number=page_number)
         page.image.save(image_name, ContentFile(page_image), save=True)
 
+        # Limits for local development
+        if settings.LOCAL_DEVELOP and page_number == 10:
+            break
 
-@app.task
+
+@app.task(
+    acks_late=True,
+    retry_backoff=True,
+    retry_backoff_max=60,
+    retry_jitter=True,
+    retry_kwargs={'max_retries': 3},
+    trail=False,
+)
 def extract_text_from_image_task(page_id):
     from books.models import Page
 

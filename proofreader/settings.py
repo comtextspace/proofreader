@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 import os
+import sys
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -23,18 +25,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 env.read_env(str(BASE_DIR / 'config.env'))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-w$z((s_-9p#@o7qhdppz6!&_$nsh)_=%o0*$++auotml^ns+8z"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=True)
 
+LOCAL_DEVELOP = DEBUG and (
+    'runserver' in sys.argv or 'pydevconsole' in sys.argv[0]  # run locally  # run from console locally
+)
 ALLOWED_HOSTS = ["*"]
 
 # Application definition
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
     # 3rd party
     "crispy_forms",
@@ -49,11 +51,43 @@ INSTALLED_APPS = [
     "tz_detect",
     'django_celery_beat',
     'django_celery_results',
+    'django_extensions',
     'simple_history',
+    'rest_framework',
+    'django_filters',
+    'drf_yasg',
+    'admin_auto_filters',
     # This project
     "books.apps.BooksConfig",
     "accounts.apps.AccountsConfig",
+    "core.apps.CoreConfig",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
+    'NON_FIELD_ERRORS_KEY': 'detail',
+    'HTML_SELECT_CUTOFF': 5,
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+}
+
+SWAGGER_SETTINGS = {
+    'LOGOUT_URL': 'admin:logout',
+    'LOGIN_URL': 'admin:login',
+    'JSON_EDITOR': True,
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=2),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+}
 
 INSTALLED_APPS += ['taskapp.celery.CeleryAppConfig']
 
@@ -84,6 +118,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'core.context_processors.custom_settings',
             ],
         },
     },
@@ -135,7 +170,6 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -143,7 +177,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = "book_list"
-LOGOUT_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/home"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
@@ -173,12 +207,11 @@ MEDIA_ROOT = str(BASE_DIR / 'media')
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-if env.bool('LOCAL', default=False):
+if LOCAL_DEVELOP:
     # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-always-eager
     CELERY_TASK_ALWAYS_EAGER = True
     # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-eager-propagates
     CELERY_TASK_EAGER_PROPAGATES = True
-
 
 sentry_sdk.set_tag("server", 'develop' if DEBUG else 'production')
 if sentry_dsn := env("SENTRY_DSN", default=''):
@@ -188,3 +221,21 @@ if sentry_dsn := env("SENTRY_DSN", default=''):
         integrations=[DjangoIntegration(), CeleryIntegration()],
         send_default_pii=True,
     )
+
+# Admin styles for different environments:
+if LOCAL_DEVELOP:
+    ADMIN_SETTINGS = {'title': 'Proofreader Local', 'header_color': '#000000', 'breadcrumbs_color': '#e81a9b'}
+elif DEBUG:
+    ADMIN_SETTINGS = {'title': 'Proofreader DEV', 'header_color': '#53ab70', 'breadcrumbs_color': '#206d22'}
+else:
+    ADMIN_SETTINGS = {'title': 'Proofreader', 'header_color': '#fd5e60', 'breadcrumbs_color': '#e8736a'}
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+SIMPLE_HISTORY_ENFORCE_HISTORY_MODEL_PERMISSIONS = True

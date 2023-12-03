@@ -12,6 +12,9 @@ logs:
 
 test:
 	docker compose exec web python manage.py test
+	
+create:
+	docker exec -it proofreader-web-1 python3 manage.py createsuperuser
 
 rebuild:
 	docker compose -f docker-compose.test.yml down

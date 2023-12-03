@@ -215,9 +215,9 @@ const config = {
 		'Title'
 	]
 };
-ClassicEditor.create(document.querySelector('textarea.resizeable-textarea'), config).then(editor => {
-	window.editor = editor;
-	/*console.log(editor);*/
-}).catch(error => {
-	console.error(error);
-});
+// ClassicEditor.create(document.querySelector('textarea.resizeable-textarea'), config).then(editor => {
+	// window.editor = editor;
+	// /*console.log(editor);*/
+// }).catch(error => {
+	// console.error(error);
+// });

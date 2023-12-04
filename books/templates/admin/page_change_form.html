@@ -6,6 +6,7 @@
     {{ block.super }}
     <!-- Static files for custom styles -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/reader.css' %}">
+    <script type="text/javascript" src="{% static 'js/ckeditor5.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'css/ckeditor5-dark.css' %}">
 
     <!-- Inline style for form row adjustments -->
@@ -46,7 +47,6 @@
 
     <!-- Custom JavaScript files -->
     <script type="text/javascript" src="{% static 'js/zoom_picture_overlay.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/ckeditor5.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/resize_textarea.js' %}"></script>
 {% endblock %}

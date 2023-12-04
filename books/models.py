@@ -17,6 +17,8 @@ class Author(models.Model):
 
     class Meta:
         db_table = '"book"."author"'
+        verbose_name = "Автор"
+        verbose_name_plural = "Авторы"
 
 
 class Book(LifecycleModelMixin, models.Model):
@@ -28,6 +30,8 @@ class Book(LifecycleModelMixin, models.Model):
 
     class Meta:
         db_table = '"book"."book"'
+        verbose_name = "Книга"
+        verbose_name_plural = "Книги"
 
     def __str__(self):
         return self.name
@@ -62,46 +66,9 @@ class Page(LifecycleModelMixin, TimeStampedModel, models.Model):
 
     class Meta:
         db_table = '"book"."page"'
+        verbose_name = "Страница"
+        verbose_name_plural = "Страницы"
 
     @hook(AFTER_CREATE, on_commit=True, when="image", is_not=None)
     def extract_text_from_image(self):
         extract_text_from_image_task.delay(self.id)
-
-
-# class PageText(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-#     page = models.ForeignKey(Page, on_delete=models.PROTECT)
-#     editor = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
-#     text = models.TextField()
-#     date = models.DateTimeField(auto_now_add=True)
-#
-#     history = HistoricalRecords()
-#
-#     def __str__(self):
-#         return f"Text for page {self.page.number} of {self.book.name}"
-#
-#     class Meta:
-#         db_table = '"book"."page_text"'
-
-# for future
-
-
-# class ImageFragment(models.Model):
-#    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#    page = models.ForeignKey(Page, on_delete=models.CASCADE)
-
-
-# class FragmentText(models.Model):
-#    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-#    page = models.ForeignKey(Page, on_delete=models.SET_NULL)
-#    fragment = models.ForeignKey(ImageFragment, null=True, on_delete=models.SET_NULL)
-#    editor = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
-#    text = models.TextField()
-#    # date
-
-
-# class TextOrder(models.Model):
-#    prev = models.ForeignKey(FragmentText, on_delete=models.CASCADE, related_name="+")
-#    next = models.ForeignKey(FragmentText, on_delete=models.CASCADE, related_name="+")

@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.admin.helpers import ActionForm
+from django.utils.translation import gettext_lazy as _
 
 from books.models import Page
 
@@ -23,4 +24,4 @@ class PageAdminForm(forms.ModelForm):
 
 
 class ActionValueForm(ActionForm):
-    action_value = forms.CharField(label='значение')
+    action_value = forms.CharField(label=_('значение'))

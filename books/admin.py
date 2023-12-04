@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from core.admin_utils import CustomHistoryAdmin
 from .admin_forms import ActionValueForm, PageAdminForm
@@ -27,26 +28,26 @@ def download_as_text_file(modeladmin, request, queryset):
     return response
 
 
-download_as_text_file.short_description = "Скачать книгу текстовым файлом"
+download_as_text_file.short_description = _("Скачать книгу текстовым файлом")
 
 
 def process_unprocessed_pages(modeladmin, request, queryset):
     for page in Page.objects.filter(status=Page.Status.PROCESSING, book__in=queryset):
         extract_text_from_image_task.delay(page.id)
-    messages.add_message(request, messages.INFO, 'Задачи по распознаванию текста запущены')
+    messages.add_message(request, messages.INFO, _('Задачи по распознаванию текста запущены'))
 
 
-process_unprocessed_pages.short_description = "Повторно запустить задачи по распознаванию текста"
+process_unprocessed_pages.short_description = _("Повторно запустить задачи по распознаванию текста")
 
 
 def continue_pages_splittings(modeladmin, request, queryset):
     for book in queryset:
         last_page = book.pages.order_by('-number').first().values_list('number', flat=True)
         split_pdf_to_pages_task.delay(book.id, start_page=last_page + 1)
-    messages.add_message(request, messages.INFO, 'Задачи по разделению страниц запущены')
+    messages.add_message(request, messages.INFO, _('Задачи по разделению страниц запущены'))
 
 
-continue_pages_splittings.short_description = "Повторно запустить задачи по разделению страниц"
+continue_pages_splittings.short_description = _("Повторно запустить задачи по разделению страниц")
 
 
 @admin.register(Book)
@@ -92,11 +93,11 @@ class BookAdmin(admin.ModelAdmin):
 
     def status(self, obj):
         if obj.pages_processing_count > 0:
-            return 'Распознавание'
+            return _('Распознавание')
         elif obj.pages_done_count == obj.total_pages_in_pdf:
-            return 'Завершено'
+            return _('Завершено')
         else:
-            return 'Вычитка'
+            return _('Вычитка')
 
     def pages_count(self, obj):
         return obj.pages_count
@@ -115,7 +116,7 @@ class BookAdmin(admin.ModelAdmin):
 
 
 class BookFilter(AutocompleteFilter):
-    title = 'Книга'  # display title
+    title = _('Книга')  # display title
     field_name = 'book'  # name of the foreign key field
 
 
@@ -125,7 +126,7 @@ def numerate_pages(modeladmin, request, queryset):
     try:
         start_number = int(request.POST.get('action_value')) - 1
     except ValueError:
-        messages.add_message(request, messages.ERROR, 'Введите целое число')
+        messages.add_message(request, messages.ERROR, _('Введите целое число'))
         return
 
     # numerate pages start from given
@@ -134,10 +135,10 @@ def numerate_pages(modeladmin, request, queryset):
         start_number += 1
         page.save(update_fields=['number_in_book'])
 
-    messages.add_message(request, messages.INFO, 'Задача по нумерации страниц запущена')
+    messages.add_message(request, messages.INFO, _('Задача по нумерации страниц запущена'))
 
 
-numerate_pages.short_description = "Запустить задачу по нумерации страниц"
+numerate_pages.short_description = _("Запустить задачу по нумерации страниц")
 
 
 @admin.register(Page)
@@ -205,6 +206,6 @@ class PageAdmin(CustomHistoryAdmin):
 
         return super().changeform_view(request, object_id, form_url, extra_context)  # noqa
 
-    @admin.display(description='Размер текста')
+    @admin.display(description=_('Размер текста'))
     def text_size(self, obj):
         return self.request.user.text_size

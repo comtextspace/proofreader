@@ -1,0 +1,207 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-12-04 16:03+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: accounts/apps.py:8
+msgid "Аккаунты"
+msgstr ""
+
+#: accounts/models.py:14
+msgid "Редактор"
+msgstr ""
+
+#: accounts/models.py:21 books/admin.py:208
+msgid "Размер текста"
+msgstr ""
+
+#: accounts/models.py:28 accounts/models.py:29
+msgid "Настройки аккаунта"
+msgstr ""
+
+#: books/admin.py:30
+msgid "Скачать книгу текстовым файлом"
+msgstr ""
+
+#: books/admin.py:36
+msgid "Задачи по распознаванию текста запущены"
+msgstr ""
+
+#: books/admin.py:39
+msgid "Повторно запустить задачи по распознаванию текста"
+msgstr ""
+
+#: books/admin.py:46
+msgid "Задачи по разделению страниц запущены"
+msgstr ""
+
+#: books/admin.py:49
+msgid "Повторно запустить задачи по разделению страниц"
+msgstr ""
+
+#: books/admin.py:95 books/models.py:46
+msgid "Распознавание"
+msgstr ""
+
+#: books/admin.py:97 books/models.py:51
+msgid "Завершено"
+msgstr ""
+
+#: books/admin.py:99 books/models.py:48
+msgid "Вычитка"
+msgstr ""
+
+#: books/admin.py:118 books/models.py:33 books/models.py:54
+msgid "Книга"
+msgstr ""
+
+#: books/admin.py:128
+msgid "Введите целое число"
+msgstr ""
+
+#: books/admin.py:137
+msgid "Задача по нумерации страниц запущена"
+msgstr ""
+
+#: books/admin.py:140
+msgid "Запустить задачу по нумерации страниц"
+msgstr ""
+
+#: books/admin_forms.py:27
+msgid "значение"
+msgstr ""
+
+#: books/apps.py:8 books/models.py:34
+msgid "Книги"
+msgstr ""
+
+#: books/models.py:20
+msgid "Автор"
+msgstr ""
+
+#: books/models.py:21
+msgid "Авторы"
+msgstr ""
+
+#: books/models.py:47
+msgid "Распознано"
+msgstr ""
+
+#: books/models.py:49
+msgid "Форматирование"
+msgstr ""
+
+#: books/models.py:50
+msgid "Проверка"
+msgstr ""
+
+#: books/models.py:55
+msgid "Порядковый номер страницы"
+msgstr ""
+
+#: books/models.py:60
+msgid "Статус"
+msgstr ""
+
+#: books/models.py:61
+msgid "Номер страницы в книге"
+msgstr ""
+
+#: books/models.py:70
+msgid "Страница"
+msgstr ""
+
+#: books/models.py:71
+msgid "Страницы"
+msgstr ""
+
+#: books/templates/admin/page_change_form.html:20
+msgid "Улучшить форматирование"
+msgstr ""
+
+#: books/templates/admin/page_change_form.html:28
+msgid "Сохранить"
+msgstr ""
+
+#: books/templates/admin/page_change_form.html:32
+msgid "<- Предыдущая страница"
+msgstr ""
+
+#: books/templates/admin/page_change_form.html:35
+msgid "Следующая страница ->"
+msgstr ""
+
+#: books/templates/admin/page_change_form.html:36
+msgid "Сохранить и перейти к следующей странице ->"
+msgstr ""
+
+#: templates/admin/login.html:27
+msgid "Пожалуйста исправьте ошибку ниже."
+msgid_plural "Пожалуйста исправьте ошибки ниже."
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/admin/login.html:43
+#, python-format
+msgid ""
+"You are authenticated as %(username)s, but are not authorized to access this "
+"page. Would you like to login to a different account?"
+msgstr ""
+
+#: templates/admin/login.html:63
+msgid "Забыли ваш пароль?"
+msgstr ""
+
+#: templates/admin/login.html:67
+msgid "Войти"
+msgstr ""
+
+#: templates/admin/login.html:69 templates/registration/signup.html:5
+#: templates/registration/signup.html:11
+msgid "Регистрация"
+msgstr ""
+
+#: templates/history/_object_history_list.html:9
+msgid "Object"
+msgstr ""
+
+#: templates/history/_object_history_list.html:13
+msgid "Date/time"
+msgstr ""
+
+#: templates/history/_object_history_list.html:14
+msgid "Changed by"
+msgstr ""
+
+#: templates/history/_object_history_list.html:34
+msgid "None"
+msgstr ""
+
+#: templates/history/object_history.html:11
+msgid ""
+"Choose a date from the list below to revert to a previous version of this "
+"object."
+msgstr ""
+
+#: templates/history/object_history.html:16
+msgid "This object doesn't have a change history."
+msgstr ""
+
+#: templates/registration/signup.html:15
+msgid "Зарегистрироваться"
+msgstr ""

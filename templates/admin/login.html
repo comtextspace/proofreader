@@ -24,7 +24,7 @@
 {% block content %}
 {% if form.errors and not form.non_field_errors %}
 <p class="errornote">
-{% blocktranslate count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
+{% blocktranslate count counter=form.errors.items|length %}Пожалуйста исправьте ошибку ниже.{% plural %}Пожалуйста исправьте ошибки ниже.{% endblocktranslate %}
 </p>
 {% endif %}
 
@@ -60,13 +60,13 @@
   {% url 'admin_password_reset' as password_reset_url %}
   {% if password_reset_url %}
   <div class="password-reset-link">
-    <a href="{{ password_reset_url }}">{% translate 'Forgotten your password or username?' %}</a>
+    <a href="{{ password_reset_url }}">{% translate 'Забыли ваш пароль?' %}</a>
   </div>
   {% endif %}
   <div class="submit-row">
-    <input type="submit" value="{% translate 'Log in' %}">
+    <input type="submit" value="{% translate 'Войти' %}">
   </div>
-    <a href="{% url "signup" %}">Регистрация</a>
+    <a href="{% url "signup" %}">{% translate 'Регистрация' %}</a>
 </form>
 
 </div>

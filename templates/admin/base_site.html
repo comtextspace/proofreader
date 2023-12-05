@@ -1,18 +1,43 @@
 {% extends "admin/base.html" %}
 {% load i18n static %}
+<!-- custom filter module -->
+{% load i18n_switcher %}
 
 {% block extrahead %}{{ block.super }}
-  <style type="text/css">
-{#    {% admin_shortcuts_css %}#}
-    #header {
-      background: {{ ADMIN_SETTINGS.header_color }};
-    }
-    div.breadcrumbs {
-      background: {{ ADMIN_SETTINGS.breadcrumbs_color }};
-    }
-  </style>
+    <style type="text/css">
+        {#    {% admin_shortcuts_css %}#}
+        #header {
+            background: {{ ADMIN_SETTINGS.header_color }};
+        }
+
+        div.breadcrumbs {
+            background: {{ ADMIN_SETTINGS.breadcrumbs_color }};
+        }
+
+    </style>
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/custom_admin.css' %}"/>
 {% endblock %}
 
 {% block branding %}
-<h1 id="site-name">{{ ADMIN_SETTINGS.title }} ver: {{ APP_VERSION }}</h1>
+    <h1 id="site-name">{{ ADMIN_SETTINGS.title }} ver: {{ APP_VERSION }}</h1>
+{% endblock %}
+
+{% block userlinks %}
+    <a href="{{ request|switch_i18n:'' }}">
+        <img class="i18n_flag" src="{% static 'images/ru.png' %}"/>
+    </a> /
+    <a href="{{ request|switch_i18n:'eo' }}">
+        <img class="i18n_flag" src="{% static 'images/eo.png' %}"/>
+    </a> /
+    {% if user.is_active and user.is_staff %}
+        {% url 'django-admindocs-docroot' as docsroot %}
+        {% if docsroot %}
+            <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
+        {% endif %}
+    {% endif %}
+    {% if user.has_usable_password %}
+        <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
+    {% endif %}
+    <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
 {% endblock %}

@@ -2,7 +2,9 @@
     width: 100%;
 }
 
-#correctTextButton {
+#correctTextButton,
+#disableCKEditor
+{
     background-color: #0C4B33; /* Django's primary color */
     border: none;
     color: white;
@@ -17,6 +19,8 @@
     transition: background-color 0.3s ease;
 }
 
-#correctTextButton:hover {
+#correctTextButton:hover,
+#disableCKEditor:hover
+{
     background-color: #09301E;
 }

@@ -24,8 +24,8 @@ class Author(models.Model):
 
 class Book(LifecycleModelMixin, models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100)
-    author = models.ForeignKey(Author, on_delete=models.PROTECT, related_name="books")
+    name = models.CharField(max_length=100, verbose_name=_("Название"))
+    author = models.ForeignKey(Author, on_delete=models.PROTECT, related_name="books", verbose_name=_("Автор"))
     pdf = models.FileField(upload_to="pdfs/", null=True, blank=True)
     total_pages_in_pdf = models.IntegerField(null=True, blank=True)
 

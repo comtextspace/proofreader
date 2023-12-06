@@ -957,3 +957,12 @@ msgstr "Vidi elektitan %(model)s"
 
 msgid "Thanks for spending some quality time with the web site today."
 msgstr "Dankon pro pasigi iom da kvalita tempo kun la retejo hodiaŭ."
+
+msgid "Название"
+msgstr "Titolo"
+
+msgid "Автор"
+msgstr "Aŭtoro"
+
+msgid "Редактирование"
+msgstr "Redaktado"

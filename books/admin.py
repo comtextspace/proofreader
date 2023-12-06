@@ -151,7 +151,7 @@ class PageAdmin(CustomHistoryAdmin):
     history_list_display = ["text", "status"]
     readonly_fields = ['book', 'page', 'number', 'text_size']
     fieldsets = (
-        ('Редактирование', {'fields': (('text', 'page'),)}),
+        (_('Редактирование'), {'fields': (('text', 'page'),)}),
         (None, {'fields': (('book', 'number', 'status', 'text_size', 'number_in_book'),)}),
     )
     list_filter = [BookFilter, 'status']

@@ -14,11 +14,13 @@
 
     <!-- External stylesheet for viewer.js -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" rel="stylesheet">
+    <script>const disableCKEditor = '{% trans "Отключить редактор" %}', enableCKEditor = '{% trans "Включить редактор" %}';</script>
 {% endblock %}
 
 {% block content %}
     <!-- Custom button for text formatting -->
     <button type="button" id="correctTextButton">{% trans "Улучшить форматирование" %}</button>
+    <button type="button" id="disableCKEditor">{% trans "Отключить редактор" %}</button>
 
     <!-- Default admin form content -->
     {{ block.super }}

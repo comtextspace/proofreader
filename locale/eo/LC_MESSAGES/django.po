@@ -963,3 +963,6 @@ msgstr "Titolo"
 
 msgid "Редактирование"
 msgstr "Redaktado"
+
+msgid "Отключить редактор"
+msgstr "Malŝalti Redaktilon"

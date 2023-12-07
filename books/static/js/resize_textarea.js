@@ -11,7 +11,7 @@ function createEditor(initialTextareaWidth, fontSize){
 			writer.setStyle('font-size', fontSize, editor.editing.view.document.getRoot());
 		});
 		window.editor = editor;
-		document.querySelector('#disableCKEditor').innerText = disableCKEditor;
+		document.querySelector('#enableCKEditor').innerText = disableCKEditor;
 	}).catch(error => {
 		console.error(error);
 	});
@@ -40,13 +40,13 @@ $(document).ready(function(){
 		console.log("Correcting text...");
 	});
 
-	createEditor(initialTextareaWidth, fontSize);
+	// createEditor(initialTextareaWidth, fontSize);
 	
-	$('#disableCKEditor').on('click', function(){
+	$('#enableCKEditor').on('click', function(){
 		if(window.editor != null){
 			editor.destroy();
 			window.editor = null;
-			$('#disableCKEditor').text(enableCKEditor);
+			$('#enableCKEditor').text(enableCKEditor);
 		}else{
 			createEditor(initialTextareaWidth, fontSize);
 		}

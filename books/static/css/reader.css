@@ -3,7 +3,7 @@
 }
 
 #correctTextButton,
-#disableCKEditor
+#enableCKEditor
 {
     background-color: #0C4B33; /* Django's primary color */
     border: none;
@@ -20,7 +20,7 @@
 }
 
 #correctTextButton:hover,
-#disableCKEditor:hover
+#enableCKEditor:hover
 {
     background-color: #09301E;
 }

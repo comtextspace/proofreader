@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser, Group, UserManager
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class CustomUserManager(UserManager):
@@ -10,19 +11,19 @@ class CustomUserManager(UserManager):
         user = self._create_user(username, email, password, **extra_fields)
 
         # Add user to editor group:
-        editor_permission_group = Group.objects.get_or_create(name="Редактор")[0]
+        editor_permission_group = Group.objects.get_or_create(name=_("Редактор"))[0]
         user.groups.add(editor_permission_group)
 
         return user
 
 
 class CustomUser(AbstractUser):
-    text_size = models.IntegerField(null=True, blank=True, default=12, verbose_name='Размер текста')
+    text_size = models.IntegerField(null=True, blank=True, default=12, verbose_name=_('Размер текста'))
     objects = CustomUserManager()
 
 
 class UserSettings(CustomUser):
     class Meta:
         proxy = True
-        verbose_name = 'Настройки аккаунта'
-        verbose_name_plural = 'Настройки аккаунта'
+        verbose_name = _('Настройки аккаунта')
+        verbose_name_plural = _('Настройки аккаунта')

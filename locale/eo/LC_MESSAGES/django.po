@@ -1,0 +1,968 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-12-04 16:03+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: accounts/apps.py:8
+msgid "Аккаунты"
+msgstr "Kontoj"
+
+#: accounts/models.py:14
+msgid "Редактор"
+msgstr "Redaktisto"
+
+#: accounts/models.py:21 books/admin.py:208
+msgid "Размер текста"
+msgstr "Tekstgrandeco"
+
+#: accounts/models.py:28 accounts/models.py:29
+msgid "Настройки аккаунта"
+msgstr "Kontagordoj"
+
+#: books/admin.py:30
+msgid "Скачать книгу текстовым файлом"
+msgstr "Elŝuti libron kiel tekstdosiero"
+
+#: books/admin.py:36
+msgid "Задачи по распознаванию текста запущены"
+msgstr "Tekstrekona taskoj lanĉitaj"
+
+#: books/admin.py:39
+msgid "Повторно запустить задачи по распознаванию текста"
+msgstr "Relanĉi tekstrekona taskojn"
+
+#: books/admin.py:46
+msgid "Задачи по разделению страниц запущены"
+msgstr "Paĝdisigaj taskoj lanĉitaj"
+
+#: books/admin.py:49
+msgid "Повторно запустить задачи по разделению страниц"
+msgstr "Relanĉi paĝdisigajn taskojn"
+
+#: books/admin.py:95 books/models.py:46
+msgid "Распознавание"
+msgstr "Rekono"
+
+#: books/admin.py:97 books/models.py:51
+msgid "Завершено"
+msgstr "Finita"
+
+#: books/admin.py:99 books/models.py:48
+msgid "Вычитка"
+msgstr "Korektado"
+
+#: books/admin.py:118 books/models.py:33 books/models.py:54
+msgid "Книга"
+msgstr "Libro"
+
+#: books/admin.py:128
+msgid "Введите целое число"
+msgstr "Enigu entjeran nombron"
+
+#: books/admin.py:137
+msgid "Задача по нумерации страниц запущена"
+msgstr "Paĝnumerada tasko lanĉita"
+
+#: books/admin.py:140
+msgid "Запустить задачу по нумерации страниц"
+msgstr "Lanĉi paĝnumeradan taskon"
+
+#: books/admin_forms.py:27
+msgid "значение"
+msgstr "valoro"
+
+#: books/apps.py:8 books/models.py:34
+msgid "Книги"
+msgstr "Libroj"
+
+#: books/models.py:20
+msgid "Автор"
+msgstr "Aŭtoro"
+
+#: books/models.py:21
+msgid "Авторы"
+msgstr "Aŭtoroj"
+
+#: books/models.py:47
+msgid "Распознано"
+msgstr "Rekonita"
+
+#: books/models.py:49
+msgid "Форматирование"
+msgstr "Formatado"
+
+#: books/models.py:50
+msgid "Проверка"
+msgstr "Kontrolo"
+
+#: books/models.py:55
+msgid "Порядковый номер страницы"
+msgstr "Ordnombro de paĝo"
+
+#: books/models.py:60
+msgid "Статус"
+msgstr "Statuso"
+
+#: books/models.py:61
+msgid "Номер страницы в книге"
+msgstr "Paĝnumero en libro"
+
+#: books/models.py:70
+msgid "Страница"
+msgstr "Paĝo"
+
+#: books/models.py:71
+msgid "Страницы"
+msgstr "Paĝoj"
+
+#: books/templates/admin/page_change_form.html:20
+msgid "Улучшить форматирование"
+msgstr "Plibonigi formatadon"
+
+#: books/templates/admin/page_change_form.html:28
+msgid "Сохранить"
+msgstr "Konservi"
+
+#: books/templates/admin/page_change_form.html:32
+msgid "<- Предыдущая страница"
+msgstr "<- Antaŭa paĝo"
+
+#: books/templates/admin/page_change_form.html:35
+msgid "Следующая страница ->"
+msgstr "Sekva paĝo ->"
+
+#: books/templates/admin/page_change_form.html:36
+msgid "Сохранить и перейти к следующей странице ->"
+msgstr "Konservi kaj iri al la sekva paĝo ->"
+
+#: templates/admin/login.html:27
+msgid "Пожалуйста исправьте ошибку ниже."
+msgid_plural "Пожалуйста исправьте ошибки ниже."
+msgstr[0] "Bonvolu korekti la eraron sube."
+msgstr[1] "Bonvolu korekti la erarojn sube."
+
+#: templates/admin/login.html:43
+#, python-format
+msgid "You are authenticated as %(username)s, but are not authorized to access this page. Would you like to login to a different account?"
+msgstr "Vi estas aŭtentikigita kiel %(username)s, sed ne rajtas aliri ĉi tiun paĝon. Ĉu vi volas ensaluti al alia konto?"
+
+#: templates/admin/login.html:63
+msgid "Забыли ваш пароль?"
+msgstr "Ĉu vi forgesis vian pasvorton?"
+
+#: templates/admin/login.html:67
+msgid "Войти"
+msgstr "Ensaluti"
+
+#: templates/admin/login.html:69 templates/registration/signup.html:5
+#: templates/registration/signup.html:11
+msgid "Регистрация"
+msgstr "Registrado"
+
+#: templates/history/_object_history_list.html:9
+msgid "Object"
+msgstr "Objekto"
+
+#: templates/history/_object_history_list.html:13
+msgid "Date/time"
+msgstr "Dato/tempo"
+
+#: templates/history/_object_history_list.html:14
+msgid "Changed by"
+msgstr "Ŝanĝita de"
+
+#: templates/history/_object_history_list.html:34
+msgid "None"
+msgstr "Neniu"
+
+#: templates/history/object_history.html:11
+msgid "Choose a date from the list below to revert to a previous version of this object."
+msgstr "Elektu daton el la listo sube por reveni al antaŭa versio de ĉi tiu objekto."
+
+#: templates/history/object_history.html:16
+msgid "This object doesn't have a change history."
+msgstr "Ĉi tiu objekto ne havas ŝanĝhistorion."
+
+#: templates/registration/signup.html:15
+msgid "Зарегистрироваться"
+msgstr "Registriĝi"
+
+#: django_celery_results/admin.py:38
+msgid "Parameters"
+msgstr "Parametroj"
+
+#: django_celery_results/admin.py:45
+msgid "Result"
+msgstr "Rezulto"
+
+#: django_celery_results/apps.py:14
+msgid "Celery Results"
+msgstr "Celery Rezultoj"
+
+#: django_celery_results/models.py:28
+msgid "Task ID"
+msgstr "Tasko ID"
+
+#: django_celery_results/models.py:29
+msgid "Celery ID for the Task that was run"
+msgstr "Celery ID por la ruligita tasko"
+
+#: django_celery_results/models.py:32
+msgid "Task Name"
+msgstr "Nomo de la Tasko"
+
+#: django_celery_results/models.py:33
+msgid "Name of the Task which was run"
+msgstr "Nomo de la ruligita tasko"
+
+#: django_celery_results/models.py:36
+msgid "Task Positional Arguments"
+msgstr "Poziciaj Argumentoj de Tasko"
+
+#: django_celery_results/models.py:37
+msgid "JSON representation of the positional arguments used with the task"
+msgstr "JSON reprezentado de la poziciaj argumentoj uzataj kun la tasko"
+
+#: django_celery_results/models.py:41
+msgid "Task Named Arguments"
+msgstr "Nomitaj Argumentoj de Tasko"
+
+#: django_celery_results/models.py:42
+msgid "JSON representation of the named arguments used with the task"
+msgstr "JSON reprezentado de la nomitaj argumentoj uzataj kun la tasko"
+
+#: django_celery_results/models.py:47
+msgid "Task State"
+msgstr "Stato de Tasko"
+
+#: django_celery_results/models.py:48
+msgid "Current state of the task being run"
+msgstr "Nuna stato de la ruligita tasko"
+
+#: django_celery_results/models.py:51
+msgid "Worker"
+msgstr "Laboristo"
+
+#: django_celery_results/models.py:51
+msgid "Worker that executes the task"
+msgstr "Laboristo kiu plenumas la taskon"
+
+#: django_celery_results/models.py:55 django_celery_results/models.py:186
+msgid "Result Content Type"
+msgstr "Rezulta Enhavtipo"
+
+#: django_celery_results/models.py:56 django_celery_results/models.py:187
+msgid "Content type of the result data"
+msgstr "Enhavtipo de la rezultaj datumoj"
+
+#: django_celery_results/models.py:59 django_celery_results/models.py:191
+msgid "Result Encoding"
+msgstr "Kodigado de Rezulto"
+
+#: django_celery_results/models.py:60 django_celery_results/models.py:192
+msgid "The encoding used to save the task result data"
+msgstr "La kodigado uzata por konservi la datumojn de la taska rezulto"
+
+#: django_celery_results/models.py:63 django_celery_results/models.py:196
+msgid "Result Data"
+msgstr "Rezultaj Datumoj"
+
+#: django_celery_results/models.py:64 django_celery_results/models.py:197
+msgid ""
+"The data returned by the task.  Use content_encoding and content_type fields "
+"to read."
+msgstr "La datumoj redonitaj de la tasko. Uzu la kampojn content_encoding kaj content_type por legi."
+
+#: django_celery_results/models.py:68 django_celery_results/models.py:176
+msgid "Created DateTime"
+msgstr "Kreita DatoTempo"
+
+#: django_celery_results/models.py:69
+msgid "Datetime field when the task result was created in UTC"
+msgstr "Datotempo-kampo kiam la rezulto de la tasko estis kreita en UTC"
+
+#: django_celery_results/models.py:72 django_celery_results/models.py:181
+msgid "Completed DateTime"
+msgstr "Finita DatoTempo"
+
+#: django_celery_results/models.py:73
+msgid "Datetime field when the task was completed in UTC"
+msgstr "Datotempo-kampo kiam la tasko estis finita en UTC"
+
+#: django_celery_results/models.py:76
+msgid "Traceback"
+msgstr "Retrospurado"
+
+#: django_celery_results/models.py:77
+msgid "Text of the traceback if the task generated one"
+msgstr "Teksto de la retrospurado se la tasko generis unu"
+
+#: django_celery_results/models.py:80
+msgid "Task Meta Information"
+msgstr "Taska Metainformo"
+
+#: django_celery_results/models.py:81
+msgid ""
+"JSON meta information about the task, such as information on child tasks"
+msgstr "JSON metainformo pri la tasko, kiel informoj pri infanaj taskoj"
+
+#: django_celery_results/models.py:91
+msgid "task result"
+msgstr "taska rezulto"
+
+#: django_celery_results/models.py:92
+msgid "task results"
+msgstr "taskaj rezultoj"
+
+#: django_celery_results/models.py:129 django_celery_results/models.py:171
+msgid "Group ID"
+msgstr "Grupo ID"
+
+#: django_celery_results/models.py:130
+msgid "Celery ID for the Chord header group"
+msgstr "Celery ID por la Ĥordo-kapgrupo"
+
+#: django_celery_results/models.py:134
+msgid ""
+"JSON serialized list of task result tuples. use .group_result() to decode"
+msgstr "JSON serilizita listo de taskaj rezultaj tuploj. Uzu .group_result() por dekodi"
+
+#: django_celery_results/models.py:140
+msgid "Starts at len(chord header) and decrements after each task is finished"
+msgstr "Komencas ĉe len(ĥordo-kapo) kaj malpliiĝas post ĉiu finita tasko"
+
+#: django_celery_results/models.py:172
+msgid "Celery ID for the Group that was run"
+msgstr "Celery ID por la grupo kiu estis ruligita"
+
+#: django_celery_results/models.py:177
+msgid "Datetime field when the group result was created in UTC"
+msgstr "Datotempo-kampo kiam la rezulto de la grupo estis kreita en UTC"
+
+#: django_celery_results/models.py:182
+msgid "Datetime field when the group was completed in UTC"
+msgstr "Datotempo-kampo kiam la grupo estis finita en UTC"
+
+#: django_celery_results/models.py:217
+msgid "group result"
+msgstr "grupo-rezulto"
+
+#: django_celery_results/models.py:218
+msgid "group results"
+msgstr "grupo-rezultoj"
+
+#: django_celery_beat/admin.py:60
+msgid "Task (registered)"
+msgstr "Tasko (registrita)"
+
+#: django_celery_beat/admin.py:64
+msgid "Task (custom)"
+msgstr "Tasko (propra)"
+
+#: django_celery_beat/admin.py:81
+msgid "Need name of task"
+msgstr "Bezonas nomon de tasko"
+
+#: django_celery_beat/admin.py:87 django_celery_beat/models.py:605
+msgid "Only one can be set, in expires and expire_seconds"
+msgstr "Nur unu povas esti agordita, en expires kaj expire_seconds"
+
+#: django_celery_beat/admin.py:97
+#, python-format
+msgid "Unable to parse JSON: %s"
+msgstr "Ne eblas analizi JSON: %s"
+
+#: django_celery_beat/admin.py:125
+#, fuzzy
+#| msgid "Solar Schedule"
+msgid "Schedule"
+msgstr "Horaro"
+
+#: django_celery_beat/admin.py:130
+#, fuzzy
+#| msgid "Keyword Arguments"
+msgid "Arguments"
+msgstr "Argumentoj"
+
+#: django_celery_beat/admin.py:134
+msgid "Execution Options"
+msgstr "Ekzekutaj Opcioj"
+
+#: django_celery_beat/admin.py:177
+#, python-brace-format
+msgid "{0} task{1} {2} successfully {3}"
+msgstr "{0} tasko{1} {2} sukcese {3}"
+
+#: django_celery_beat/admin.py:180 django_celery_beat/admin.py:247
+msgid "was,were"
+msgstr "estis"
+
+#: django_celery_beat/admin.py:189
+msgid "Enable selected tasks"
+msgstr "Aktivigi elektitajn taskojn"
+
+#: django_celery_beat/admin.py:195
+msgid "Disable selected tasks"
+msgstr "Malaktivigi elektitajn taskojn"
+
+#: django_celery_beat/admin.py:207
+msgid "Toggle activity of selected tasks"
+msgstr "Ŝanĝi aktivecon de elektitaj taskoj"
+
+#: django_celery_beat/admin.py:228
+#, fuzzy, python-brace-format
+#| msgid "task \"{0}\" not found"
+msgid "task \"{not_found_task_name}\" not found"
+msgstr "tasko \"{not_found_task_name}\" ne trovita"
+
+#: django_celery_beat/admin.py:244
+#, python-brace-format
+msgid "{0} task{1} {2} successfully run"
+msgstr "{0} tasko{1} {2} sukcese ruligita"
+
+#: django_celery_beat/admin.py:250
+msgid "Run selected tasks"
+msgstr "Ruligi elektitajn taskojn"
+
+#: django_celery_beat/apps.py:13
+msgid "Periodic Tasks"
+msgstr "Periodaj Taskoj"
+
+#: django_celery_beat/models.py:30
+msgid "Days"
+msgstr "Tagoj"
+
+#: django_celery_beat/models.py:31
+msgid "Hours"
+msgstr "Horoj"
+
+#: django_celery_beat/models.py:32
+msgid "Minutes"
+msgstr "Minutoj"
+
+#: django_celery_beat/models.py:33
+msgid "Seconds"
+msgstr "Sekundoj"
+
+#: django_celery_beat/models.py:34
+msgid "Microseconds"
+msgstr "Mikrosekundoj"
+
+#: django_celery_beat/models.py:38
+msgid "Day"
+msgstr "Tago"
+
+#: django_celery_beat/models.py:39
+msgid "Hour"
+msgstr "Horo"
+
+#: django_celery_beat/models.py:40
+msgid "Minute"
+msgstr "Minuto"
+
+#: django_celery_beat/models.py:41
+msgid "Second"
+msgstr "Sekundo"
+
+#: django_celery_beat/models.py:42
+msgid "Microsecond"
+msgstr "Mikrosekundo"
+
+#: django_celery_beat/models.py:46
+msgid "Astronomical dawn"
+msgstr "Astronomia krepusko"
+
+#: django_celery_beat/models.py:47
+msgid "Civil dawn"
+msgstr "Civila krepusko"
+
+#: django_celery_beat/models.py:48
+msgid "Nautical dawn"
+msgstr "Marista krepusko"
+
+#: django_celery_beat/models.py:49
+msgid "Astronomical dusk"
+msgstr "Astronomia vesperkrepusko"
+
+#: django_celery_beat/models.py:50
+msgid "Civil dusk"
+msgstr "Civila vesperkrepusko"
+
+#: django_celery_beat/models.py:51
+msgid "Nautical dusk"
+msgstr "Marista vesperkrepusko"
+
+#: django_celery_beat/models.py:52
+#, fuzzy
+#| msgid "Solar Event"
+msgid "Solar noon"
+msgstr "Sunmezo"
+
+#: django_celery_beat/models.py:53
+msgid "Sunrise"
+msgstr "Sunleviĝo"
+
+#: django_celery_beat/models.py:54
+msgid "Sunset"
+msgstr "Sunsubiro"
+
+#: django_celery_beat/models.py:88
+msgid "Solar Event"
+msgstr "Suna Evento"
+
+#: django_celery_beat/models.py:89
+msgid "The type of solar event when the job should run"
+msgstr "Tipo de suna evento kiam la laboro devas ruliĝi"
+
+#: django_celery_beat/models.py:93
+msgid "Latitude"
+msgstr "Latitudo"
+
+#: django_celery_beat/models.py:94
+msgid "Run the task when the event happens at this latitude"
+msgstr "Ruligi la taskon kiam la evento okazas ĉe ĉi tiu latitudo"
+
+#: django_celery_beat/models.py:99
+msgid "Longitude"
+msgstr "Longitudo"
+
+#: django_celery_beat/models.py:100
+msgid "Run the task when the event happens at this longitude"
+msgstr "Ruligi la taskon kiam la evento okazas ĉe ĉi tiu longitudo"
+
+#: django_celery_beat/models.py:107
+msgid "solar event"
+msgstr "suna evento"
+
+#: django_celery_beat/models.py:108
+msgid "solar events"
+msgstr "sunaj eventoj"
+
+#: django_celery_beat/models.py:158
+msgid "Number of Periods"
+msgstr "Nombro de Periodoj"
+
+#: django_celery_beat/models.py:159
+msgid "Number of interval periods to wait before running the task again"
+msgstr "Nombro da intervalaj periodoj atendotaj antaŭ reruligo de la tasko"
+
+#: django_celery_beat/models.py:165
+msgid "Interval Period"
+msgstr "Intervala Periodo"
+
+#: django_celery_beat/models.py:166
+msgid "The type of period between task runs (Example: days)"
+msgstr "Tipo de periodo inter taskaj ruladoj (Ekzemple: tagoj)"
+
+#: django_celery_beat/models.py:172
+msgid "interval"
+msgstr "intervalo"
+
+#: django_celery_beat/models.py:173
+msgid "intervals"
+msgstr "intervaloj"
+
+#: django_celery_beat/models.py:200
+msgid "every {}"
+msgstr "ĉiu {}"
+
+#: django_celery_beat/models.py:205
+msgid "every {} {}"
+msgstr "ĉiu {} {}"
+
+#: django_celery_beat/models.py:216
+msgid "Clock Time"
+msgstr "Horloĝtempo"
+
+#: django_celery_beat/models.py:217
+msgid "Run the task at clocked time"
+msgstr "Ruligi la taskon je horloĝtempo"
+
+#: django_celery_beat/models.py:223 django_celery_beat/models.py:224
+msgid "clocked"
+msgstr "horloĝita"
+
+#: django_celery_beat/models.py:264
+msgid "Minute(s)"
+msgstr "Minuto(j)"
+
+#: django_celery_beat/models.py:266
+msgid "Cron Minutes to Run. Use \"*\" for \"all\". (Example: \"0,30\")"
+msgstr "Cron Minutoj por Ruligi. Uzu \"*\" por \"ĉiuj\". (Ekzemplo: \"0,30\")"
+
+#: django_celery_beat/models.py:271
+msgid "Hour(s)"
+msgstr "Horo(j)"
+
+#: django_celery_beat/models.py:273
+msgid "Cron Hours to Run. Use \"*\" for \"all\". (Example: \"8,20\")"
+msgstr "Cron Horoj por Ruligi. Uzu \"*\" por \"ĉiuj\". (Ekzemplo: \"8,20\")"
+
+#: django_celery_beat/models.py:278
+msgid "Day(s) Of The Week"
+msgstr "Tago(j) De La Semajno"
+
+#: django_celery_beat/models.py:280
+msgid ""
+"Cron Days Of The Week to Run. Use \"*\" for \"all\", Sunday is 0 or 7, "
+"Monday is 1. (Example: \"0,5\")"
+msgstr ""
+"Cron Tagoj De La Semajno por Ruligi. Uzu \"*\" por \"ĉiuj\", Dimanĉo estas 0 aŭ 7, "
+"Lundo estas 1. (Ekzemplo: \"0,5\")"
+
+#: django_celery_beat/models.py:286
+msgid "Day(s) Of The Month"
+msgstr "Tago(j) De La Monato"
+
+#: django_celery_beat/models.py:288
+msgid ""
+"Cron Days Of The Month to Run. Use \"*\" for \"all\". (Example: \"1,15\")"
+msgstr ""
+"Cron Tagoj De La Monato por Ruligi. Uzu \"*\" por \"ĉiuj\". (Ekzemplo: \"1,15\")"
+
+#: django_celery_beat/models.py:294
+msgid "Month(s) Of The Year"
+msgstr "Monato(j) De La Jaro"
+
+#: django_celery_beat/models.py:296
+msgid ""
+"Cron Months (1-12) Of The Year to Run. Use \"*\" for \"all\". (Example: "
+"\"1,12\")"
+msgstr ""
+"Cron Monatoj (1-12) De La Jaro por Ruligi. Uzu \"*\" por \"ĉiuj\". (Ekzemplo: "
+"\"1,12\")"
+
+#: django_celery_beat/models.py:304
+msgid "Cron Timezone"
+msgstr "Cron Horzono"
+
+#: django_celery_beat/models.py:306
+msgid "Timezone to Run the Cron Schedule on. Default is UTC."
+msgstr "Horzono por Ruligi la Cron Horaron. Defaŭlto estas UTC."
+
+#: django_celery_beat/models.py:312
+msgid "crontab"
+msgstr "crontab"
+
+#: django_celery_beat/models.py:313
+msgid "crontabs"
+msgstr "crontaboj"
+
+#: django_celery_beat/models.py:404
+msgid "Name"
+msgstr "Nomo"
+
+#: django_celery_beat/models.py:405
+msgid "Short Description For This Task"
+msgstr "Mallonga Priskribo Por Ĉi Tiu Tasko"
+
+#: django_celery_beat/models.py:410
+msgid ""
+"The Name of the Celery Task that Should be Run.  (Example: \"proj.tasks."
+"import_contacts\")"
+msgstr ""
+"La Nomo de la Celery Tasko Kiu Devus Esti Ruligita.  (Ekzemplo: \"proj.tasks."
+"import_contacts\")"
+
+#: django_celery_beat/models.py:418
+msgid "Interval Schedule"
+msgstr "Intervala Horaro"
+
+#: django_celery_beat/models.py:419
+msgid ""
+"Interval Schedule to run the task on.  Set only one schedule type, leave the "
+"others null."
+msgstr ""
+"Intervala Horaro por ruligi la taskon. Agordu nur unu horarotipon, lasu la "
+"aliajn nulaj."
+
+#: django_celery_beat/models.py:424
+msgid "Crontab Schedule"
+msgstr "Crontab Horaro"
+
+#: django_celery_beat/models.py:425
+msgid ""
+"Crontab Schedule to run the task on.  Set only one schedule type, leave the "
+"others null."
+msgstr ""
+"Crontab Horaro por ruligi la taskon. Agordu nur unu horarotipon, lasu la "
+"aliajn nulaj."
+
+#: django_celery_beat/models.py:430
+msgid "Solar Schedule"
+msgstr "Suna Horaro"
+
+#: django_celery_beat/models.py:431
+msgid ""
+"Solar Schedule to run the task on.  Set only one schedule type, leave the "
+"others null."
+msgstr ""
+"Suna Horaro por ruligi la taskon. Agordu nur unu horarotipon, lasu la "
+"aliajn nulaj."
+
+#: django_celery_beat/models.py:436
+msgid "Clocked Schedule"
+msgstr "Horloĝita Horaro"
+
+#: django_celery_beat/models.py:437
+msgid ""
+"Clocked Schedule to run the task on.  Set only one schedule type, leave the "
+"others null."
+msgstr ""
+"Horloĝita Horaro por ruligi la taskon. Agordu nur unu horarotipon, lasu la "
+"aliajn nulaj."
+
+#: django_celery_beat/models.py:443
+msgid "Positional Arguments"
+msgstr "Poziciaj Argumentoj"
+
+#: django_celery_beat/models.py:445
+msgid "JSON encoded positional arguments (Example: [\"arg1\", \"arg2\"])"
+msgstr ""
+"JSON kodigitaj poziciaj argumentoj (Ekzemplo: [\"arg1\", \"arg2\"])"
+
+#: django_celery_beat/models.py:450
+msgid "Keyword Arguments"
+msgstr "Ŝlosilvortaj Argumentoj"
+
+#: django_celery_beat/models.py:452
+msgid "JSON encoded keyword arguments (Example: {\"argument\": \"value\"})"
+msgstr ""
+"JSON kodigitaj ŝlosilvortaj argumentoj (Ekzemplo: {\"argument\": \"value\"})"
+
+#: django_celery_beat/models.py:458
+msgid "Queue Override"
+msgstr "Vico Transpremo"
+
+#: django_celery_beat/models.py:460
+msgid "Queue defined in CELERY_TASK_QUEUES. Leave None for default queuing."
+msgstr ""
+"Vico difinita en CELERY_TASK_QUEUES. Lasu Neniu por defaŭlta envicigo."
+
+#: django_celery_beat/models.py:469
+msgid "Exchange"
+msgstr "Interŝanĝo"
+
+#: django_celery_beat/models.py:470
+msgid "Override Exchange for low-level AMQP routing"
+msgstr "Transpremu Interŝanĝon por malalt-nivela AMQP marŝrutado"
+
+#: django_celery_beat/models.py:474
+msgid "Routing Key"
+msgstr "Marŝrutiga Ŝlosilo"
+
+#: django_celery_beat/models.py:475
+msgid "Override Routing Key for low-level AMQP routing"
+msgstr "Anstataŭigi Marŝrutigan Ŝlosilon por malalta-nivela AMQP-marŝrutado"
+
+#: django_celery_beat/models.py:479
+msgid "AMQP Message Headers"
+msgstr "AMQP Mesaĝkapoj"
+
+#: django_celery_beat/models.py:480
+msgid "JSON encoded message headers for the AMQP message."
+msgstr "JSON koditaj mesaĝkapoj por la AMQP-mesaĝo."
+
+#: django_celery_beat/models.py:486
+msgid "Priority"
+msgstr "Prioritato"
+
+#: django_celery_beat/models.py:488
+msgid ""
+"Priority Number between 0 and 255. Supported by: RabbitMQ, Redis (priority "
+"reversed, 0 is highest)."
+msgstr ""
+"Prioreca Nombro inter 0 kaj 255. Subtenata de: RabbitMQ, Redis (inversigita prioritato, 0 estas plej alta)."
+
+#: django_celery_beat/models.py:493
+msgid "Expires Datetime"
+msgstr "Eksvalidiĝas Datotempo"
+
+#: django_celery_beat/models.py:495
+msgid ""
+"Datetime after which the schedule will no longer trigger the task to run"
+msgstr "Datotempo post kiu la horaro ne plu aktivigos la taskon por ruliĝi"
+
+#: django_celery_beat/models.py:500
+msgid "Expires timedelta with seconds"
+msgstr "Eksvalidiĝas tempodiferenco kun sekundoj"
+
+#: django_celery_beat/models.py:502
+#, fuzzy
+#| msgid ""
+#| "Datetime after which the schedule will no longer trigger the task to run"
+msgid ""
+"Timedelta with seconds which the schedule will no longer trigger the task to "
+"run"
+msgstr "Tempodiferenco kun sekundoj post kiu la horaro ne plu aktivigos la taskon por ruliĝi"
+
+#: django_celery_beat/models.py:508
+msgid "One-off Task"
+msgstr "Unufoja Tasko"
+
+#: django_celery_beat/models.py:510
+msgid "If True, the schedule will only run the task a single time"
+msgstr "Se Vera, la horaro ruligos la taskon nur unufoje"
+
+#: django_celery_beat/models.py:514
+msgid "Start Datetime"
+msgstr "Komenco Datotempo"
+
+#: django_celery_beat/models.py:516
+msgid "Datetime when the schedule should begin triggering the task to run"
+msgstr "Datotempo kiam la horaro komencu aktivigi la taskon por ruliĝi"
+
+#: django_celery_beat/models.py:521
+msgid "Enabled"
+msgstr "Aktivigita"
+
+#: django_celery_beat/models.py:522
+msgid "Set to False to disable the schedule"
+msgstr "Agordu al Falsa por malaktivigi la horaron"
+
+#: django_celery_beat/models.py:527
+msgid "Last Run Datetime"
+msgstr "Lasta Ruliĝo Datotempo"
+
+#: django_celery_beat/models.py:529
+msgid ""
+"Datetime that the schedule last triggered the task to run. Reset to None if "
+"enabled is set to False."
+msgstr "Datotempo kiam la horaro laste aktivigis la taskon por ruliĝi. Reagordu al Nenio se aktivigita estas agordita al Falsa."
+
+#: django_celery_beat/models.py:534
+msgid "Total Run Count"
+msgstr "Suma Ruliĝo-Kvanto"
+
+#: django_celery_beat/models.py:536
+msgid "Running count of how many times the schedule has triggered the task"
+msgstr "Kuranta kalkulo de kiom da fojoj la horaro aktivigis la taskon"
+
+#: django_celery_beat/models.py:541
+msgid "Last Modified"
+msgstr "Laste Modifita"
+
+#: django_celery_beat/models.py:542
+msgid "Datetime that this PeriodicTask was last modified"
+msgstr "Datotempo kiam ĉi tiu PeriodaTasko laste estis modifita"
+
+#: django_celery_beat/models.py:546
+msgid "Description"
+msgstr "Priskribo"
+
+#: django_celery_beat/models.py:548
+msgid "Detailed description about the details of this Periodic Task"
+msgstr "Detala priskribo pri la detaloj de ĉi tiu Perioda Tasko"
+
+#: django_celery_beat/models.py:557
+msgid "periodic task"
+msgstr "perioda tasko"
+
+#: django_celery_beat/models.py:558
+msgid "periodic tasks"
+msgstr "periodaj taskoj"
+
+#: django_celery_beat/templates/admin/djcelery/change_list.html:6
+msgid "Home"
+msgstr "Hejmo"
+
+msgid "Hold down “Control”, or “Command” on a Mac, to select more than one."
+msgstr "Tenu premata “Control”, aŭ “Command” sur Mac, por elekti pli ol unu."
+
+msgid ""
+"The {name} “{obj}” was changed successfully. You may edit it again below."
+msgstr ""
+"La {name} “{obj}” estis sukcese ŝanĝita. Vi povas redakti ĝin denove sube."
+
+#, python-brace-format
+msgid "The {name} “{obj}” was added successfully. You may edit it again below."
+msgstr ""
+"La {name} “{obj}” estis sukcese aldonita. Vi povas redakti ĝin denove sube."
+
+#, python-brace-format
+msgid ""
+"The {name} “{obj}” was changed successfully. You may add another {name} "
+"below."
+msgstr ""
+"La {name} “{obj}” estis sukcese ŝanĝita. Vi povas aldoni alian {name} "
+"sube."
+
+#, python-brace-format
+msgid "The {name} “{obj}” was changed successfully."
+msgstr "La {name} “{obj}” estis sukcese ŝanĝita."
+
+#, python-format
+msgid "%(name)s with ID “%(key)s” doesn’t exist. Perhaps it was deleted?"
+msgstr "%(name)s kun ID “%(key)s” ne ekzistas. Eble ĝi estis forigita?"
+
+msgid ""
+"There’s been an error. It’s been reported to the site administrators via "
+"email and should be fixed shortly. Thanks for your patience."
+msgstr ""
+"Okazis eraro. Ĝi estis raportita al la retejestraj administrantoj per "
+"retpoŝto kaj devus esti baldaŭ riparita. Dankon pro via pacienco."
+
+msgid "You don’t have permission to view or edit anything."
+msgstr "Vi ne havas permeson vidi aŭ redakti ion ajn."
+
+msgid ""
+"First, enter a username and password. Then, you’ll be able to edit more user "
+"options."
+msgstr ""
+"Unue, enigu uzantnomon kaj pasvorton. Poste, vi povos redakti pli da uzantaj "
+"opcioj."
+
+msgid "Clear all filters"
+msgstr "Forigu ĉiujn filtrilojn"
+
+msgid ""
+"Something’s wrong with your database installation. Make sure the appropriate "
+"database tables have been created, and make sure the database is readable by "
+"the appropriate user."
+msgstr ""
+"Io malĝustas kun via datumbaza instalo. Certigu ke la taŭgaj datumbazaj "
+"tabeloj estis kreitaj, kaj certigu ke la datumbazo estas legebla de la "
+"taŭga uzanto."
+
+msgid "Start typing to filter…"
+msgstr "Komencu tajpi por filtri…"
+
+msgid "Filter navigation items"
+msgstr "Filtrilo de navigaj eroj"
+
+msgid "entry"
+msgstr "enskribo"
+
+msgid "entries"
+msgstr "enskriboj"
+
+#, python-format
+msgid "View selected %(model)s"
+msgstr "Vidi elektitan %(model)s"
+
+msgid "Thanks for spending some quality time with the web site today."
+msgstr "Dankon pro pasigi iom da kvalita tempo kun la retejo hodiaŭ."
+
+msgid "Название"
+msgstr "Titolo"
+
+msgid "Редактирование"
+msgstr "Redaktado"
+
+msgid "Отключить редактор"
+msgstr "Malŝalti Redaktilon"

@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from core.admin_utils import CustomHistoryAdmin
+from core.admin_utils import CustomHistoryAdmin, add_request_object_to_admin_form
 from .admin_forms import ActionValueForm, PageAdminForm
 from .models import Author, Book, Page
 from .services.book_export import export_book
@@ -209,3 +209,7 @@ class PageAdmin(CustomHistoryAdmin):
     @admin.display(description=_('Размер текста'))
     def text_size(self, obj):
         return self.request.user.text_size
+
+    @add_request_object_to_admin_form
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        return super().get_form(request, obj, change, **kwargs)

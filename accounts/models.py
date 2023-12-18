@@ -15,7 +15,7 @@ class CustomUserManager(UserManager):
         user = self._create_user(username, email, password, **extra_fields)
 
         # Add user to editor group:
-        editor_permission_group = Group.objects.get_or_create(name=_("Редактор"))[0]
+        editor_permission_group = Group.objects.get_or_create(name="Корректор")[0]
         user.groups.add(editor_permission_group)
 
         return user

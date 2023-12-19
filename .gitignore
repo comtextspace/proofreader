@@ -1,5 +1,6 @@
 .venv
 .vscode
+.vagrant
 __pycache__
 config.env
 # Media folder

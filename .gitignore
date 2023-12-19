@@ -9,3 +9,4 @@ data
 .idea
 .DS_Store
 /staticfiles
+/rabbitmq_data

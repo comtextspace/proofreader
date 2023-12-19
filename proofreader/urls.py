@@ -14,14 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     path("home/", admin.site.urls),
-    path("accounts/", include("accounts.urls")),
-    path("accounts/", include("django.contrib.auth.urls")),
+    path("", include("accounts.urls")),
     path("tz_detect/", include("tz_detect.urls")),
     re_path(r'^api/v1/', include('proofreader.api_urls', namespace='v1')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    prefix_default_language=False,
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

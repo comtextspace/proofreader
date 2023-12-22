@@ -64,5 +64,9 @@ class Assignment(LifecycleModelMixin, models.Model):
         help_text=_("Номера страниц через запятую или диапазон через тире"),
     )
 
+    class Meta:
+        verbose_name = _("Назначение")
+        verbose_name_plural = _("Назначения")
+
     def __str__(self):
         return f"{self.book.name} - {self.user.username}"

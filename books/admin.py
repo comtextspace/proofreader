@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from accounts.models import Assignment
 from core.admin_utils import CustomHistoryAdmin, add_request_object_to_admin_form
 from .admin_forms import ActionValueForm, PageAdminForm
 from .models import Author, Book, Page
@@ -50,6 +51,12 @@ def continue_pages_splittings(modeladmin, request, queryset):
 continue_pages_splittings.short_description = _("Повторно запустить задачи по разделению страниц")
 
 
+class AssignmentAdminInline(admin.TabularInline):
+    model = Assignment
+    extra = 0
+    autocomplete_fields = ['user']
+
+
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
     actions = [download_as_text_file, process_unprocessed_pages, continue_pages_splittings]
@@ -76,6 +83,7 @@ class BookAdmin(admin.ModelAdmin):
     ]
     fieldsets = ((None, {'fields': ('name', 'author', 'pdf')}),)
     autocomplete_fields = ['author']
+    inlines = [AssignmentAdminInline]
 
     def get_queryset(self, request):
         # annotate pages count for each page status
@@ -120,6 +128,37 @@ class BookFilter(AutocompleteFilter):
     field_name = 'book'  # name of the foreign key field
 
 
+class AssigmentPagesFilter(admin.SimpleListFilter):
+    title = _('Назначенные страницы')  # display title
+    parameter_name = 'assigned_pages'  # lookup parameter for filtering
+
+    def lookups(self, request, model_admin):
+        return (('assigned', _('Назначенные')),)
+
+    def _get_list_of_int_from_comma_separated_string(self, string):
+        result = []
+        for item in string.split(','):
+            if '-' in item:
+                start, end = item.split('-')
+                result.extend(range(int(start), int(end) + 1))
+            else:
+                result.append(int(item))
+        return result
+
+    def queryset(self, request, queryset):
+        if self.value() == 'assigned':
+            user_assignments = Assignment.objects.filter(user=request.user).values('pages', 'book_id')
+            q_filter = models.Q()
+            for assignment in user_assignments:
+                q_filter |= models.Q(
+                    book_id=assignment['book_id'],
+                    number__in=self._get_list_of_int_from_comma_separated_string(assignment['pages']),
+                )
+            return queryset.filter(q_filter)
+        elif self.value() is None:
+            return queryset
+
+
 def numerate_pages(modeladmin, request, queryset):
     page = queryset.first()
 
@@ -154,7 +193,7 @@ class PageAdmin(CustomHistoryAdmin):
         (_('Редактирование'), {'fields': (('text', 'page'),)}),
         (None, {'fields': (('book', 'number', 'status', 'text_size', 'number_in_book'),)}),
     )
-    list_filter = [BookFilter, 'status']
+    list_filter = [AssigmentPagesFilter, BookFilter, 'status']
     search_fields = ['number']
 
     def get_queryset(self, request):

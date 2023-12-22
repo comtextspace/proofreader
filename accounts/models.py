@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser, Group, UserManager
+from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_lifecycle import LifecycleModelMixin
@@ -47,3 +48,21 @@ class PageStatus(LifecycleModelMixin, TimeStampedModel, models.Model):
         db_table = '"book"."page_status"'
         verbose_name = _("Статус страницы")
         verbose_name_plural = _("Статусы страниц")
+
+
+class Assignment(LifecycleModelMixin, models.Model):
+    book = models.ForeignKey(
+        'books.Book', on_delete=models.CASCADE, related_name="assignments", verbose_name=_("Книга")
+    )
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name="assignments", verbose_name=_("Пользователь")
+    )
+    pages = models.CharField(
+        max_length=100,
+        verbose_name=_("Страницы"),
+        validators=[RegexValidator(r'^[0-9,-]+$')],
+        help_text=_("Номера страниц через запятую или диапазон через тире"),
+    )
+
+    def __str__(self):
+        return f"{self.book.name} - {self.user.username}"

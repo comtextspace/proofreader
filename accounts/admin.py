@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from .forms import CustomUserChangeForm, CustomUserCreationForm
 from .models import Assignment, CustomUser, PageStatus, UserSettings
@@ -17,18 +19,11 @@ class UserAssignmentInline(admin.TabularInline):
     model = Assignment
     extra = 0
     autocomplete_fields = ['book']
-    readonly_fields = ['book', 'pages']
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def has_add_permission(self, request, obj=None):
-        return False
 
 
 @admin.register(UserSettings)
 class UserSettingsAdmin(admin.ModelAdmin):
-    list_display = ('username', 'text_size')
+    list_display = ('username', 'text_size', 'assigned_pages')
     list_editable = ('text_size',)
     fields = ('text_size',)
     inlines = [UserAssignmentInline]
@@ -38,6 +33,11 @@ class UserSettingsAdmin(admin.ModelAdmin):
             return super().get_queryset(request)
         else:
             return super().get_queryset(request).filter(id=request.user.id)
+
+    @admin.display(description=_('Назначенные страницы'))
+    def assigned_pages(self, obj):
+        link = f"{reverse('admin:books_page_changelist')}?assignment={obj.id}"
+        return mark_safe(f'<a href="{link}">{_("перейти")}</a>')
 
 
 @admin.register(PageStatus)

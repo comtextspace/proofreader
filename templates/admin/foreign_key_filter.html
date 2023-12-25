@@ -1,0 +1,28 @@
+{% load i18n %}
+
+<h3>{% blocktrans with filter_title=title %} By {{ filter_title }} {% endblocktrans %}</h3>
+<ul>
+    <li>
+        {% with choices.0 as all_choice %}
+        <form method="GET" action="">
+
+          {% for k, v in all_choice.query_parts %}
+          <input type="hidden" name="{{ k }}" value="{{ v }}" />
+          {% endfor %}
+
+          <div style="display: flex; align-items: center;">
+            <input type="{% block input_type %}number{% endblock %}"
+                   min="0"
+                   step="positive"
+                   value="{{ spec.value|default_if_none:'' }}"
+                   name="{{ spec.parameter_name }}"/>
+            {% if not all_choice.selected %}
+              <strong><a style="margin-left: 10px;" href="{{ all_choice.query_string }}">x</a></strong>
+            {% endif %}
+          </div>
+
+          <a onclick="this.closest('form').submit();return false;" href="">{% trans 'Apply' %}</a>
+        </form>
+        {% endwith %}
+    </li>
+</ul>

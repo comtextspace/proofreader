@@ -6,6 +6,7 @@ from django_extensions.db.models import TimeStampedModel
 from django_lifecycle import AFTER_CREATE, LifecycleModelMixin, hook
 from simple_history.models import HistoricalRecords
 
+from .managers import PagesQuerySet
 from .tasks import extract_text_from_image_task, split_pdf_to_pages_task
 
 
@@ -62,6 +63,7 @@ class Page(LifecycleModelMixin, TimeStampedModel, models.Model):
     )
     number_in_book = models.CharField(null=True, blank=True, verbose_name=_("Номер страницы в книге"), max_length=100)
 
+    object = PagesQuerySet.as_manager()
     history = HistoricalRecords()
 
     def __str__(self) -> str:

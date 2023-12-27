@@ -11,6 +11,8 @@ services:
       - REDIS_URL=redis://redis:6379/1
       - CELERY_BROKER_URL=amqp://guest:@amqp:5672/
       - DEBUG=False
+      - ADMIN_USER_GROUP=Администратор
+      - INITIAL_USER_GROUP=Корректор
     env_file: ./docker.env
     volumes:
       - project-static:/code/staticfiles

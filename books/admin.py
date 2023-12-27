@@ -1,5 +1,6 @@
 from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib import admin, messages
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -7,11 +8,15 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from accounts.models import Assignment
+from core.admin_filter import ForeignKeyFilter
 from core.admin_utils import CustomHistoryAdmin, add_request_object_to_admin_form
 from .admin_forms import ActionValueForm, PageAdminForm
 from .models import Author, Book, Page
 from .services.book_export import export_book
 from .tasks import extract_text_from_image_task, split_pdf_to_pages_task
+
+User = get_user_model()
 
 
 @admin.register(Author)
@@ -50,6 +55,12 @@ def continue_pages_splittings(modeladmin, request, queryset):
 continue_pages_splittings.short_description = _("Повторно запустить задачи по разделению страниц")
 
 
+class AssignmentAdminInline(admin.TabularInline):
+    model = Assignment
+    extra = 0
+    autocomplete_fields = ['user']
+
+
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
     actions = [download_as_text_file, process_unprocessed_pages, continue_pages_splittings]
@@ -76,6 +87,7 @@ class BookAdmin(admin.ModelAdmin):
     ]
     fieldsets = ((None, {'fields': ('name', 'author', 'pdf')}),)
     autocomplete_fields = ['author']
+    inlines = [AssignmentAdminInline]
 
     def get_queryset(self, request):
         # annotate pages count for each page status
@@ -120,6 +132,31 @@ class BookFilter(AutocompleteFilter):
     field_name = 'book'  # name of the foreign key field
 
 
+class AssigmentPagesFilter(admin.SimpleListFilter):
+    title = _('Назначенные страницы')  # display title
+    parameter_name = 'assigned_pages'  # lookup parameter for filtering
+
+    def lookups(self, request, model_admin):
+        return (('assigned', _('Назначенные')),)
+
+    def queryset(self, request, queryset):
+        if self.value() == 'assigned':
+            return queryset.user_assignments(request.user)
+        elif self.value() is None:
+            return queryset
+
+
+class AssignmentFilter(ForeignKeyFilter):
+    title = _('ID пользователя (по назначению)')  # display title
+    lookup = 'assignment'
+
+    def queryset(self, request, queryset):
+        f_key: str = self.value()
+        if f_key and f_key.isnumeric():
+            user = User.objects.get(id=f_key)
+            return queryset.user_assignments(user)
+
+
 def numerate_pages(modeladmin, request, queryset):
     page = queryset.first()
 
@@ -154,7 +191,7 @@ class PageAdmin(CustomHistoryAdmin):
         (_('Редактирование'), {'fields': (('text', 'page'),)}),
         (None, {'fields': (('book', 'number', 'status', 'text_size', 'number_in_book'),)}),
     )
-    list_filter = [BookFilter, 'status']
+    list_filter = [AssigmentPagesFilter, BookFilter, 'status', AssignmentFilter]
     search_fields = ['number']
 
     def get_queryset(self, request):

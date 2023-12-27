@@ -29,7 +29,7 @@ class UserSettingsAdmin(admin.ModelAdmin):
     inlines = [UserAssignmentInline]
 
     def get_queryset(self, request):
-        if request.user.is_superuser:
+        if request.user.is_admin:
             return super().get_queryset(request)
         else:
             return super().get_queryset(request).filter(id=request.user.id)

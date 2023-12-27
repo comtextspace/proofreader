@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group, UserManager
 from django.core.validators import RegexValidator
 from django.db import models
@@ -16,7 +17,7 @@ class CustomUserManager(UserManager):
         user = self._create_user(username, email, password, **extra_fields)
 
         # Add user to editor group:
-        editor_permission_group = Group.objects.get_or_create(name="Корректор")[0]
+        editor_permission_group = Group.objects.get_or_create(name=settings.INITIAL_USER_GROUP)[0]
         user.groups.add(editor_permission_group)
 
         return user
@@ -25,6 +26,10 @@ class CustomUserManager(UserManager):
 class CustomUser(AbstractUser):
     text_size = models.IntegerField(null=True, blank=True, default=12, verbose_name=_('Размер текста'))
     objects = CustomUserManager()
+
+    @property
+    def is_admin(self):
+        return self.is_superuser or self.groups.filter(name=settings.ADMIN_USER_GROUP).exists()
 
 
 class UserSettings(CustomUser):

@@ -244,3 +244,5 @@ LANGUAGES = [
     ('eo', 'Esperanto'),
     ('ru', 'Russian'),
 ]
+ADMIN_USER_GROUP = env('ADMIN_USER_GROUP', default='Администратор')
+INITIAL_USER_GROUP = env('INITIAL_USER_GROUP', default='Корректор')

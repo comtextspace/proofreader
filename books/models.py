@@ -63,7 +63,7 @@ class Page(LifecycleModelMixin, TimeStampedModel, models.Model):
     )
     number_in_book = models.CharField(null=True, blank=True, verbose_name=_("Номер страницы в книге"), max_length=100)
 
-    object = PagesQuerySet.as_manager()
+    objects = PagesQuerySet.as_manager()
     history = HistoricalRecords()
 
     def __str__(self) -> str:

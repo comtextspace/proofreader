@@ -12,7 +12,9 @@ class CustomUserCreationForm(UserCreationForm):
 
     def clean(self):
         super().clean()
-        code = self.cleaned_data["code"]
+        code = self.cleaned_data.get("code", None)
+        if code is None:
+            raise fields.ValidationError("Необходимо ввести кодовое слово")
         if code.lower() != "текстология":
             raise fields.ValidationError("Неверное кодовое слово")
 

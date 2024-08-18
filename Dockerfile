@@ -13,6 +13,6 @@ WORKDIR /code
 COPY poetry.lock pyproject.toml /code/
 
 RUN poetry config virtualenvs.create false --local
-RUN poetry install --no-dev
+RUN poetry install --only main
 
 COPY . /code/

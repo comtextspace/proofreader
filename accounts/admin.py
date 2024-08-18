@@ -4,13 +4,12 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from .forms import CustomUserChangeForm, CustomUserCreationForm
+from .forms import CustomUserChangeForm
 from .models import Assignment, CustomUser, PageStatus, UserSettings
 
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
-    add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
 

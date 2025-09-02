@@ -109,11 +109,22 @@ jobs:
       run: |
         poetry run python manage.py test
     
-    - name: Run linting
+    - name: Apply linting and formatting
       run: |
+        poetry run isort .
+        poetry run black .
         poetry run flake8 .
-        poetry run black --check .
-        poetry run isort --check-only .
+        
+    - name: Commit linting changes if any
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add -A
+        if git diff --staged --quiet; then
+          echo "No linting changes to commit"
+        else
+          git commit -m "Auto-fix: Apply linting and formatting"
+        fi
 
   build-and-push:
     needs: test

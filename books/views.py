@@ -1,5 +1,5 @@
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import UpdateView
 
 from .models import Book, Page
@@ -52,7 +52,6 @@ class PageView(UpdateView):
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
-        book_id = self.kwargs["book_id"]
         page_id = self.kwargs["page_id"]
 
         page = Page.objects.get(id=page_id)

@@ -77,6 +77,11 @@ jobs:
     - name: Install project
       run: poetry install --no-interaction
     
+    - name: Install PostgreSQL client
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client
+    
     - name: Create test config
       run: |
         cat > config.env << EOF
@@ -89,6 +94,11 @@ jobs:
         ADMIN_USER_GROUP=Администратор
         INITIAL_USER_GROUP=Корректор
         EOF
+    
+    - name: Setup database schemas
+      run: |
+        PGPASSWORD=postgres psql -h localhost -U postgres -d test_db -c "CREATE SCHEMA IF NOT EXISTS book;"
+        PGPASSWORD=postgres psql -h localhost -U postgres -d test_db -c "CREATE SCHEMA IF NOT EXISTS django;"
     
     - name: Run migrations
       run: |

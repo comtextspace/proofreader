@@ -1,6 +1,6 @@
 name: Test and Deploy to Dev
 
-# This workflow deploys to the DEVELOPMENT environment at $HOME/proofreader-dev
+# This workflow deploys to the DEVELOPMENT environment at /proofreader-dev
 # Production deployment uses /proofreader directory
 
 on:
@@ -185,7 +185,7 @@ jobs:
           # Set deployment path for development
           DEPLOY_PATH="${{ secrets.DEV_DEPLOY_PATH }}"
           if [ -z "$DEPLOY_PATH" ]; then
-            DEPLOY_PATH="$HOME/proofreader-dev"
+            DEPLOY_PATH="/proofreader-dev"
             echo "Using default path: $DEPLOY_PATH"
           else
             echo "Using configured path: $DEPLOY_PATH"

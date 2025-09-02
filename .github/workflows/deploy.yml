@@ -1,5 +1,8 @@
 name: Test and Deploy to Dev
 
+# This workflow deploys to the DEVELOPMENT environment at /proofreader-dev
+# Production deployment uses /proofreader directory
+
 on:
   push:
     branches: [ develop ]
@@ -179,10 +182,10 @@ jobs:
         key: ${{ secrets.DEV_DEPLOY_KEY }}
         port: ${{ secrets.DEV_DEPLOY_PORT || 22 }}
         script: |
-          # Set deployment path
+          # Set deployment path for development
           DEPLOY_PATH="${{ secrets.DEV_DEPLOY_PATH }}"
           if [ -z "$DEPLOY_PATH" ]; then
-            DEPLOY_PATH="/opt/proofreader"
+            DEPLOY_PATH="/proofreader-dev"
           fi
           
           # Check if directory exists, create if not

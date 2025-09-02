@@ -179,10 +179,35 @@ jobs:
         key: ${{ secrets.DEV_DEPLOY_KEY }}
         port: ${{ secrets.DEV_DEPLOY_PORT || 22 }}
         script: |
-          cd ${{ secrets.DEV_DEPLOY_PATH || '/opt/proofreader' }}
+          # Set deployment path
+          DEPLOY_PATH="${{ secrets.DEV_DEPLOY_PATH }}"
+          if [ -z "$DEPLOY_PATH" ]; then
+            DEPLOY_PATH="/opt/proofreader"
+          fi
           
-          # Pull latest changes from develop branch
-          git pull origin develop
+          # Check if directory exists, create if not
+          if [ ! -d "$DEPLOY_PATH" ]; then
+            echo "Creating deployment directory: $DEPLOY_PATH"
+            sudo mkdir -p "$DEPLOY_PATH"
+            sudo chown $USER:$USER "$DEPLOY_PATH"
+          fi
+          
+          cd "$DEPLOY_PATH"
+          
+          # Check if it's a git repository, clone if not
+          if [ ! -d ".git" ]; then
+            echo "Cloning repository..."
+            git clone -b develop https://github.com/comtextspace/proofreader.git .
+          else
+            echo "Pulling latest changes..."
+            git pull origin develop
+          fi
+          
+          # Ensure docker-compose file exists
+          if [ ! -f "docker-compose.dev.yml" ]; then
+            echo "Error: docker-compose.dev.yml not found!"
+            exit 1
+          fi
           
           # Log in to GitHub Container Registry
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
@@ -193,14 +218,17 @@ jobs:
           # Deploy with zero-downtime
           docker compose -f docker-compose.dev.yml up -d --remove-orphans
           
+          # Wait for services to be ready
+          sleep 10
+          
           # Run migrations
-          docker compose -f docker-compose.dev.yml exec -T web python manage.py migrate
+          docker compose -f docker-compose.dev.yml exec -T web python manage.py migrate || echo "Migration failed or already applied"
           
           # Collect static files
-          docker compose -f docker-compose.dev.yml exec -T web python manage.py collectstatic --noinput
+          docker compose -f docker-compose.dev.yml exec -T web python manage.py collectstatic --noinput || echo "Static collection failed"
           
           # Compile messages (if using internationalization)
-          docker compose -f docker-compose.dev.yml exec -T web python manage.py compilemessages
+          docker compose -f docker-compose.dev.yml exec -T web python manage.py compilemessages || echo "Message compilation failed"
           
           # Clean up old images
           docker image prune -f

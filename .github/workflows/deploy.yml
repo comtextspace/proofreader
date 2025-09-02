@@ -1,0 +1,186 @@
+name: Test and Deploy to Dev
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:6.2
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+      
+      rabbitmq:
+        image: rabbitmq:3
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5672:5672
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v3
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+    
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+    
+    - name: Install project
+      run: poetry install --no-interaction
+    
+    - name: Create test config
+      run: |
+        cat > config.env << EOF
+        DEBUG=True
+        DATABASE_URL=postgres://postgres:postgres@localhost:5432/test_db
+        REDIS_URL=redis://localhost:6379/1
+        CELERY_BROKER_URL=amqp://guest:guest@localhost:5672/
+        CELERY_TASK_ALWAYS_EAGER=True
+        SECRET_KEY=test-secret-key-for-ci
+        ADMIN_USER_GROUP=Администратор
+        INITIAL_USER_GROUP=Корректор
+        EOF
+    
+    - name: Run migrations
+      run: |
+        poetry run python manage.py migrate
+        poetry run python manage.py collectstatic --noinput
+    
+    - name: Run tests
+      run: |
+        poetry run python manage.py test
+    
+    - name: Run linting
+      run: |
+        poetry run flake8 .
+        poetry run black --check .
+        poetry run isort --check-only .
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    needs: [test, build-and-push]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - name: Deploy to dev server
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.DEV_DEPLOY_HOST }}
+        username: ${{ secrets.DEV_DEPLOY_USER }}
+        key: ${{ secrets.DEV_DEPLOY_KEY }}
+        port: ${{ secrets.DEV_DEPLOY_PORT || 22 }}
+        script: |
+          cd ${{ secrets.DEV_DEPLOY_PATH || '/opt/proofreader' }}
+          
+          # Pull latest changes from develop branch
+          git pull origin develop
+          
+          # Log in to GitHub Container Registry
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          
+          # Pull latest images
+          docker compose -f docker-compose.dev.yml pull
+          
+          # Deploy with zero-downtime
+          docker compose -f docker-compose.dev.yml up -d --remove-orphans
+          
+          # Run migrations
+          docker compose -f docker-compose.dev.yml exec -T web python manage.py migrate
+          
+          # Collect static files
+          docker compose -f docker-compose.dev.yml exec -T web python manage.py collectstatic --noinput
+          
+          # Compile messages (if using internationalization)
+          docker compose -f docker-compose.dev.yml exec -T web python manage.py compilemessages
+          
+          # Clean up old images
+          docker image prune -f
+          
+          echo "Dev deployment completed successfully!"

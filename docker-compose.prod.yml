@@ -1,8 +1,10 @@
 version: '3.7'
 
+name: proofreader-prod
+
 services:
   web:
-    build: .
+    image: ghcr.io/comtextspace/proofreader:latest
     command: gunicorn proofreader.wsgi:application --bind 0.0.0.0:8000 --workers 3
     environment:
       - SENTRY_DSN=https://068d46f1d057c6dc3154519ab00a82ed@o4506100246708224.ingest.sentry.io/4506100248608768
@@ -91,7 +93,8 @@ services:
 
 volumes:
   project-media:
-    name: project-media
+    name: proofreader-prod-media
   project-static:
-    name: project-static
+    name: proofreader-prod-static
   redis_data:
+    name: proofreader-prod-redis

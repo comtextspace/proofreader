@@ -9,3 +9,6 @@ data
 .DS_Store
 /staticfiles
 /rabbitmq_data
+
+# Warp AI configuration
+WARP.md

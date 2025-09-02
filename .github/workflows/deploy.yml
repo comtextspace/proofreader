@@ -186,16 +186,28 @@ jobs:
           DEPLOY_PATH="${{ secrets.DEV_DEPLOY_PATH }}"
           if [ -z "$DEPLOY_PATH" ]; then
             DEPLOY_PATH="/proofreader-dev"
+            echo "Using default path: $DEPLOY_PATH"
+          else
+            echo "Using configured path: $DEPLOY_PATH"
           fi
           
           # Check if directory exists, create if not
           if [ ! -d "$DEPLOY_PATH" ]; then
-            echo "Creating deployment directory: $DEPLOY_PATH"
-            sudo mkdir -p "$DEPLOY_PATH"
-            sudo chown $USER:$USER "$DEPLOY_PATH"
+            echo "Directory $DEPLOY_PATH does not exist. Creating it..."
+            mkdir -p "$DEPLOY_PATH"
+            if [ $? -eq 0 ]; then
+              echo "Successfully created directory: $DEPLOY_PATH"
+            else
+              echo "Failed to create directory. Trying with sudo..."
+              sudo mkdir -p "$DEPLOY_PATH"
+              sudo chown $USER:$USER "$DEPLOY_PATH"
+            fi
+          else
+            echo "Directory $DEPLOY_PATH already exists"
           fi
           
           cd "$DEPLOY_PATH"
+          echo "Changed to directory: $(pwd)"
           
           # Check if it's a git repository, clone if not
           if [ ! -d ".git" ]; then

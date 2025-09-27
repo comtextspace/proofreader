@@ -288,11 +288,12 @@ body.dark-mode {
 
 /* Metadata Panel */
 .metadata-panel {
-    background: white;
+    background: var(--card-bg);
     border-radius: var(--border-radius);
     padding: 1.5rem;
     margin: 1rem 0;
     box-shadow: var(--shadow-sm);
+    color: var(--text-color);
 }
 
 .metadata-grid {
@@ -308,14 +309,14 @@ body.dark-mode {
 
 .metadata-label {
     font-size: 0.875rem;
-    color: #6c757d;
+    color: var(--text-muted);
     margin-bottom: 0.25rem;
     font-weight: 500;
 }
 
 .metadata-value {
     font-size: 1rem;
-    color: #212529;
+    color: var(--text-color);
     font-weight: 600;
 }
 
@@ -545,4 +546,34 @@ textarea:focus {
 .submit-row input[type="submit"]:hover {
     background: var(--primary-hover) !important;
     transform: translateY(-1px) !important;
+}
+
+/* Style Django admin result tables */
+.results,
+table.results {
+    background: var(--card-bg) !important;
+    color: var(--text-color) !important;
+}
+
+.results th,
+.results td,
+table.results th,
+table.results td {
+    background: transparent !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Style any white info boxes */
+.module,
+fieldset {
+    background: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+.module h2,
+fieldset h2 {
+    background: var(--toolbar-bg) !important;
+    color: var(--text-color) !important;
 }

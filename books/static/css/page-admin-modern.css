@@ -379,32 +379,45 @@ body.dark-mode {
 /* Keyboard Shortcuts Panel */
 .shortcuts-panel {
     position: fixed;
-    bottom: 1rem;
+    bottom: 8rem;
     right: 1rem;
-    background: white;
+    background: var(--card-bg);
+    color: var(--text-color);
     border-radius: var(--border-radius);
-    padding: 1rem;
-    box-shadow: var(--shadow-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
     max-width: 300px;
     display: none;
+    z-index: 9999;
 }
 
 .shortcuts-panel.active {
     display: block;
 }
 
+.shortcuts-panel h4 {
+    margin: 0 0 1rem 0;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
 .shortcut-item {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-muted);
 }
 
 .shortcut-key {
-    background: var(--light-bg);
+    background: var(--toolbar-bg);
+    color: var(--text-color);
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
     font-family: monospace;
     font-size: 0.875rem;
+    font-weight: 600;
+    border: 1px solid var(--border-color);
 }
 
 /* Responsive Design */

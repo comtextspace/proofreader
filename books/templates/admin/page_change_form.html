@@ -102,8 +102,20 @@
                 <span class="metadata-value">{{ original.number }} / {{ original.book.total_pages_in_pdf|default:"N/A" }}</span>
             </div>
             <div class="metadata-item">
+                <span class="metadata-label">{% trans "Номер в книге" %}</span>
+                <span class="metadata-value">
+                    <div id="number-in-book-container" style="display: inline-block;">
+                        <!-- number_in_book field will be moved here -->
+                    </div>
+                </span>
+            </div>
+            <div class="metadata-item">
                 <span class="metadata-label">{% trans "Статус" %}</span>
-                <span class="status-badge {{ original.status|lower|cut:"_" }}">{{ original.get_status_display }}</span>
+                <span class="metadata-value">
+                    <div id="status-container" style="display: inline-block;">
+                        <!-- status field will be moved here -->
+                    </div>
+                </span>
             </div>
             <div class="metadata-item">
                 <span class="metadata-label">{% trans "Последнее изменение" %}</span>

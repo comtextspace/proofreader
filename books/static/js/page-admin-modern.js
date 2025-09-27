@@ -150,15 +150,34 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // Move number_in_book field to metadata panel
+        const numberInBookField = document.querySelector('.field-number_in_book');
+        const numberInBookContainer = document.getElementById('number-in-book-container');
+        if (numberInBookField && numberInBookContainer) {
+            const input = numberInBookField.querySelector('input');
+            if (input) {
+                input.style.width = '80px';
+                numberInBookContainer.appendChild(input);
+            }
+        }
+
+        // Move status field to metadata panel
+        const statusField = document.querySelector('.field-status');
+        const statusContainer = document.getElementById('status-container');
+        if (statusField && statusContainer) {
+            const select = statusField.querySelector('select');
+            if (select) {
+                select.style.width = '150px';
+                statusContainer.appendChild(select);
+            }
+        }
+
         // Hide original form structure
         const originalForm = document.getElementById('original-form');
         if (originalForm) {
-            // Move any remaining important fields to appropriate sections
-            const statusField = originalForm.querySelector('.field-status');
-            if (statusField) {
-                // Status is already shown in metadata panel
-                statusField.style.display = 'none';
-            }
+            // Fields have been moved, hide their original containers
+            if (statusField) statusField.style.display = 'none';
+            if (numberInBookField) numberInBookField.style.display = 'none';
         }
     }
 

@@ -334,6 +334,26 @@ body.dark-mode {
     font-weight: 600;
 }
 
+/* Form inputs in metadata panel */
+.metadata-panel input[type="number"],
+.metadata-panel select {
+    background: var(--textarea-bg);
+    color: var(--textarea-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.875rem;
+    font-weight: normal;
+    transition: var(--transition);
+}
+
+.metadata-panel input[type="number"]:focus,
+.metadata-panel select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
 /* Book link in metadata */
 .book-link {
     color: var(--primary-color);

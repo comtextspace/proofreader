@@ -22,7 +22,7 @@
 
 {% block content %}
     <!-- Top Controls -->
-    <div style="position: absolute; top: 8rem; right: 3rem; display: flex; gap: 1rem; z-index: 100;">
+    <div style="position: absolute; top: 6rem; right: 3rem; display: flex; gap: 1rem; z-index: 100;">
         <!-- History Button -->
         {% if change and original %}
             <a href="{% url 'admin:books_page_history' original.pk %}" class="btn-modern btn-sm">

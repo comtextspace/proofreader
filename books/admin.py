@@ -265,6 +265,14 @@ class PageAdmin(CustomHistoryAdmin):
             next_page = Page.objects.filter(book=current_page.book, number=current_page.number + 1).last()
             return redirect(reverse("admin:books_page_change", args=(next_page.id,)))
 
+        # Add custom title with page information
+        extra_context = extra_context or {}
+        if object_id and current_page:
+            page_info = f'{current_page.number}'
+            if current_page.number_in_book:
+                page_info = f'{current_page.number} ({current_page.number_in_book})'
+            extra_context['title'] = f'Изменить Страницу: {current_page.book.name} - Страница {page_info}'
+
         return super().changeform_view(request, object_id, form_url, extra_context)  # noqa
 
     @admin.display(description=_('Размер текста'))

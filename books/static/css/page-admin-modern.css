@@ -14,6 +14,22 @@ body {
     overflow: hidden !important;
 }
 
+/* Hide the default Django admin h2 title and object name */
+#content > h2 {
+    display: none !important;
+}
+
+/* Also hide any h2 that appears to be the object representation */
+h2:has(+ .page-editor-container),
+h2:has(+ div > .page-editor-container) {
+    display: none !important;
+}
+
+/* Remove h1 margin in admin header */
+#content h1 {
+    margin-bottom: 0 !important;
+}
+
 /* Use Django Admin default colors - inherit from parent */
 :root {
     /* Django admin default colors */
@@ -99,7 +115,7 @@ body.dark-mode {
     padding: 1.5rem;
     background: transparent;
     border-radius: var(--border-radius);
-    margin: 1rem 0;
+    margin: 0 0 1rem 0;
 }
 
 /* Card Style Sections */

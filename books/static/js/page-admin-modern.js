@@ -16,13 +16,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const body = document.body;
         const root = document.documentElement;
 
-        // Check for saved theme preference or default to system preference
+        // Check for saved theme preference or default to light mode
         const savedTheme = localStorage.getItem('page-editor-theme');
-        const systemDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-        // Apply saved theme or system preference
-        if (savedTheme === 'dark' || (!savedTheme && systemDarkMode)) {
+        // Only enable dark mode if explicitly saved as 'dark'
+        if (savedTheme === 'dark') {
             enableDarkMode();
+        } else {
+            // Ensure light mode is properly set
+            disableDarkMode();
         }
 
         // Toggle theme on button click
@@ -119,16 +121,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (!localStorage.getItem('page-editor-theme')) {
-                if (e.matches) {
-                    enableDarkMode();
-                } else {
-                    disableDarkMode();
-                }
-            }
-        });
+        // Remove automatic system theme detection to prevent unwanted dark mode
+        // Users must explicitly toggle dark mode using the button
     }
 
     // Reorganize Django form elements into modern layout

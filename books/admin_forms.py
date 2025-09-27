@@ -8,7 +8,15 @@ from books.models import Page
 
 class PageAdminForm(forms.ModelForm):
     text = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'resizeable-textarea', 'rows': 60, 'cols': 90}),
+        widget=forms.Textarea(
+            attrs={
+                'class': 'modern-textarea resizeable-textarea',
+                'rows': 35,
+                'cols': 90,
+                'placeholder': 'Введите текст страницы...',
+                'spellcheck': 'true',
+            }
+        ),
         label='Text',
         strip=False,
         required=False,
@@ -16,7 +24,19 @@ class PageAdminForm(forms.ModelForm):
 
     text_size = forms.IntegerField(
         label='Text Size (px)',
-        widget=forms.NumberInput(attrs={'id': 'text-size-input'}),
+        widget=forms.NumberInput(
+            attrs={
+                'id': 'text-size-input',
+                'class': 'form-control',
+                'min': '10',
+                'max': '30',
+            }
+        ),
+    )
+
+    status = forms.ChoiceField(
+        widget=forms.Select(attrs={'class': 'form-control status-select'}),
+        required=True,
     )
 
     class Meta:
@@ -25,20 +45,30 @@ class PageAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # if not self.request.user.is_superuser:
-        self.filter_statuses_according_to_user_permissions(self.request)
+        # Access request from class attribute
+        if hasattr(self.__class__, 'request'):
+            self.filter_statuses_according_to_user_permissions(self.__class__.request)
 
     def filter_statuses_according_to_user_permissions(self, request):
         # set status dropdown values according to user permission group
+        if not request or not hasattr(request, 'user'):
+            # Fallback to all statuses if no request
+            self.fields['status'].choices = Page.Status.choices
+            return
+
         statuses = (
             PageStatus.objects.filter(permission_groups__in=request.user.groups.all())
             .distinct()
             .values_list('status', flat=True)
         )
 
-        self.fields['status'].choices = [
-            status_tuple for status_tuple in Page.Status.choices if status_tuple[0] in statuses
-        ]
+        if statuses:
+            self.fields['status'].choices = [
+                status_tuple for status_tuple in Page.Status.choices if status_tuple[0] in statuses
+            ]
+        else:
+            # If no statuses found for user's groups, show all statuses
+            self.fields['status'].choices = Page.Status.choices
 
 
 class ActionValueForm(ActionForm):

@@ -6,6 +6,7 @@
     {{ block.super }}
     <!-- Static files for custom styles -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/reader.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/page-admin-modern.css' %}">
     <script type="text/javascript" src="{% static 'js/ckeditor5.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'css/ckeditor5-dark.css' %}">
 
@@ -14,30 +15,164 @@
 
     <!-- External stylesheet for viewer.js -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>const disableCKEditor = '{% trans "Отключить редактор" %}', enableCKEditor = '{% trans "Включить редактор" %}';</script>
 {% endblock %}
 
 {% block content %}
-    <!-- Custom button for text formatting -->
-    <button type="button" id="correctTextButton">{% trans "Улучшить форматирование" %}</button>
-    <button type="button" id="enableCKEditor">{% trans "Включить редактор" %}</button>
+    <!-- Dark Mode Toggle -->
+    <button class="theme-toggle" id="theme-toggle" title="Toggle Dark Mode">
+        <i class="fas fa-moon" id="theme-icon"></i>
+    </button>
 
-    <!-- Default admin form content -->
-    {{ block.super }}
+    <!-- Metadata Panel -->
+    <div class="metadata-panel">
+        <div class="metadata-grid">
+            <div class="metadata-item">
+                <span class="metadata-label">{% trans "Книга" %}</span>
+                <span class="metadata-value">{{ original.book.name }}</span>
+            </div>
+            <div class="metadata-item">
+                <span class="metadata-label">{% trans "Страница" %}</span>
+                <span class="metadata-value">{{ original.number }} / {{ original.book.total_pages_in_pdf|default:"N/A" }}</span>
+            </div>
+            <div class="metadata-item">
+                <span class="metadata-label">{% trans "Статус" %}</span>
+                <span class="status-badge {{ original.status|lower|cut:"_" }}">{{ original.get_status_display }}</span>
+            </div>
+            <div class="metadata-item">
+                <span class="metadata-label">{% trans "Последнее изменение" %}</span>
+                <span class="metadata-value">{{ original.modified|date:"d.m.Y H:i" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Editor Container -->
+    <div class="page-editor-container">
+        <!-- Text Editor Section -->
+        <div class="editor-card text-editor-section">
+            <div class="editor-card-header">
+                <h3 class="editor-card-title">
+                    <i class="fas fa-edit"></i> {% trans "Редактор текста" %}
+                </h3>
+                <div class="text-size-controls">
+                    <label for="text-size-input">{% trans "Размер текста" %}:</label>
+                    <input type="number" id="text-size-input" value="14" min="10" max="30">
+                </div>
+            </div>
+            <div class="text-editor-toolbar">
+                <button type="button" class="btn-modern btn-sm" id="correctTextButton">
+                    <i class="fas fa-magic"></i> {% trans "Улучшить форматирование" %}
+                </button>
+                <button type="button" class="btn-modern btn-sm" id="enableCKEditor">
+                    <i class="fas fa-code"></i> {% trans "Включить редактор" %}
+                </button>
+                <button type="button" class="btn-modern btn-sm btn-info" id="undoBtn" style="display:none;">
+                    <i class="fas fa-undo"></i> {% trans "Отменить" %}
+                </button>
+                <button type="button" class="btn-modern btn-sm btn-info" id="redoBtn" style="display:none;">
+                    <i class="fas fa-redo"></i> {% trans "Повторить" %}
+                </button>
+            </div>
+            <!-- Django form field will be rendered here -->
+            <div id="text-editor-container">
+                <!-- The actual form fields will be moved here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Image Viewer Section -->
+        <div class="editor-card image-viewer-section">
+            <div class="editor-card-header">
+                <h3 class="editor-card-title">
+                    <i class="fas fa-image"></i> {% trans "Изображение страницы" %}
+                </h3>
+                <div>
+                    <button type="button" class="btn-modern btn-sm" id="zoomInBtn">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button type="button" class="btn-modern btn-sm" id="zoomOutBtn">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <button type="button" class="btn-modern btn-sm" id="fitBtn">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="image-container" id="image-viewer-container">
+                <!-- The page image will be moved here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Default admin form content (hidden, will be reorganized by JS) -->
+    <div id="original-form" style="display: none;">
+        {{ block.super }}
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <button class="fab tooltip" id="shortcuts-fab">
+            <i class="fas fa-keyboard"></i>
+            <span class="tooltiptext">{% trans "Горячие клавиши" %}</span>
+        </button>
+        <button class="fab tooltip" id="save-fab">
+            <i class="fas fa-save"></i>
+            <span class="tooltiptext">{% trans "Сохранить (Ctrl+S)" %}</span>
+        </button>
+    </div>
+
+    <!-- Keyboard Shortcuts Panel -->
+    <div class="shortcuts-panel" id="shortcuts-panel">
+        <h4>{% trans "Горячие клавиши" %}</h4>
+        <div class="shortcut-item">
+            <span>{% trans "Сохранить" %}</span>
+            <span class="shortcut-key">Ctrl+S</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{% trans "Следующая страница" %}</span>
+            <span class="shortcut-key">Alt+→</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{% trans "Предыдущая страница" %}</span>
+            <span class="shortcut-key">Alt+←</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{% trans "Увеличить" %}</span>
+            <span class="shortcut-key">Ctrl++</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{% trans "Уменьшить" %}</span>
+            <span class="shortcut-key">Ctrl+-</span>
+        </div>
+    </div>
 {% endblock %}
 
 {% block submit_buttons_bottom %}
-    <!-- Save button -->
-    <input type="submit" value="{% trans 'Сохранить' %}" class="default" name="_continue">
+    <!-- Modern Navigation Controls -->
+    <div class="navigation-controls">
+        <div class="nav-group">
+            {% if prev_page_exists %}
+                <button type="submit" class="btn-modern" name="back_page">
+                    <i class="fas fa-chevron-left"></i> {% trans 'Предыдущая страница' %}
+                </button>
+            {% endif %}
+        </div>
 
-    <!-- Navigation buttons for multi-page forms -->
-    {% if prev_page_exists %}
-        <input type="submit" value="{% trans '<- Предыдущая страница' %}" class="default" name="back_page">
-    {% endif %}
-    {% if next_page_exists %}
-        <input type="submit" value="{% trans 'Следующая страница ->' %}" class="default" name="next_page">
-        <input type="submit" value="{% trans 'Сохранить и перейти к следующей странице ->' %}" class="default" name="_save">
-    {% endif %}
+        <div class="nav-group">
+            <button type="submit" class="btn-modern btn-success" name="_continue">
+                <i class="fas fa-save"></i> {% trans 'Сохранить' %}
+            </button>
+            {% if next_page_exists %}
+                <button type="submit" class="btn-modern btn-info" name="next_page">
+                    {% trans 'Следующая страница' %} <i class="fas fa-chevron-right"></i>
+                </button>
+                <button type="submit" class="btn-modern btn-success" name="_save">
+                    <i class="fas fa-save"></i> {% trans 'Сохранить и далее' %} <i class="fas fa-chevron-right"></i>
+                </button>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
 
 {% block admin_change_form_document_ready %}
@@ -51,4 +186,5 @@
     <script type="text/javascript" src="{% static 'js/zoom_picture_overlay.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/resize_textarea.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/page-admin-modern.js' %}"></script>
 {% endblock %}

@@ -8,7 +8,15 @@ from books.models import Page
 
 class PageAdminForm(forms.ModelForm):
     text = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'resizeable-textarea', 'rows': 60, 'cols': 90}),
+        widget=forms.Textarea(
+            attrs={
+                'class': 'modern-textarea resizeable-textarea',
+                'rows': 35,
+                'cols': 90,
+                'placeholder': 'Введите текст страницы...',
+                'spellcheck': 'true',
+            }
+        ),
         label='Text',
         strip=False,
         required=False,
@@ -16,7 +24,19 @@ class PageAdminForm(forms.ModelForm):
 
     text_size = forms.IntegerField(
         label='Text Size (px)',
-        widget=forms.NumberInput(attrs={'id': 'text-size-input'}),
+        widget=forms.NumberInput(
+            attrs={
+                'id': 'text-size-input',
+                'class': 'form-control',
+                'min': '10',
+                'max': '30',
+            }
+        ),
+    )
+
+    status = forms.ChoiceField(
+        widget=forms.Select(attrs={'class': 'form-control status-select'}),
+        required=True,
     )
 
     class Meta:

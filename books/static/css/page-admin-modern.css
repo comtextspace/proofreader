@@ -162,19 +162,30 @@ body.dark-mode {
 }
 
 /* Enhanced Textarea */
-.modern-textarea {
+/* Text editor container */
+#text-editor-container {
+    flex: 1;
+    display: flex;
+    height: calc(100% - 60px); /* Subtract header height */
     width: 100%;
-    min-height: 600px;
+}
+
+.modern-textarea,
+#text-editor-container textarea {
+    width: 100% !important;
+    height: 100% !important;
     padding: 1rem;
     border: 1px solid var(--border-color);
     border-radius: 0 0 var(--border-radius) var(--border-radius);
     font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
     font-size: 14px;
     line-height: 1.6;
-    resize: vertical;
+    resize: none;
     transition: var(--transition);
     background: var(--textarea-bg) !important;
     color: var(--textarea-color) !important;
+    box-sizing: border-box;
+    margin: 0;
 }
 
 .modern-textarea:focus {

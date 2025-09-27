@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeKeyboardShortcuts();
     initializeFloatingButtons();
     initializeUndoRedo();
+    initializeFormButtons();
 
     // Dark Mode Functionality
     function initializeDarkMode() {
@@ -357,12 +358,7 @@ document.addEventListener('DOMContentLoaded', function() {
             shortcutsPanel?.classList.toggle('active');
         });
 
-        // Save FAB
-        const saveFab = document.getElementById('save-fab');
-        saveFab?.addEventListener('click', () => {
-            const saveButton = document.querySelector('button[name="_continue"]');
-            if (saveButton) saveButton.click();
-        });
+        // Note: Save functionality is now handled directly by the form submit button with name="_continue"
     }
 
     // Undo/Redo Functionality
@@ -479,6 +475,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Initial button state
         updateUndoRedoButtons();
+    }
+
+    // Initialize Form Buttons
+    function initializeFormButtons() {
+        // Find the Django admin form
+        const form = document.querySelector('#page_form') || document.querySelector('#changelist-form') || document.querySelector('form[method="post"]');
+
+        if (!form) {
+            console.warn('Form not found, buttons may not work');
+            return;
+        }
+
+        // Add click handlers to ensure form submission
+        document.querySelectorAll('.fab-container button[type="submit"]').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault(); // Prevent default to handle submission manually
+
+                console.log('Submitting with button:', this.name);
+
+                // Create a hidden input with the button name
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = this.name;
+                hiddenInput.value = this.value || '1';
+
+                // Add the hidden input to the form
+                form.appendChild(hiddenInput);
+
+                // Submit the form
+                form.submit();
+            });
+        });
     }
 
     // Helper Functions

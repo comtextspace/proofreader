@@ -124,21 +124,43 @@
         </div>
     </div>
 
-    <!-- Default admin form content (hidden, will be reorganized by JS) -->
-    <div id="original-form" style="display: none;">
-        {{ block.super }}
-    </div>
-
-    <!-- Floating Action Buttons -->
+    <!-- Floating Action Buttons (moved before original-form to be inside the form) -->
     <div class="fab-container">
-        <button class="fab tooltip" id="shortcuts-fab">
+        <!-- Navigation buttons -->
+        {% if prev_page_exists %}
+            <button type="submit" class="fab tooltip" name="back_page">
+                <i class="fas fa-chevron-left"></i>
+                <span class="tooltiptext">{% trans 'Предыдущая страница' %}</span>
+            </button>
+        {% endif %}
+
+        <button type="submit" class="fab tooltip fab-save-page" name="_continue">
+            <i class="fas fa-save"></i>
+            <span class="tooltiptext">{% trans 'Сохранить' %}</span>
+        </button>
+
+        {% if next_page_exists %}
+            <button type="submit" class="fab tooltip" name="next_page">
+                <i class="fas fa-chevron-right"></i>
+                <span class="tooltiptext">{% trans 'Следующая страница' %}</span>
+            </button>
+
+            <button type="submit" class="fab tooltip fab-save-next" name="_save">
+                <i class="fas fa-save"></i><i class="fas fa-chevron-right"></i>
+                <span class="tooltiptext">{% trans 'Сохранить и далее' %}</span>
+            </button>
+        {% endif %}
+
+        <!-- Hotkeys button -->
+        <button type="button" class="fab tooltip" id="shortcuts-fab">
             <i class="fas fa-keyboard"></i>
             <span class="tooltiptext">{% trans "Горячие клавиши" %}</span>
         </button>
-        <button class="fab tooltip" id="save-fab">
-            <i class="fas fa-save"></i>
-            <span class="tooltiptext">{% trans "Сохранить (Ctrl+S)" %}</span>
-        </button>
+    </div>
+
+    <!-- Default admin form content (hidden, will be reorganized by JS) -->
+    <div id="original-form" style="display: none;">
+        {{ block.super }}
     </div>
 
     <!-- Keyboard Shortcuts Panel -->
@@ -168,30 +190,7 @@
 {% endblock %}
 
 {% block submit_buttons_bottom %}
-    <!-- Modern Navigation Controls -->
-    <div class="navigation-controls">
-        <div class="nav-group">
-            {% if prev_page_exists %}
-                <button type="submit" class="btn-modern" name="back_page">
-                    <i class="fas fa-chevron-left"></i> {% trans 'Предыдущая страница' %}
-                </button>
-            {% endif %}
-        </div>
-
-        <div class="nav-group">
-            <button type="submit" class="btn-modern btn-success" name="_continue">
-                <i class="fas fa-save"></i> {% trans 'Сохранить' %}
-            </button>
-            {% if next_page_exists %}
-                <button type="submit" class="btn-modern btn-info" name="next_page">
-                    {% trans 'Следующая страница' %} <i class="fas fa-chevron-right"></i>
-                </button>
-                <button type="submit" class="btn-modern btn-success" name="_save">
-                    <i class="fas fa-save"></i> {% trans 'Сохранить и далее' %} <i class="fas fa-chevron-right"></i>
-                </button>
-            {% endif %}
-        </div>
-    </div>
+    <!-- Navigation buttons moved to main content area for visibility -->
 {% endblock %}
 
 {% block admin_change_form_document_ready %}

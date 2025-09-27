@@ -26,28 +26,6 @@
         <i class="fas fa-moon" id="theme-icon"></i>
     </button>
 
-    <!-- Metadata Panel -->
-    <div class="metadata-panel">
-        <div class="metadata-grid">
-            <div class="metadata-item">
-                <span class="metadata-label">{% trans "Книга" %}</span>
-                <span class="metadata-value">{{ original.book.name }}</span>
-            </div>
-            <div class="metadata-item">
-                <span class="metadata-label">{% trans "Страница" %}</span>
-                <span class="metadata-value">{{ original.number }} / {{ original.book.total_pages_in_pdf|default:"N/A" }}</span>
-            </div>
-            <div class="metadata-item">
-                <span class="metadata-label">{% trans "Статус" %}</span>
-                <span class="status-badge {{ original.status|lower|cut:"_" }}">{{ original.get_status_display }}</span>
-            </div>
-            <div class="metadata-item">
-                <span class="metadata-label">{% trans "Последнее изменение" %}</span>
-                <span class="metadata-value">{{ original.modified|date:"d.m.Y H:i" }}</span>
-            </div>
-        </div>
-    </div>
-
     <!-- Main Editor Container -->
     <div class="page-editor-container">
         <!-- Text Editor Section -->
@@ -56,25 +34,28 @@
                 <h3 class="editor-card-title">
                     <i class="fas fa-edit"></i> {% trans "Редактор текста" %}
                 </h3>
-                <div class="text-size-controls">
-                    <label for="text-size-input">{% trans "Размер текста" %}:</label>
-                    <input type="number" id="text-size-input" value="14" min="10" max="30">
+                <div class="editor-controls">
+                    <div class="text-size-controls">
+                        <label for="text-size-input">{% trans "Размер" %}:</label>
+                        <input type="number" id="text-size-input" value="14" min="10" max="30">
+                    </div>
+                    <div class="editor-buttons">
+                        <button type="button" class="btn-icon" id="correctTextButton" title="{% trans 'Улучшить форматирование' %}">
+                            <i class="fas fa-magic"></i>
+                        </button>
+                        <button type="button" class="btn-icon" id="enableCKEditor" title="{% trans 'Включить редактор' %}">
+                            <i class="fas fa-code"></i>
+                        </button>
+                        <button type="button" class="btn-icon" id="undoBtn" title="{% trans 'Отменить (Ctrl+Z)' %}">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <button type="button" class="btn-icon" id="redoBtn" title="{% trans 'Повторить (Ctrl+Y)' %}">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="text-editor-toolbar">
-                <button type="button" class="btn-modern btn-sm" id="correctTextButton">
-                    <i class="fas fa-magic"></i> {% trans "Улучшить форматирование" %}
-                </button>
-                <button type="button" class="btn-modern btn-sm" id="enableCKEditor">
-                    <i class="fas fa-code"></i> {% trans "Включить редактор" %}
-                </button>
-                <button type="button" class="btn-modern btn-sm btn-info" id="undoBtn" style="display:none;">
-                    <i class="fas fa-undo"></i> {% trans "Отменить" %}
-                </button>
-                <button type="button" class="btn-modern btn-sm btn-info" id="redoBtn" style="display:none;">
-                    <i class="fas fa-redo"></i> {% trans "Повторить" %}
-                </button>
-            </div>
+            <div class="text-editor-toolbar" style="display: none;"></div>
             <!-- Django form field will be rendered here -->
             <div id="text-editor-container">
                 <!-- The actual form fields will be moved here by JavaScript -->
@@ -101,6 +82,32 @@
             </div>
             <div class="image-container" id="image-viewer-container">
                 <!-- The page image will be moved here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Metadata Panel -->
+    <div class="metadata-panel">
+        <div class="metadata-grid">
+            <div class="metadata-item">
+                <span class="metadata-label">{% trans "Книга" %}</span>
+                <span class="metadata-value">
+                    <a href="{% url 'admin:books_book_change' original.book.pk %}" class="book-link">
+                        {{ original.book.name }}
+                    </a>
+                </span>
+            </div>
+            <div class="metadata-item">
+                <span class="metadata-label">{% trans "Страница" %}</span>
+                <span class="metadata-value">{{ original.number }} / {{ original.book.total_pages_in_pdf|default:"N/A" }}</span>
+            </div>
+            <div class="metadata-item">
+                <span class="metadata-label">{% trans "Статус" %}</span>
+                <span class="status-badge {{ original.status|lower|cut:"_" }}">{{ original.get_status_display }}</span>
+            </div>
+            <div class="metadata-item">
+                <span class="metadata-label">{% trans "Последнее изменение" %}</span>
+                <span class="metadata-value">{{ original.modified|date:"d.m.Y H:i" }}</span>
             </div>
         </div>
     </div>

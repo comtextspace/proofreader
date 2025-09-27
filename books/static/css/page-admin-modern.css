@@ -111,6 +111,20 @@ body.dark-mode {
     border-bottom: 2px solid var(--border-color);
 }
 
+/* Editor controls container */
+.editor-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Editor buttons group */
+.editor-buttons {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
 .editor-card-title {
     font-size: 1.25rem;
     font-weight: 600;
@@ -320,6 +334,24 @@ body.dark-mode {
     font-weight: 600;
 }
 
+/* Book link in metadata */
+.book-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition);
+    border-bottom: 1px solid transparent;
+}
+
+.book-link:hover {
+    color: var(--primary-hover);
+    border-bottom-color: var(--primary-hover);
+    text-decoration: none;
+}
+
+.book-link:visited {
+    color: var(--primary-color);
+}
+
 /* Toolbar Icons */
 .toolbar-icon {
     width: 1.25rem;
@@ -444,25 +476,105 @@ textarea:focus {
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
+/* Icon-only buttons - match zoom button style */
+.btn-icon {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 2rem;
+}
+
+.btn-icon:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-icon:active {
+    transform: translateY(0);
+}
+
+.btn-icon:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-icon i {
+    font-size: 0.875rem;
+    pointer-events: none;
+}
+
+/* Tooltip on hover */
+.btn-icon[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 5px;
+    padding: 5px 10px;
+    background-color: #333;
+    color: white;
+    font-size: 12px;
+    white-space: nowrap;
+    border-radius: 4px;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.btn-icon[title]:hover::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 0;
+    border: 5px solid transparent;
+    border-top-color: #333;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* All editor buttons use same style */
+.btn-icon {
+    background: var(--primary-color);
+}
+
+.btn-icon:hover:not(:disabled) {
+    background: var(--primary-hover);
+}
+
 /* Text Size Controls */
 .text-size-controls {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem;
-    background: var(--light-bg);
-    border-radius: var(--border-radius);
 }
 
 .text-size-controls label {
     font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--text-muted);
 }
 
 .text-size-controls input[type="number"] {
-    width: 80px;
-    padding: 0.375rem 0.75rem;
+    width: 60px;
+    padding: 0.375rem 0.5rem;
     border: 1px solid var(--border-color);
     border-radius: 0.25rem;
+    font-size: 0.875rem;
+    background: var(--textarea-bg);
+    color: var(--textarea-color);
 }
 
 /* Floating Action Buttons */

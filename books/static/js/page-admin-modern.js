@@ -351,35 +351,65 @@ document.addEventListener('DOMContentLoaded', function() {
         const textarea = document.querySelector('.modern-textarea');
         if (!textarea) return;
 
-        const history = [];
+        let history = [];
         let historyIndex = -1;
+        let isUpdatingFromHistory = false;
+
+        // Initialize with current value
+        if (textarea.value) {
+            history.push(textarea.value);
+            historyIndex = 0;
+        }
 
         // Save state on significant changes
         let saveTimeout;
         textarea.addEventListener('input', function() {
+            // Skip if we're updating from history (undo/redo)
+            if (isUpdatingFromHistory) {
+                isUpdatingFromHistory = false;
+                return;
+            }
+
             clearTimeout(saveTimeout);
             saveTimeout = setTimeout(() => {
+                // Remove any states after current index
                 if (historyIndex < history.length - 1) {
-                    history.splice(historyIndex + 1);
+                    history = history.slice(0, historyIndex + 1);
                 }
-                history.push(textarea.value);
-                historyIndex++;
 
-                // Limit history size
-                if (history.length > 50) {
-                    history.shift();
-                    historyIndex--;
+                // Only add if different from current state
+                const currentValue = textarea.value;
+                if (history.length === 0 || history[history.length - 1] !== currentValue) {
+                    history.push(currentValue);
+                    historyIndex = history.length - 1;
+
+                    // Limit history size
+                    if (history.length > 100) {
+                        history.shift();
+                        historyIndex--;
+                    }
                 }
 
                 updateUndoRedoButtons();
-            }, 500);
+            }, 300);
         });
 
         // Undo
         document.getElementById('undoBtn')?.addEventListener('click', () => {
             if (historyIndex > 0) {
+                // Save current state if it's not in history
+                if (historyIndex === history.length - 1 && textarea.value !== history[historyIndex]) {
+                    history[historyIndex] = textarea.value;
+                }
+
                 historyIndex--;
+                isUpdatingFromHistory = true;
                 textarea.value = history[historyIndex];
+
+                // Trigger change event for any listeners
+                const event = new Event('input', { bubbles: true });
+                textarea.dispatchEvent(event);
+
                 updateUndoRedoButtons();
             }
         });
@@ -388,8 +418,25 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('redoBtn')?.addEventListener('click', () => {
             if (historyIndex < history.length - 1) {
                 historyIndex++;
+                isUpdatingFromHistory = true;
                 textarea.value = history[historyIndex];
+
+                // Trigger change event for any listeners
+                const event = new Event('input', { bubbles: true });
+                textarea.dispatchEvent(event);
+
                 updateUndoRedoButtons();
+            }
+        });
+
+        // Keyboard shortcuts for undo/redo
+        textarea.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('undoBtn')?.click();
+            } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                e.preventDefault();
+                document.getElementById('redoBtn')?.click();
             }
         });
 
@@ -398,18 +445,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const redoBtn = document.getElementById('redoBtn');
 
             if (undoBtn) {
-                undoBtn.style.display = historyIndex > 0 ? 'inline-flex' : 'none';
+                const canUndo = historyIndex > 0;
+                undoBtn.disabled = !canUndo;
+                undoBtn.style.opacity = canUndo ? '1' : '0.4';
+                undoBtn.style.cursor = canUndo ? 'pointer' : 'not-allowed';
             }
             if (redoBtn) {
-                redoBtn.style.display = historyIndex < history.length - 1 ? 'inline-flex' : 'none';
+                const canRedo = historyIndex < history.length - 1;
+                redoBtn.disabled = !canRedo;
+                redoBtn.style.opacity = canRedo ? '1' : '0.4';
+                redoBtn.style.cursor = canRedo ? 'pointer' : 'not-allowed';
             }
         }
 
-        // Initialize with current value
-        if (textarea.value) {
-            history.push(textarea.value);
-            historyIndex = 0;
-        }
+        // Initial button state
+        updateUndoRedoButtons();
     }
 
     // Helper Functions
@@ -484,23 +534,4 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.head.appendChild(style);
 
-    // Progress Indicator
-    const textarea = document.querySelector('.modern-textarea');
-    if (textarea) {
-        const progressIndicator = document.createElement('div');
-        progressIndicator.className = 'progress-indicator';
-        progressIndicator.innerHTML = `
-            <span class="progress-text">Статус: редактирование</span>
-        `;
-
-        const editorCard = document.querySelector('.text-editor-section');
-        if (editorCard) {
-            editorCard.insertBefore(progressIndicator, editorCard.querySelector('.text-editor-toolbar'));
-        }
-
-        // Update progress on changes
-        textarea.addEventListener('input', () => {
-            progressIndicator.querySelector('.progress-text').textContent = 'Статус: изменено';
-        });
-    }
 });

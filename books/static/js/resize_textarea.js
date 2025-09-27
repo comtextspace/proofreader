@@ -11,7 +11,7 @@ function createEditor(initialTextareaWidth, fontSize){
 			writer.setStyle('font-size', fontSize, editor.editing.view.document.getRoot());
 		});
 		window.editor = editor;
-		document.querySelector('#enableCKEditor').innerText = disableCKEditor;
+		document.querySelector('#enableCKEditor').setAttribute('title', disableCKEditor);
 	}).catch(error => {
 		console.error(error);
 	});
@@ -41,12 +41,12 @@ $(document).ready(function(){
 	});
 
 	// createEditor(initialTextareaWidth, fontSize);
-	
+
 	$('#enableCKEditor').on('click', function(){
 		if(window.editor != null){
 			editor.destroy();
 			window.editor = null;
-			$('#enableCKEditor').text(enableCKEditor);
+			$('#enableCKEditor').attr('title', enableCKEditor);
 		}else{
 			createEditor(initialTextareaWidth, fontSize);
 		}

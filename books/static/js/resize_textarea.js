@@ -32,7 +32,7 @@ $(document).ready(function(){
 	});
 
 	$('#correctTextButton').on('click', function(){
-		if(initialTextarea.attr('ClassicEditor') == 'yes'){
+		if(window.editor != null && initialTextarea.attr('ClassicEditor') == 'yes'){
 			editor.setData(correct(editor.getData()));
 		}else{
 			initialTextarea.val(correct(initialTextarea.val()));

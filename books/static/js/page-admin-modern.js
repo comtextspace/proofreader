@@ -128,57 +128,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Reorganize Django form elements into modern layout
     function initializeLayout() {
-        // Move text field to text editor section
-        const textField = document.querySelector('.field-text');
-        const textEditorContainer = document.getElementById('text-editor-container');
-        if (textField && textEditorContainer) {
-            // Extract just the textarea and move it
-            const textarea = textField.querySelector('textarea');
-            if (textarea) {
-                textEditorContainer.appendChild(textarea);
+        // Sync visible fields with hidden form fields
+        syncFormFields();
+    }
+
+    // Sync form fields between visible and hidden forms
+    function syncFormFields() {
+        // Sync text field
+        const visibleText = document.querySelector('#text-editor-container textarea, #text-editor-container [name="text"]');
+        const hiddenText = document.querySelector('#original-form [name="text"]');
+
+        if (visibleText && hiddenText && visibleText !== hiddenText) {
+            // Sync initial values
+            if (hiddenText.value && !visibleText.value) {
+                visibleText.value = hiddenText.value;
             }
+
+            // Keep them in sync
+            visibleText.addEventListener('input', function() {
+                hiddenText.value = this.value;
+            });
         }
 
-        // Move image to image viewer section
-        const imageField = document.querySelector('.field-page');
-        const imageViewerContainer = document.getElementById('image-viewer-container');
-        if (imageField && imageViewerContainer) {
-            const image = imageField.querySelector('img');
-            if (image) {
-                image.classList.add('page-image');
-                image.id = 'page-image';
-                imageViewerContainer.appendChild(image);
+        // Sync status field
+        const visibleStatus = document.querySelector('.metadata-panel [name="status"]');
+        const hiddenStatus = document.querySelector('#original-form [name="status"]');
+
+        if (visibleStatus && hiddenStatus && visibleStatus !== hiddenStatus) {
+            // Sync initial values
+            if (hiddenStatus.value) {
+                visibleStatus.value = hiddenStatus.value;
             }
+
+            // Keep them in sync
+            visibleStatus.addEventListener('change', function() {
+                hiddenStatus.value = this.value;
+            });
         }
 
-        // Move number_in_book field to metadata panel
-        const numberInBookField = document.querySelector('.field-number_in_book');
-        const numberInBookContainer = document.getElementById('number-in-book-container');
-        if (numberInBookField && numberInBookContainer) {
-            const input = numberInBookField.querySelector('input');
-            if (input) {
-                input.style.width = '80px';
-                numberInBookContainer.appendChild(input);
-            }
-        }
+        // Sync number_in_book field
+        const visibleNumberInBook = document.querySelector('.metadata-panel [name="number_in_book"]');
+        const hiddenNumberInBook = document.querySelector('#original-form [name="number_in_book"]');
 
-        // Move status field to metadata panel
-        const statusField = document.querySelector('.field-status');
-        const statusContainer = document.getElementById('status-container');
-        if (statusField && statusContainer) {
-            const select = statusField.querySelector('select');
-            if (select) {
-                select.style.width = '150px';
-                statusContainer.appendChild(select);
+        if (visibleNumberInBook && hiddenNumberInBook && visibleNumberInBook !== hiddenNumberInBook) {
+            // Sync initial values
+            if (hiddenNumberInBook.value) {
+                visibleNumberInBook.value = hiddenNumberInBook.value;
             }
-        }
 
-        // Hide original form structure
-        const originalForm = document.getElementById('original-form');
-        if (originalForm) {
-            // Fields have been moved, hide their original containers
-            if (statusField) statusField.style.display = 'none';
-            if (numberInBookField) numberInBookField.style.display = 'none';
+            // Keep them in sync
+            visibleNumberInBook.addEventListener('input', function() {
+                hiddenNumberInBook.value = this.value;
+            });
         }
     }
 
@@ -201,25 +202,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Auto-save draft
-        if (textarea) {
-            let saveTimeout;
-            textarea.addEventListener('input', function() {
-                clearTimeout(saveTimeout);
-                saveTimeout = setTimeout(() => {
-                    localStorage.setItem('page-draft-' + getPageId(), textarea.value);
-                    showNotification('Draft saved', 'info');
-                }, 2000);
-            });
-
-            // Load draft if exists
-            const draft = localStorage.getItem('page-draft-' + getPageId());
-            if (draft && !textarea.value) {
-                if (confirm('Load saved draft?')) {
-                    textarea.value = draft;
-                }
-            }
-        }
 
         // Enhanced text selection
         if (textarea) {
@@ -479,32 +461,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize Form Buttons
     function initializeFormButtons() {
-        // Find the Django admin form
-        const form = document.querySelector('#page_form') || document.querySelector('#changelist-form') || document.querySelector('form[method="post"]');
+        // Make FAB buttons trigger the hidden form buttons
+        document.querySelectorAll('.fab-container button[type="submit"]').forEach(fabButton => {
+            fabButton.addEventListener('click', function(e) {
+                e.preventDefault();
 
-        if (!form) {
-            console.warn('Form not found, buttons may not work');
-            return;
-        }
-
-        // Add click handlers to ensure form submission
-        document.querySelectorAll('.fab-container button[type="submit"]').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault(); // Prevent default to handle submission manually
-
-                console.log('Submitting with button:', this.name);
-
-                // Create a hidden input with the button name
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = this.name;
-                hiddenInput.value = this.value || '1';
-
-                // Add the hidden input to the form
-                form.appendChild(hiddenInput);
-
-                // Submit the form
-                form.submit();
+                // Find the corresponding hidden button
+                const hiddenButton = document.querySelector(`button[name="${this.name}"]:not(.fab)`);
+                if (hiddenButton) {
+                    console.log('Triggering hidden button:', this.name);
+                    hiddenButton.click();
+                } else {
+                    console.warn('Hidden button not found for:', this.name);
+                }
             });
         });
     }

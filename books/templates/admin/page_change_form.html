@@ -56,9 +56,13 @@
                 </div>
             </div>
             <div class="text-editor-toolbar" style="display: none;"></div>
-            <!-- Django form field will be rendered here -->
+            <!-- Text editor with Django form field -->
             <div id="text-editor-container">
-                <!-- The actual form fields will be moved here by JavaScript -->
+                {% for field in adminform.form %}
+                    {% if field.name == "text" %}
+                        {{ field }}
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
 
@@ -81,7 +85,10 @@
                 </div>
             </div>
             <div class="image-container" id="image-viewer-container">
-                <!-- The page image will be moved here by JavaScript -->
+                <!-- Display the page image directly -->
+                {% if original.image %}
+                    <img src="{{ original.image.url }}" class="page-image" id="page-image" alt="Page {{ original.number }}">
+                {% endif %}
             </div>
         </div>
     </div>
@@ -104,17 +111,21 @@
             <div class="metadata-item">
                 <span class="metadata-label">{% trans "Номер в книге" %}</span>
                 <span class="metadata-value">
-                    <div id="number-in-book-container" style="display: inline-block;">
-                        <!-- number_in_book field will be moved here -->
-                    </div>
+                    {% for field in adminform.form %}
+                        {% if field.name == "number_in_book" %}
+                            {{ field }}
+                        {% endif %}
+                    {% endfor %}
                 </span>
             </div>
             <div class="metadata-item">
                 <span class="metadata-label">{% trans "Статус" %}</span>
                 <span class="metadata-value">
-                    <div id="status-container" style="display: inline-block;">
-                        <!-- status field will be moved here -->
-                    </div>
+                    {% for field in adminform.form %}
+                        {% if field.name == "status" %}
+                            {{ field }}
+                        {% endif %}
+                    {% endfor %}
                 </span>
             </div>
             <div class="metadata-item">
@@ -158,8 +169,8 @@
         </button>
     </div>
 
-    <!-- Default admin form content (hidden, will be reorganized by JS) -->
-    <div id="original-form" style="display: none;">
+    <!-- Include all form fields (hidden) to ensure they're submitted -->
+    <div id="original-form" style="position: absolute; left: -9999px; visibility: hidden; height: 0; overflow: hidden;">
         {{ block.super }}
     </div>
 
@@ -190,7 +201,17 @@
 {% endblock %}
 
 {% block submit_buttons_bottom %}
-    <!-- Navigation buttons moved to main content area for visibility -->
+    <!-- Hidden default buttons to allow our FAB buttons to work -->
+    <div style="display: none;">
+        {% if prev_page_exists %}
+            <button type="submit" name="back_page" value="1">Back</button>
+        {% endif %}
+        <button type="submit" name="_continue" value="1">Save</button>
+        {% if next_page_exists %}
+            <button type="submit" name="next_page" value="1">Next</button>
+            <button type="submit" name="_save" value="1">Save and Next</button>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block admin_change_form_document_ready %}

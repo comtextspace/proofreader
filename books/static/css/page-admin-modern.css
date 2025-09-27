@@ -1,5 +1,19 @@
 /* Modern Page Admin Interface Styles */
 
+/* Prevent overflow from hidden elements */
+body {
+    overflow-x: hidden !important;
+}
+
+#original-form {
+    position: fixed !important;
+    top: -9999px !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+}
+
 /* Use Django Admin default colors - inherit from parent */
 :root {
     /* Django admin default colors */

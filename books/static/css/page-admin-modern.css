@@ -30,6 +30,56 @@ h2:has(+ div > .page-editor-container) {
     margin-bottom: 0 !important;
 }
 
+/* Style language switcher */
+#user-tools .language-switcher,
+.language-switcher {
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+#user-tools .language-switcher:hover,
+.language-switcher:hover {
+    opacity: 1;
+}
+
+/* Language flags/icons - circular design */
+.i18n_flag,
+img.i18n_flag {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
+    opacity: 0.85 !important;
+    transition: all 0.3s ease !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+.i18n_flag:hover,
+img.i18n_flag:hover,
+a:hover > .i18n_flag,
+a:hover > img.i18n_flag {
+    opacity: 1 !important;
+    transform: scale(1.15) !important;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Dark mode adjustments for language flags */
+body.dark-mode .i18n_flag,
+body.dark-mode img.i18n_flag {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+body.dark-mode .i18n_flag:hover,
+body.dark-mode img.i18n_flag:hover,
+body.dark-mode a:hover > .i18n_flag,
+body.dark-mode a:hover > img.i18n_flag {
+    border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
 /* Use Django Admin default colors - inherit from parent */
 :root {
     /* Django admin default colors */
@@ -691,32 +741,14 @@ textarea:focus {
     background: var(--primary-hover);
 }
 
-/* Dark Mode Toggle */
-.theme-toggle {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    z-index: 1000;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: var(--shadow-md);
-    transition: var(--transition);
+/* Dark Mode Toggle icon styling */
+#theme-toggle i {
+    font-size: 1rem;
 }
 
-.theme-toggle:hover {
-    transform: scale(1.1);
-}
-
-.theme-toggle i {
-    font-size: 1.25rem;
-    color: var(--text-color);
+/* Hide Django's default theme toggle button */
+.theme-toggle:not(#theme-toggle) {
+    display: none !important;
 }
 
 /* Django Admin Override Adjustments */

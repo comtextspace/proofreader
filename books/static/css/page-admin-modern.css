@@ -476,7 +476,7 @@ textarea:focus {
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Icon-only buttons - match zoom button style */
+/* Icon-only buttons - match zoom button style exactly */
 .btn-icon {
     background: var(--primary-color);
     color: white;
@@ -484,14 +484,12 @@ textarea:focus {
     padding: 0.375rem 0.75rem;
     border-radius: 0.375rem;
     font-size: 0.875rem;
-    font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    min-height: 2rem;
 }
 
 .btn-icon:hover {

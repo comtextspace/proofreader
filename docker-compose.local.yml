@@ -1,0 +1,73 @@
+version: '3.7'
+
+name: proofreader-local
+
+services:
+  celery_worker:
+    build: .
+    command: celery -A taskapp.celery:app worker --loglevel=debug -c 2
+    environment:
+      - LOGLEVEL=DEBUG
+      - DATABASE_URL=db://postgres:postgres@db:5432/postgres
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=amqp://guest:@amqp:5672/
+      - DEBUG=True
+    env_file: ./docker.env
+    volumes:
+      - .:/code
+      - project-media:/code/media
+      - project-static:/code/staticfiles
+    depends_on:
+      - db
+      - amqp
+      - redis
+
+  celery_beat:
+    build: .
+    command: celery -A taskapp.celery:app beat --loglevel=debug
+    environment:
+      - LOGLEVEL=DEBUG
+      - DATABASE_URL=db://postgres:postgres@db:5432/postgres
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=amqp://guest:@amqp:5672/
+      - DEBUG=True
+    env_file: ./docker.env
+    volumes:
+      - .:/code
+    depends_on:
+      - celery_worker
+      - amqp
+      - db
+
+  db:
+    image: postgres:14
+    volumes:
+      - ./conf/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5433:5432"
+
+  amqp:
+    image: rabbitmq:management
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+
+  redis:
+    image: redis:6.2
+    volumes:
+      - redis_data:/data
+    entrypoint: redis-server --appendonly yes
+    restart: always
+    ports:
+      - "6381:6379"
+
+volumes:
+  project-media:
+    name: proofreader-local-media
+  project-static:
+    name: proofreader-local-static
+  redis_data:
+    name: proofreader-local-redis

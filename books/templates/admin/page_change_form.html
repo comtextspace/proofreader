@@ -21,10 +21,20 @@
 {% endblock %}
 
 {% block content %}
-    <!-- Dark Mode Toggle -->
-    <button class="theme-toggle" id="theme-toggle" title="Toggle Dark Mode">
-        <i class="fas fa-moon" id="theme-icon"></i>
-    </button>
+    <!-- Top Controls -->
+    <div style="position: absolute; top: 8rem; right: 3rem; display: flex; gap: 1rem; z-index: 100;">
+        <!-- History Button -->
+        {% if change and original %}
+            <a href="{% url 'admin:books_page_history' original.pk %}" class="btn-modern btn-sm">
+                <i class="fas fa-history"></i> {% trans "История" %}
+            </a>
+        {% endif %}
+
+        <!-- Dark Mode Toggle -->
+        <button class="theme-toggle" id="theme-toggle" title="Toggle Dark Mode">
+            <i class="fas fa-moon" id="theme-icon"></i>
+        </button>
+    </div>
 
     <!-- Main Editor Container -->
     <div class="page-editor-container">

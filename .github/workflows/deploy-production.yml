@@ -138,14 +138,25 @@ jobs:
           # Keep only last 5 backups
           ls -t "$BACKUP_DIR"/backup_*.sql.gz 2>/dev/null | tail -n +6 | xargs -r rm
 
-          echo "Production deployment completed successfully!"
-
           # Health check and service status
           echo "=== Service Status ==="
           docker compose -f docker-compose.prod.yml ps
 
-          # Check if nginx is running, show logs if not
-          if ! docker compose -f docker-compose.prod.yml ps nginx | grep -q "Up"; then
-            echo "=== NGINX NOT RUNNING - Showing logs ==="
-            docker compose -f docker-compose.prod.yml logs nginx --tail=50
+          # Verify all critical services are running
+          FAILED_SERVICES=""
+
+          for service in web nginx celery_worker db redis; do
+            if ! docker compose -f docker-compose.prod.yml ps $service | grep -q "Up"; then
+              echo "❌ ERROR: Service $service is not running!"
+              docker compose -f docker-compose.prod.yml logs $service --tail=50
+              FAILED_SERVICES="$FAILED_SERVICES $service"
+            fi
+          done
+
+          if [ -n "$FAILED_SERVICES" ]; then
+            echo "=== DEPLOYMENT FAILED ==="
+            echo "Failed services:$FAILED_SERVICES"
+            exit 1
           fi
+
+          echo "=== ✅ Production deployment completed successfully! ==="

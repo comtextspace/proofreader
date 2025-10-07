@@ -16,7 +16,7 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:14
@@ -30,7 +30,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      
+
       redis:
         image: redis:6.2
         options: >-
@@ -40,7 +40,7 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
-      
+
       rabbitmq:
         image: rabbitmq:3
         options: >-
@@ -53,38 +53,38 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
-    
+
     - name: Install Poetry
       uses: snok/install-poetry@v1
       with:
         version: latest
         virtualenvs-create: true
         virtualenvs-in-project: true
-    
+
     - name: Load cached venv
       id: cached-poetry-dependencies
       uses: actions/cache@v3
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-    
+
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root
-    
+
     - name: Install project
       run: poetry install --no-interaction
-    
+
     - name: Install PostgreSQL client
       run: |
         sudo apt-get update
         sudo apt-get install -y postgresql-client
-    
+
     - name: Create test config
       run: |
         cat > config.env << EOF
@@ -97,28 +97,28 @@ jobs:
         ADMIN_USER_GROUP=Администратор
         INITIAL_USER_GROUP=Корректор
         EOF
-    
+
     - name: Setup database schemas
       run: |
         PGPASSWORD=postgres psql -h localhost -U postgres -d test_db -c "CREATE SCHEMA IF NOT EXISTS book;"
         PGPASSWORD=postgres psql -h localhost -U postgres -d test_db -c "CREATE SCHEMA IF NOT EXISTS django;"
-    
+
     - name: Run migrations
       run: |
         poetry run python manage.py migrate
         poetry run python manage.py collectstatic --noinput
-    
+
     - name: Run tests
       run: |
         poetry run python manage.py test
-    
+
     - name: Apply linting and formatting
       run: |
         poetry run isort .
         poetry run black .
         # Run flake8 but don't fail the build
         poetry run flake8 . || echo "Flake8 found issues (see above), but continuing..."
-        
+
     - name: Commit linting changes if any
       run: |
         git config --local user.email "action@github.com"
@@ -134,22 +134,22 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
-    
+
     permissions:
       contents: read
       packages: write
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    
+
     - name: Log in to Container Registry
       uses: docker/login-action@v3
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    
+
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v5
@@ -159,7 +159,7 @@ jobs:
           type=ref,event=branch
           type=sha,prefix={{branch}}-
           type=raw,value=latest,enable={{is_default_branch}}
-    
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
@@ -172,7 +172,7 @@ jobs:
     needs: [test, build-and-push]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
-    
+
     steps:
     - name: Deploy to dev server
       uses: appleboy/ssh-action@v1.0.0
@@ -190,7 +190,7 @@ jobs:
           else
             echo "Using configured path: $DEPLOY_PATH"
           fi
-          
+
           # Check if directory exists, create if not
           if [ ! -d "$DEPLOY_PATH" ]; then
             echo "Directory $DEPLOY_PATH does not exist. Creating it..."
@@ -205,10 +205,10 @@ jobs:
           else
             echo "Directory $DEPLOY_PATH already exists"
           fi
-          
+
           cd "$DEPLOY_PATH"
           echo "Changed to directory: $(pwd)"
-          
+
           # Check if it's a git repository, clone if not
           if [ ! -d ".git" ]; then
             echo "Cloning repository..."
@@ -217,35 +217,56 @@ jobs:
             echo "Pulling latest changes..."
             git pull origin develop
           fi
-          
+
           # Ensure docker-compose file exists
           if [ ! -f "docker-compose.dev.yml" ]; then
             echo "Error: docker-compose.dev.yml not found!"
             exit 1
           fi
-          
+
           # Log in to GitHub Container Registry
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-          
+
           # Pull latest images
           docker compose -f docker-compose.dev.yml pull
-          
+
           # Deploy with zero-downtime
           docker compose -f docker-compose.dev.yml up -d --remove-orphans
-          
+
           # Wait for services to be ready
           sleep 10
-          
+
           # Run migrations
           docker compose -f docker-compose.dev.yml exec -T web python manage.py migrate || echo "Migration failed or already applied"
-          
+
           # Collect static files
           docker compose -f docker-compose.dev.yml exec -T web python manage.py collectstatic --noinput || echo "Static collection failed"
-          
+
           # Compile messages (if using internationalization)
           docker compose -f docker-compose.dev.yml exec -T web python manage.py compilemessages || echo "Message compilation failed"
-          
+
           # Clean up old images
           docker image prune -f
-          
-          echo "Dev deployment completed successfully!"
+
+          # Health check and service status
+          echo "=== Service Status ==="
+          docker compose -f docker-compose.dev.yml ps
+
+          # Verify all critical services are running
+          FAILED_SERVICES=""
+
+          for service in web celery_worker db redis amqp; do
+            if ! docker compose -f docker-compose.dev.yml ps $service | grep -q "Up"; then
+              echo "❌ ERROR: Service $service is not running!"
+              docker compose -f docker-compose.dev.yml logs $service --tail=50
+              FAILED_SERVICES="$FAILED_SERVICES $service"
+            fi
+          done
+
+          if [ -n "$FAILED_SERVICES" ]; then
+            echo "=== DEPLOYMENT FAILED ==="
+            echo "Failed services:$FAILED_SERVICES"
+            exit 1
+          fi
+
+          echo "=== ✅ Dev deployment completed successfully! ==="

@@ -12,4 +12,11 @@ exclude =
     .git,
     __pycache__,
     .mypy_cache,
-    **/migrations/**
+    **/migrations/**,
+    .venv,
+    venv,
+    .env,
+    env,
+    build,
+    dist,
+    *.egg-info

@@ -1,0 +1,144 @@
+name: Deploy to Production
+
+# This workflow deploys to the PRODUCTION environment at /root/proofreader
+# Only triggers on pushes to master branch
+# Tests should be run in develop branch before merging to master
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=raw,value=latest
+          type=sha,prefix=prod-
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to production server
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.PROD_DEPLOY_HOST }}
+        username: ${{ secrets.PROD_DEPLOY_USER }}
+        key: ${{ secrets.PROD_DEPLOY_KEY }}
+        port: ${{ secrets.PROD_DEPLOY_PORT || 22 }}
+        script: |
+          # Set deployment path for production
+          DEPLOY_PATH="${{ secrets.PROD_DEPLOY_PATH }}"
+          if [ -z "$DEPLOY_PATH" ]; then
+            DEPLOY_PATH="/root/proofreader"
+            echo "Using default path: $DEPLOY_PATH"
+          else
+            echo "Using configured path: $DEPLOY_PATH"
+          fi
+
+          # Check if directory exists, create if not
+          if [ ! -d "$DEPLOY_PATH" ]; then
+            echo "Directory $DEPLOY_PATH does not exist. Creating it..."
+            mkdir -p "$DEPLOY_PATH"
+            if [ $? -eq 0 ]; then
+              echo "Successfully created directory: $DEPLOY_PATH"
+            else
+              echo "Failed to create directory. Trying with sudo..."
+              sudo mkdir -p "$DEPLOY_PATH"
+              sudo chown $USER:$USER "$DEPLOY_PATH"
+            fi
+          else
+            echo "Directory $DEPLOY_PATH already exists"
+          fi
+
+          cd "$DEPLOY_PATH"
+          echo "Changed to directory: $(pwd)"
+
+          # Check if it's a git repository, clone if not
+          if [ ! -d ".git" ]; then
+            echo "Cloning repository..."
+            git clone -b master https://github.com/comtextspace/proofreader.git .
+          else
+            echo "Pulling latest changes..."
+            git pull origin master
+          fi
+
+          # Ensure docker-compose file exists
+          if [ ! -f "docker-compose.prod.yml" ]; then
+            echo "Error: docker-compose.prod.yml not found!"
+            exit 1
+          fi
+
+          # Backup database before deployment (optional but recommended)
+          echo "Creating database backup..."
+          BACKUP_DIR="/root/backupdb"
+          mkdir -p "$BACKUP_DIR"
+          docker compose -f docker-compose.prod.yml exec -T db pg_dump -U postgres postgres | gzip > "$BACKUP_DIR/backup_$(date +%Y%m%d_%H%M%S).sql.gz" || echo "Backup failed, continuing anyway..."
+
+          # Log in to GitHub Container Registry
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+          # Pull latest images
+          docker compose -f docker-compose.prod.yml pull
+
+          # Deploy with zero-downtime
+          docker compose -f docker-compose.prod.yml up -d --remove-orphans
+
+          # Wait for services to be ready
+          sleep 15
+
+          # Run migrations
+          docker compose -f docker-compose.prod.yml exec -T web python manage.py migrate || echo "Migration failed or already applied"
+
+          # Collect static files
+          docker compose -f docker-compose.prod.yml exec -T web python manage.py collectstatic --noinput || echo "Static collection failed"
+
+          # Compile messages (if using internationalization)
+          docker compose -f docker-compose.prod.yml exec -T web python manage.py compilemessages || echo "Message compilation failed"
+
+          # Clean up old images
+          docker image prune -f
+
+          # Keep only last 5 backups
+          ls -t "$BACKUP_DIR"/backup_*.sql.gz 2>/dev/null | tail -n +6 | xargs -r rm
+
+          echo "Production deployment completed successfully!"
+
+          # Send health check (optional)
+          docker compose -f docker-compose.prod.yml ps

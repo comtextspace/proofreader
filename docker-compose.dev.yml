@@ -1,8 +1,10 @@
 version: '3.7'
 
+name: proofreader-dev
+
 services:
   web:
-    build: .
+    image: ghcr.io/comtextspace/proofreader:develop
     command: gunicorn proofreader.wsgi:application --bind 0.0.0.0:8000 --workers 3
     environment:
       - SENTRY_DSN=https://068d46f1d057c6dc3154519ab00a82ed@o4506100246708224.ingest.sentry.io/4506100248608768
@@ -23,7 +25,7 @@ services:
       - redis
 
   celery_worker:
-    build: .
+    image: ghcr.io/comtextspace/proofreader:develop
     command: celery -A taskapp.celery:app worker --loglevel=info -c 4
     environment:
       - SENTRY_DSN=https://068d46f1d057c6dc3154519ab00a82ed@o4506100246708224.ingest.sentry.io/4506100248608768
@@ -42,7 +44,7 @@ services:
       - redis
 
   celery_beat:
-    build: .
+    image: ghcr.io/comtextspace/proofreader:develop
     command: celery -A taskapp.celery:app beat --loglevel=info
     environment:
       - SENTRY_DSN=https://068d46f1d057c6dc3154519ab00a82ed@o4506100246708224.ingest.sentry.io/4506100248608768
@@ -91,7 +93,8 @@ services:
 
 volumes:
     project-media:
-      name: project-media
+      name: proofreader-dev-media
     project-static:
-      name: project-static
+      name: proofreader-dev-static
     redis_data:
+      name: proofreader-dev-redis

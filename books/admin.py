@@ -14,6 +14,7 @@ from core.admin_utils import CustomHistoryAdmin, add_request_object_to_admin_for
 from .admin_forms import ActionValueForm, PageAdminForm
 from .models import Author, Book, Page
 from .services.book_export import export_book
+from .services.github_upload import upload_books_to_github
 from .tasks import extract_text_from_image_task, split_pdf_to_pages_task
 
 User = get_user_model()
@@ -25,6 +26,7 @@ class AuthorAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
+@admin.action(description=_("Скачать книгу текстовым файлом"))
 def download_as_text_file(modeladmin, request, queryset):
     book = queryset.first()  # Assuming you want to download pages for one book at a time
     text = export_book(book)
@@ -33,26 +35,50 @@ def download_as_text_file(modeladmin, request, queryset):
     return response
 
 
-download_as_text_file.short_description = _("Скачать книгу текстовым файлом")
+@admin.action(description=_("Загрузить в GitHub репозиторий"))
+def upload_to_github(modeladmin, request, queryset):
+    from django.conf import settings
+
+    # Check if GitHub settings are configured
+    if not getattr(settings, 'GITHUB_TOKEN', None) or not getattr(settings, 'GITHUB_REPO', None):
+        messages.error(
+            request, _('GitHub настройки не сконфигурированы. Добавьте GITHUB_TOKEN и GITHUB_REPO в settings.')
+        )
+        return
+
+    results = upload_books_to_github(queryset)
+
+    # Process results and show messages
+    successful = [r for r in results if r['success']]
+    failed = [r for r in results if not r['success']]
+
+    if successful:
+        success_msg = _('Успешно загружено в GitHub: ') + ', '.join([r['book'] for r in successful])
+        messages.success(request, success_msg)
+
+        # Show URLs for uploaded files
+        for result in successful:
+            if 'url' in result:
+                messages.info(request, mark_safe(f"<a href='{result['url']}' target='_blank'>{result['book']}</a>"))
+
+    if failed:
+        for result in failed:
+            messages.error(request, f"{result['book']}: {result['message']}")
 
 
+@admin.action(description=_("Повторно запустить задачи по распознаванию текста"))
 def process_unprocessed_pages(modeladmin, request, queryset):
     for page in Page.objects.filter(status=Page.Status.PROCESSING, book__in=queryset):
         extract_text_from_image_task.delay(page.id)
     messages.add_message(request, messages.INFO, _('Задачи по распознаванию текста запущены'))
 
 
-process_unprocessed_pages.short_description = _("Повторно запустить задачи по распознаванию текста")
-
-
+@admin.action(description=_("Повторно запустить задачи по разделению страниц"))
 def continue_pages_splittings(modeladmin, request, queryset):
     for book in queryset:
         last_page = book.pages.order_by('-number').first().values_list('number', flat=True)
         split_pdf_to_pages_task.delay(book.id, start_page=last_page + 1)
     messages.add_message(request, messages.INFO, _('Задачи по разделению страниц запущены'))
-
-
-continue_pages_splittings.short_description = _("Повторно запустить задачи по разделению страниц")
 
 
 class AssignmentAdminInline(admin.TabularInline):
@@ -63,7 +89,7 @@ class AssignmentAdminInline(admin.TabularInline):
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    actions = [download_as_text_file, process_unprocessed_pages, continue_pages_splittings]
+    actions = [download_as_text_file, upload_to_github, process_unprocessed_pages, continue_pages_splittings]
     list_display = [
         "name",
         "author",
@@ -157,6 +183,7 @@ class AssignmentFilter(ForeignKeyFilter):
             return queryset.user_assignments(user)
 
 
+@admin.action(description=_("Запустить задачу по нумерации страниц"))
 def numerate_pages(modeladmin, request, queryset):
     page = queryset.first()
 
@@ -173,9 +200,6 @@ def numerate_pages(modeladmin, request, queryset):
         page.save(update_fields=['number_in_book'])
 
     messages.add_message(request, messages.INFO, _('Задача по нумерации страниц запущена'))
-
-
-numerate_pages.short_description = _("Запустить задачу по нумерации страниц")
 
 
 @admin.register(Page)
@@ -240,6 +264,14 @@ class PageAdmin(CustomHistoryAdmin):
         elif 'next_page' in request.POST:
             next_page = Page.objects.filter(book=current_page.book, number=current_page.number + 1).last()
             return redirect(reverse("admin:books_page_change", args=(next_page.id,)))
+
+        # Add custom title with page information
+        extra_context = extra_context or {}
+        if object_id and current_page:
+            page_info = f'{current_page.number}'
+            if current_page.number_in_book:
+                page_info = f'{current_page.number} ({current_page.number_in_book})'
+            extra_context['title'] = f'Изменить Страницу: {current_page.book.name} - Страница {page_info}'
 
         return super().changeform_view(request, object_id, form_url, extra_context)  # noqa
 

@@ -3,7 +3,6 @@ from pathlib import Path
 
 import environ
 from celery import Celery
-from celery.schedules import crontab
 from django.apps import AppConfig, apps
 from django.conf import settings
 
@@ -15,16 +14,16 @@ if not settings.configured:
     # set the default Django settings module for the 'celery' program.
     print(
         'Celery settings module is {}'.format(
-            os.environ.setdefault('DJANGO_SETTINGS_MODULE', env('DJANGO_SETTINGS_MODULE', default='proofreader.settings'))
+            os.environ.setdefault(
+                'DJANGO_SETTINGS_MODULE', env('DJANGO_SETTINGS_MODULE', default='proofreader.settings')
+            )
         )
     )
 
 app = Celery(__name__)
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
-app.conf.beat_schedule = {
-
-}
+app.conf.beat_schedule = {}
 
 
 class CeleryAppConfig(AppConfig):

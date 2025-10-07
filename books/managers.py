@@ -4,7 +4,8 @@ from django.db import models
 class PagesQuerySet(models.QuerySet):
     use_in_migrations = True
 
-    def _get_list_of_int_from_comma_separated_string(self, string):
+    @staticmethod
+    def _get_list_of_int_from_comma_separated_string(string):
         result = []
         for item in string.split(','):
             if '-' in item:

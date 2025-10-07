@@ -246,3 +246,9 @@ LANGUAGES = [
 ]
 ADMIN_USER_GROUP = env('ADMIN_USER_GROUP', default='Администратор')
 INITIAL_USER_GROUP = env('INITIAL_USER_GROUP', default='Корректор')
+
+# GitHub integration settings
+GITHUB_TOKEN = env('GITHUB_TOKEN', default=None)
+GITHUB_REPO = env('GITHUB_REPO', default=None)  # Format: 'username/repository'
+GITHUB_BRANCH = env('GITHUB_BRANCH', default='main')
+GITHUB_TARGET_DIR = env('GITHUB_TARGET_DIR', default='books')

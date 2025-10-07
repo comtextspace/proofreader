@@ -100,6 +100,7 @@ class BookAdmin(admin.ModelAdmin):
         'pages_ready_count',
         'pages_in_progress_count',
         'pages_done_count',
+        'view_pages_link',
     ]
     list_filter = ['author']
     search_fields = ['name', 'author__name']
@@ -110,10 +111,32 @@ class BookAdmin(admin.ModelAdmin):
         'pages_ready_count',
         'pages_in_progress_count',
         'pages_done_count',
+        'view_pages_link',
     ]
-    fieldsets = ((None, {'fields': ('name', 'author', 'pdf')}),)
+    fieldsets = (
+        (None, {'fields': ('name', 'author', 'pdf')}),
+        (
+            _('Страницы'),
+            {
+                'fields': (
+                    'view_pages_link',
+                    'status',
+                    'pages_count',
+                    'pages_processing_count',
+                    'pages_ready_count',
+                    'pages_in_progress_count',
+                    'pages_done_count',
+                )
+            },
+        ),
+    )
     autocomplete_fields = ['author']
     inlines = [AssignmentAdminInline]
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['title'] = _('Выберите Книгу для изменения')
+        return super().changelist_view(request, extra_context)
 
     def get_queryset(self, request):
         # annotate pages count for each page status
@@ -151,6 +174,13 @@ class BookAdmin(admin.ModelAdmin):
 
     def pages_done_count(self, obj):
         return obj.pages_done_count
+
+    @admin.display(description=_('Страницы'))
+    def view_pages_link(self, obj):
+        if obj.pk:
+            url = reverse('admin:books_page_changelist') + f'?book={obj.pk}'
+            return mark_safe(f'<a href="{url}">{_("Просмотреть страницы")}</a>')
+        return '-'
 
 
 class BookFilter(AutocompleteFilter):
@@ -217,6 +247,11 @@ class PageAdmin(CustomHistoryAdmin):
     )
     list_filter = [AssigmentPagesFilter, BookFilter, 'status', AssignmentFilter]
     search_fields = ['number']
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['title'] = _('Выберите Страницу для изменения')
+        return super().changelist_view(request, extra_context)
 
     def get_queryset(self, request):
         return super().get_queryset(request).order_by('book__name', 'number')

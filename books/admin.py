@@ -100,6 +100,7 @@ class BookAdmin(admin.ModelAdmin):
         'pages_ready_count',
         'pages_in_progress_count',
         'pages_done_count',
+        'view_pages_link',
     ]
     list_filter = ['author']
     search_fields = ['name', 'author__name']
@@ -110,8 +111,25 @@ class BookAdmin(admin.ModelAdmin):
         'pages_ready_count',
         'pages_in_progress_count',
         'pages_done_count',
+        'view_pages_link',
     ]
-    fieldsets = ((None, {'fields': ('name', 'author', 'pdf')}),)
+    fieldsets = (
+        (None, {'fields': ('name', 'author', 'pdf')}),
+        (
+            _('Страницы'),
+            {
+                'fields': (
+                    'view_pages_link',
+                    'status',
+                    'pages_count',
+                    'pages_processing_count',
+                    'pages_ready_count',
+                    'pages_in_progress_count',
+                    'pages_done_count',
+                )
+            },
+        ),
+    )
     autocomplete_fields = ['author']
     inlines = [AssignmentAdminInline]
 
@@ -151,6 +169,13 @@ class BookAdmin(admin.ModelAdmin):
 
     def pages_done_count(self, obj):
         return obj.pages_done_count
+
+    @admin.display(description=_('Страницы'))
+    def view_pages_link(self, obj):
+        if obj.pk:
+            url = reverse('admin:books_page_changelist') + f'?book__id__exact={obj.pk}'
+            return mark_safe(f'<a href="{url}">{_("Просмотреть страницы")}</a>')
+        return '-'
 
 
 class BookFilter(AutocompleteFilter):

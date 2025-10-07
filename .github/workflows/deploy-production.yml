@@ -140,5 +140,12 @@ jobs:
 
           echo "Production deployment completed successfully!"
 
-          # Send health check (optional)
+          # Health check and service status
+          echo "=== Service Status ==="
           docker compose -f docker-compose.prod.yml ps
+
+          # Check if nginx is running, show logs if not
+          if ! docker compose -f docker-compose.prod.yml ps nginx | grep -q "Up"; then
+            echo "=== NGINX NOT RUNNING - Showing logs ==="
+            docker compose -f docker-compose.prod.yml logs nginx --tail=50
+          fi

@@ -133,6 +133,11 @@ class BookAdmin(admin.ModelAdmin):
     autocomplete_fields = ['author']
     inlines = [AssignmentAdminInline]
 
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['title'] = _('Выберите Книгу для изменения')
+        return super().changelist_view(request, extra_context)
+
     def get_queryset(self, request):
         # annotate pages count for each page status
         return (
@@ -173,7 +178,7 @@ class BookAdmin(admin.ModelAdmin):
     @admin.display(description=_('Страницы'))
     def view_pages_link(self, obj):
         if obj.pk:
-            url = reverse('admin:books_page_changelist') + f'?book__id__exact={obj.pk}'
+            url = reverse('admin:books_page_changelist') + f'?book={obj.pk}'
             return mark_safe(f'<a href="{url}">{_("Просмотреть страницы")}</a>')
         return '-'
 
@@ -242,6 +247,11 @@ class PageAdmin(CustomHistoryAdmin):
     )
     list_filter = [AssigmentPagesFilter, BookFilter, 'status', AssignmentFilter]
     search_fields = ['number']
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['title'] = _('Выберите Страницу для изменения')
+        return super().changelist_view(request, extra_context)
 
     def get_queryset(self, request):
         return super().get_queryset(request).order_by('book__name', 'number')

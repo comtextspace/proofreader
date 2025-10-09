@@ -1,5 +1,268 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* Modern Base Styles */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    background: linear-gradient(135deg, #f6f9fc 0%, #eef2f7 100%) !important;
+}
+
+/* Header Styling */
+#header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+}
+
+#site-name {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em;
+    color: white !important;
+}
+
+#site-name a {
+    color: white !important;
+}
+
+/* Breadcrumbs */
+div.breadcrumbs {
+    background: white !important;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border-radius: 0;
+}
+
+div.breadcrumbs a {
+    color: #667eea !important;
+    font-weight: 500;
+}
+
+/* Buttons */
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 0.6rem 1.2rem !important;
+    font-weight: 600 !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+    transition: all 0.3s ease !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.875rem !important;
+}
+
+.button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+.submit-row input:hover,
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+}
+
+.button.default,
+input[type="submit"].default {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* Delete buttons */
+.deletelink,
+.deletelink-box a {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+}
+
+.deletelink:hover,
+.deletelink-box a:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+}
+
+/* Module styling */
+.module {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.module h2,
+.module caption {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Forms */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+textarea,
+select {
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 0.6rem 0.8rem !important;
+    font-family: 'Inter', sans-serif !important;
+    transition: all 0.3s ease !important;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+    outline: none !important;
+}
+
+/* Tables */
+#result_list {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#result_list thead th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    text-transform: none;
+    font-family: 'Inter', sans-serif;
+}
+
+#result_list tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+#result_list tbody tr:hover {
+    background-color: #f7fafc !important;
+}
+
+/* Sidebar */
+#content-related h3 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px 8px 0 0;
+    padding: 0.75rem 1rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+}
+
+/* Links */
+a:link,
+a:visited {
+    color: #667eea;
+    font-weight: 500;
+}
+
+a:hover {
+    color: #764ba2;
+}
+
+/* Messages */
+.messagelist li {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.messagelist li.success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.messagelist li.warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.messagelist li.error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* Dashboard modules */
+#content-main .module {
+    margin-bottom: 1.5rem;
+}
+
+.dashboard .module table {
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+}
+
+/* Language flags */
 .i18n_flag {
     width: 16px;
     vertical-align: text-top;
+    transition: transform 0.2s ease;
+}
+
+.i18n_flag:hover {
+    transform: scale(1.1);
+}
+
+/* User tools */
+#user-tools {
+    font-family: 'Inter', sans-serif;
+}
+
+#user-tools a {
+    color: white !important;
+    font-weight: 500;
+}
+
+/* Change form */
+.submit-row {
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    padding: 1rem;
+    border-radius: 0 0 12px 12px;
+}
+
+/* Field styling */
+.form-row {
+    padding: 1rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.form-row:last-child {
+    border-bottom: none;
+}
+
+/* Checkbox and radio */
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: #667eea;
+}
+
+/* Calendar widget */
+.calendarbox h2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.calendar td a:hover {
+    background: #667eea;
+}
+
+/* Object tools */
+.object-tools {
+    margin-top: 1rem;
+}
+
+.object-tools li a {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.object-tools li a:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }

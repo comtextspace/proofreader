@@ -1,79 +1,504 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{% extends "admin/base_site.html" %}
 {% load i18n static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>{% translate 'Вход' %} - ProofReader</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
+          crossorigin="anonymous"/>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+        }
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static "admin/css/login.css" %}">
-{{ form.media }}
-{% endblock %}
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
 
-{% block bodyclass %}{{ block.super }} login{% endblock %}
+        .navbar-brand:hover {
+            opacity: 0.8;
+        }
 
-{% block usertools %}{% endblock %}
+        .navbar-brand::before {
+            content: '\F4FF';
+            font-family: 'bootstrap-icons';
+            font-size: 1.5rem;
+            -webkit-text-fill-color: initial;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-{% block nav-global %}{% endblock %}
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
 
-{% block nav-sidebar %}{% endblock %}
+        .login-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
 
-{% block content_title %}{% endblock %}
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 2rem 2.5rem;
+            max-width: 480px;
+            width: 100%;
+            animation: slideUp 0.5s ease-out;
+            position: relative;
+        }
 
-{% block nav-breadcrumbs %}{% endblock %}
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-{% block content %}
-{% if form.errors and not form.non_field_errors %}
-<p class="errornote">
-{% blocktranslate count counter=form.errors.items|length %}Пожалуйста исправьте ошибку ниже.{% plural %}Пожалуйста исправьте ошибки ниже.{% endblocktranslate %}
-</p>
-{% endif %}
+        .login-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
 
-{% if form.non_field_errors %}
-{% for error in form.non_field_errors %}
-<p class="errornote">
-    {{ error }}
-</p>
-{% endfor %}
-{% endif %}
+        .login-header h2 {
+            color: #1a202c;
+            font-weight: 700;
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.025em;
+        }
 
-<div id="content-main">
+        .login-header p {
+            color: #718096;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
 
-{% if user.is_authenticated %}
-<p class="errornote">
-{% blocktranslate trimmed %}
-    You are authenticated as {{ username }}, but are not authorized to
-    access this page. Would you like to login to a different account?
-{% endblocktranslate %}
-</p>
-{% endif %}
+        .login-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
 
-<form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
-  <div class="form-row">
-    {{ form.username.errors }}
-    {{ form.username.label_tag }} {{ form.username }}
-  </div>
-  <div class="form-row">
-    {{ form.password.errors }}
-    {{ form.password.label_tag }} {{ form.password }}
-    <input type="hidden" name="next" value="{{ next }}">
-  </div>
-  {% url 'admin_password_reset' as password_reset_url %}
-  {% if password_reset_url %}
-  <div class="password-reset-link">
-    <a href="{{ password_reset_url }}">{% translate 'Забыли ваш пароль?' %}</a>
-  </div>
-  {% endif %}
-  <div class="submit-row">
-    <input type="submit" value="{% translate 'Войти' %}">
-  </div>
-    <a href="{% url "signup" %}">{% translate 'Регистрация' %}</a>
-</form>
+        .login-icon i {
+            font-size: 2rem;
+            color: white;
+        }
 
-</div>
-{% endblock %}
-</title>
+        .decorative-element {
+            position: absolute;
+            opacity: 0.07;
+            pointer-events: none;
+        }
+
+        .decorative-element.book-1 {
+            top: 5%;
+            left: 5%;
+            font-size: 3rem;
+            transform: rotate(-15deg);
+        }
+
+        .decorative-element.book-2 {
+            bottom: 10%;
+            right: 8%;
+            font-size: 2.5rem;
+            transform: rotate(20deg);
+        }
+
+        .decorative-element.book-3 {
+            top: 48%;
+            left: 2%;
+            font-size: 2rem;
+            transform: rotate(-25deg);
+        }
+
+        .decorative-element.book-4 {
+            top: 75%;
+            left: 8%;
+            font-size: 1.8rem;
+            transform: rotate(10deg);
+        }
+
+        .decorative-element.book-5 {
+            top: 30%;
+            right: 4%;
+            font-size: 2.2rem;
+            transform: rotate(-10deg);
+        }
+
+        .decorative-element.book-6 {
+            bottom: 45%;
+            right: 6%;
+            font-size: 1.5rem;
+            transform: rotate(30deg);
+        }
+
+        .decorative-element.book-7 {
+            top: 20%;
+            left: 12%;
+            font-size: 1.9rem;
+            transform: rotate(15deg);
+        }
+
+        .decorative-element.book-8 {
+            top: 60%;
+            left: 15%;
+            font-size: 1.6rem;
+            transform: rotate(-30deg);
+        }
+
+        .decorative-element.book-9 {
+            bottom: 55%;
+            right: 10%;
+            font-size: 2.1rem;
+            transform: rotate(25deg);
+        }
+
+        .decorative-element.book-10 {
+            top: 85%;
+            right: 5%;
+            font-size: 1.7rem;
+            transform: rotate(-15deg);
+        }
+
+        .decorative-element.book-11 {
+            top: 40%;
+            left: 7%;
+            font-size: 1.4rem;
+            transform: rotate(35deg);
+        }
+
+        .decorative-element.book-12 {
+            bottom: 20%;
+            right: 15%;
+            font-size: 1.5rem;
+            transform: rotate(-20deg);
+        }
+
+        .decorative-element.pen {
+            top: 25%;
+            right: 12%;
+            font-size: 2rem;
+            transform: rotate(45deg);
+        }
+
+        .decorative-element.pen-2 {
+            bottom: 28%;
+            left: 10%;
+            font-size: 1.8rem;
+            transform: rotate(-35deg);
+        }
+
+        .decorative-element.pen-3 {
+            top: 65%;
+            right: 8%;
+            font-size: 1.5rem;
+            transform: rotate(55deg);
+        }
+
+        .decorative-element.pen-4 {
+            top: 12%;
+            left: 18%;
+            font-size: 1.4rem;
+            transform: rotate(-45deg);
+        }
+
+        .decorative-element.spell {
+            top: 18%;
+            left: 8%;
+            font-size: 1.6rem;
+            transform: rotate(20deg);
+        }
+
+        .decorative-element.spell-2 {
+            bottom: 35%;
+            left: 5%;
+            font-size: 1.3rem;
+            transform: rotate(-25deg);
+        }
+
+        .decorative-element.text {
+            bottom: 32%;
+            right: 14%;
+            font-size: 1.7rem;
+            transform: rotate(-20deg);
+        }
+
+        .decorative-element.text-2 {
+            top: 55%;
+            right: 3%;
+            font-size: 1.4rem;
+            transform: rotate(18deg);
+        }
+
+        .decorative-element.quote {
+            top: 8%;
+            right: 16%;
+            font-size: 1.6rem;
+            transform: rotate(-12deg);
+        }
+
+        .decorative-element.type {
+            bottom: 50%;
+            left: 12%;
+            font-size: 1.5rem;
+            transform: rotate(22deg);
+        }
+
+        .form-row {
+            margin-bottom: 1rem;
+        }
+
+        .form-row label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            letter-spacing: -0.01em;
+            display: block;
+        }
+
+        .form-row input[type="text"],
+        .form-row input[type="password"] {
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9375rem;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+        }
+
+        .form-row input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+            outline: none;
+        }
+
+        .submit-row {
+            margin-top: 1.5rem;
+        }
+
+        .submit-row input[type="submit"] {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            color: white;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            letter-spacing: -0.01em;
+            cursor: pointer;
+        }
+
+        .submit-row input[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .submit-row input[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 1rem;
+            color: #718096;
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+
+        .signup-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        .password-reset-link {
+            margin-top: 0.75rem;
+            text-align: right;
+        }
+
+        .password-reset-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .password-reset-link a:hover {
+            text-decoration: underline;
+        }
+
+        .errornote {
+            background: #fee;
+            border: 1px solid #fcc;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            color: #c33;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .errorlist {
+            list-style: none;
+            padding: 0;
+            margin: 0.25rem 0 0 0;
+        }
+
+        .errorlist li {
+            color: #dc3545;
+            font-size: 0.875rem;
+        }
+    </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="container-xxl justify-content-between">
+            <a class="navbar-brand" href="{% url 'admin:index' %}">ProofReader v:{{ APP_VERSION }}</a>
+        </div>
+    </nav>
 
+    <div class="login-container">
+        <div class="container-xxl">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                    <div class="login-card">
+                        <i class="bi bi-book decorative-element book-1"></i>
+                        <i class="bi bi-journal-text decorative-element book-2"></i>
+                        <i class="bi bi-book-fill decorative-element book-3"></i>
+                        <i class="bi bi-journal decorative-element book-4"></i>
+                        <i class="bi bi-journal-bookmark decorative-element book-5"></i>
+                        <i class="bi bi-book-half decorative-element book-6"></i>
+                        <i class="bi bi-books decorative-element book-7"></i>
+                        <i class="bi bi-journal-richtext decorative-element book-8"></i>
+                        <i class="bi bi-journal-album decorative-element book-9"></i>
+                        <i class="bi bi-journal-code decorative-element book-10"></i>
+                        <i class="bi bi-book decorative-element book-11"></i>
+                        <i class="bi bi-journal-bookmark-fill decorative-element book-12"></i>
+                        <i class="bi bi-pen decorative-element pen"></i>
+                        <i class="bi bi-pen-fill decorative-element pen-2"></i>
+                        <i class="bi bi-pencil decorative-element pen-3"></i>
+                        <i class="bi bi-pencil-fill decorative-element pen-4"></i>
+                        <i class="bi bi-spellcheck decorative-element spell"></i>
+                        <i class="bi bi-check2-square decorative-element spell-2"></i>
+                        <i class="bi bi-file-earmark-text decorative-element text"></i>
+                        <i class="bi bi-file-text decorative-element text-2"></i>
+                        <i class="bi bi-quote decorative-element quote"></i>
+                        <i class="bi bi-type decorative-element type"></i>
+
+                        <div class="login-header">
+                            <div class="login-icon">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                            </div>
+                            <h2>{% translate 'Вход' %}</h2>
+                            <p>{% translate 'Войдите в свою учетную запись' %}</p>
+                        </div>
+
+                        {% if form.errors and not form.non_field_errors %}
+                        <p class="errornote">
+                        {% blocktranslate count counter=form.errors.items|length %}Пожалуйста исправьте ошибку ниже.{% plural %}Пожалуйста исправьте ошибки ниже.{% endblocktranslate %}
+                        </p>
+                        {% endif %}
+
+                        {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                        <p class="errornote">
+                            {{ error }}
+                        </p>
+                        {% endfor %}
+                        {% endif %}
+
+                        {% if user.is_authenticated %}
+                        <p class="errornote">
+                        {% blocktranslate trimmed %}
+                            You are authenticated as {{ username }}, but are not authorized to
+                            access this page. Would you like to login to a different account?
+                        {% endblocktranslate %}
+                        </p>
+                        {% endif %}
+
+                        <form action="{{ app_path }}" method="post" id="login-form">
+                            {% csrf_token %}
+                            <div class="form-row">
+                                {{ form.username.errors }}
+                                {{ form.username.label_tag }}
+                                {{ form.username }}
+                            </div>
+                            <div class="form-row">
+                                {{ form.password.errors }}
+                                {{ form.password.label_tag }}
+                                {{ form.password }}
+                                <input type="hidden" name="next" value="{{ next }}">
+                            </div>
+                            {% url 'admin_password_reset' as password_reset_url %}
+                            {% if password_reset_url %}
+                            <div class="password-reset-link">
+                                <a href="{{ password_reset_url }}">{% translate 'Забыли ваш пароль?' %}</a>
+                            </div>
+                            {% endif %}
+                            <div class="submit-row">
+                                <input type="submit" value="{% translate 'Войти' %}">
+                            </div>
+                        </form>
+
+                        <div class="signup-link">
+                            {% translate 'Нет аккаунта?' %} <a href="{% url 'signup' %}">{% translate 'Зарегистрироваться' %}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 </body>
 </html>

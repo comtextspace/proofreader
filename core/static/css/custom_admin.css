@@ -266,3 +266,164 @@ input[type="radio"] {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
+
+/* ============================================
+   DARK MODE SUPPORT
+   ============================================ */
+
+/* Main background - pure black */
+body.theme-dark,
+[data-theme="dark"] body {
+    background: #000000 !important;
+}
+
+body.theme-dark #content,
+body.theme-dark #content-main,
+body.theme-dark .colMS,
+body.theme-dark .colM,
+[data-theme="dark"] #content,
+[data-theme="dark"] #content-main,
+[data-theme="dark"] .colMS,
+[data-theme="dark"] .colM {
+    background: #000000 !important;
+}
+
+/* Modules - dark gray */
+body.theme-dark .module,
+[data-theme="dark"] .module {
+    background: #1a1a1a !important;
+    border-color: #333333 !important;
+}
+
+/* Breadcrumbs */
+body.theme-dark div.breadcrumbs,
+[data-theme="dark"] div.breadcrumbs {
+    background: #1a1a1a !important;
+    border-bottom-color: #333333 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Form inputs */
+body.theme-dark input[type="text"],
+body.theme-dark input[type="password"],
+body.theme-dark input[type="email"],
+body.theme-dark input[type="url"],
+body.theme-dark input[type="number"],
+body.theme-dark textarea,
+body.theme-dark select,
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="url"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+    background: #2a2a2a !important;
+    color: #e0e0e0 !important;
+    border-color: #444444 !important;
+}
+
+/* Tables */
+body.theme-dark #result_list,
+body.theme-dark table,
+[data-theme="dark"] #result_list,
+[data-theme="dark"] table {
+    background: #1a1a1a !important;
+    border-color: #333333 !important;
+}
+
+body.theme-dark #result_list tbody tr,
+body.theme-dark table tbody tr,
+[data-theme="dark"] #result_list tbody tr,
+[data-theme="dark"] table tbody tr {
+    background: #1a1a1a !important;
+    color: #e0e0e0 !important;
+    border-bottom-color: #333333 !important;
+}
+
+body.theme-dark #result_list tbody tr:hover,
+body.theme-dark table tbody tr:hover,
+[data-theme="dark"] #result_list tbody tr:hover,
+[data-theme="dark"] table tbody tr:hover {
+    background-color: #2a2a2a !important;
+}
+
+/* Submit row */
+body.theme-dark .submit-row,
+[data-theme="dark"] .submit-row {
+    background: #1a1a1a !important;
+    border-top-color: #333333 !important;
+}
+
+/* Text colors */
+body.theme-dark,
+body.theme-dark #content-main,
+body.theme-dark #content,
+body.theme-dark p,
+body.theme-dark div,
+body.theme-dark span,
+[data-theme="dark"],
+[data-theme="dark"] #content-main,
+[data-theme="dark"] #content,
+[data-theme="dark"] p,
+[data-theme="dark"] div,
+[data-theme="dark"] span {
+    color: #e0e0e0 !important;
+}
+
+body.theme-dark label,
+body.theme-dark th,
+body.theme-dark td,
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark .form-row label,
+[data-theme="dark"] label,
+[data-theme="dark"] th,
+[data-theme="dark"] td,
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] .form-row label {
+    color: #e0e0e0 !important;
+}
+
+/* Form rows */
+body.theme-dark .form-row,
+[data-theme="dark"] .form-row {
+    border-bottom-color: #333333 !important;
+}
+
+/* Changelist */
+body.theme-dark #changelist,
+body.theme-dark .results,
+[data-theme="dark"] #changelist,
+[data-theme="dark"] .results {
+    background: #000000 !important;
+}
+
+/* Dashboard links */
+body.theme-dark #content-main a,
+body.theme-dark .module a,
+[data-theme="dark"] #content-main a,
+[data-theme="dark"] .module a {
+    color: #8b9eff !important;
+}
+
+body.theme-dark #content-main a:hover,
+body.theme-dark .module a:hover,
+[data-theme="dark"] #content-main a:hover,
+[data-theme="dark"] .module a:hover {
+    color: #a5b4ff !important;
+}
+
+/* Sidebar */
+body.theme-dark #content-related,
+[data-theme="dark"] #content-related {
+    background: #000000 !important;
+}
+
+body.theme-dark #content-related .module,
+[data-theme="dark"] #content-related .module {
+    background: #1a1a1a !important;
+}

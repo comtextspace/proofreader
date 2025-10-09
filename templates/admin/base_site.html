@@ -17,6 +17,107 @@
     </style>
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'css/custom_admin.css' %}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+    <!-- Hide default theme toggle button -->
+    <style type="text/css">
+        .theme-toggle {
+            display: none !important;
+        }
+
+        /* Hide duplicate theme button on page change screen */
+        #theme-toggle {
+            display: none !important;
+        }
+
+        /* Custom theme toggle button */
+        .custom-theme-toggle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        .custom-theme-toggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .custom-theme-toggle i {
+            font-size: 14px;
+            color: white;
+        }
+
+        .custom-theme-toggle .fa-sun {
+            display: none;
+        }
+
+        .custom-theme-toggle .fa-moon {
+            display: block;
+        }
+
+        body.theme-dark .custom-theme-toggle .fa-sun {
+            display: block;
+        }
+
+        body.theme-dark .custom-theme-toggle .fa-moon {
+            display: none;
+        }
+    </style>
+{% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+    <script>
+        function toggleCustomTheme() {
+            const html = document.documentElement;
+            const body = document.body;
+            const currentTheme = body.classList.contains('theme-dark') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            // Remove all theme classes from body
+            body.classList.remove('theme-light', 'theme-dark', 'theme-auto');
+
+            // Add new theme class to body
+            body.classList.add('theme-' + newTheme);
+
+            // Update data-theme attribute on html element
+            html.setAttribute('data-theme', newTheme);
+
+            // Save to localStorage
+            try {
+                localStorage.setItem('theme', newTheme);
+            } catch (e) {
+                console.error('Failed to save theme preference:', e);
+            }
+        }
+
+        // Initialize theme on page load
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
+                    const html = document.documentElement;
+                    const body = document.body;
+
+                    body.classList.remove('theme-light', 'theme-dark', 'theme-auto');
+                    body.classList.add('theme-' + savedTheme);
+                    html.setAttribute('data-theme', savedTheme);
+                }
+            } catch (e) {
+                console.error('Failed to load theme preference:', e);
+            }
+        })();
+    </script>
 {% endblock %}
 
 {% block branding %}
@@ -31,4 +132,8 @@
         <img class="i18n_flag" src="{% static 'images/eo.png' %}"/>
     </a> /
     {{ block.super }}
+    <button class="custom-theme-toggle" onclick="toggleCustomTheme()" title="Toggle theme">
+        <i class="fas fa-sun"></i>
+        <i class="fas fa-moon"></i>
+    </button>
 {% endblock %}

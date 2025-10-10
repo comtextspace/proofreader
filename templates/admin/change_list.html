@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n admin_urls static admin_list %}
+{% load i18n admin_urls static admin_list russian_case %}
 
 {% block extrahead %}
 {{ block.super }}
@@ -48,7 +48,11 @@
     {% if has_add_permission %}
       <ul class="object-tools" style="margin: 0;">
         {% block object-tools-items %}
-          {% change_list_object_tools %}
+          <li>
+            <a href="{% url cl.opts|admin_urlname:'add' %}{% if is_popup %}?{{ is_popup_var }}=1{% endif %}" class="addlink">
+              {% blocktranslate with name=cl.opts.verbose_name|accusative %}Add {{ name }}{% endblocktranslate %}
+            </a>
+          </li>
         {% endblock %}
       </ul>
     {% endif %}

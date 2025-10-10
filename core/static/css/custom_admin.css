@@ -362,6 +362,7 @@ input[type="radio"] {
 /* Add left padding to actions label */
 #changelist .actions label {
     padding-left: 10px !important;
+    display: inline !important;
 }
 
 /* ============================================

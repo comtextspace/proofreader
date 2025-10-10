@@ -354,6 +354,16 @@ input[type="radio"] {
     margin: 0 !important;
 }
 
+/* Remove margin from changelist filter */
+#changelist-filter {
+    margin: 0 !important;
+}
+
+/* Add left padding to actions label */
+#changelist .actions label {
+    padding-left: 10px !important;
+}
+
 /* ============================================
    DARK MODE SUPPORT
    ============================================ */

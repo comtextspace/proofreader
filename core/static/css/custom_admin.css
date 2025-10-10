@@ -97,6 +97,16 @@ input[type="submit"].default {
     font-family: 'Inter', sans-serif;
 }
 
+.module caption a,
+.module h2 a {
+    color: #ffffff !important;
+}
+
+.module caption a:hover,
+.module h2 a:hover {
+    color: #e0e0e0 !important;
+}
+
 /* Forms */
 input[type="text"],
 input[type="password"],
@@ -402,19 +412,19 @@ body.theme-dark .results,
     background: #000000 !important;
 }
 
-/* Dashboard links */
-body.theme-dark #content-main a,
-body.theme-dark .module a,
-[data-theme="dark"] #content-main a,
-[data-theme="dark"] .module a {
-    color: #8b9eff !important;
+/* Module caption and header links in dark mode */
+body.theme-dark .module caption a,
+body.theme-dark .module h2 a,
+[data-theme="dark"] .module caption a,
+[data-theme="dark"] .module h2 a {
+    color: #ffffff !important;
 }
 
-body.theme-dark #content-main a:hover,
-body.theme-dark .module a:hover,
-[data-theme="dark"] #content-main a:hover,
-[data-theme="dark"] .module a:hover {
-    color: #a5b4ff !important;
+body.theme-dark .module caption a:hover,
+body.theme-dark .module h2 a:hover,
+[data-theme="dark"] .module caption a:hover,
+[data-theme="dark"] .module h2 a:hover {
+    color: #e0e0e0 !important;
 }
 
 /* Sidebar */

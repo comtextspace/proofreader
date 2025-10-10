@@ -242,11 +242,36 @@ a:hover {
 /* User tools */
 #user-tools {
     font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 #user-tools a {
     color: white !important;
     font-weight: 500;
+}
+
+/* Hide default Django theme toggle */
+#user-tools .theme-toggle {
+    display: none !important;
+}
+
+/* Make logout button and custom theme toggle same height */
+#user-tools #logout-form {
+    display: inline-flex;
+    margin: 0;
+}
+
+#user-tools #logout-form button,
+#user-tools .custom-theme-toggle {
+    height: 35px !important;
+    min-height: 35px !important;
+    padding: 0.5rem 1rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
 }
 
 /* Change form */
@@ -265,6 +290,11 @@ a:hover {
 
 .form-row:last-child {
     border-bottom: none;
+}
+
+/* Add left padding to aligned labels */
+.aligned label {
+    padding-left: 10px !important;
 }
 
 /* Checkbox and radio */
@@ -290,9 +320,15 @@ input[type="radio"] {
     background: #667eea;
 }
 
-/* Object tools */
+/* Object tools - Inline with h1 */
 .object-tools {
-    margin-top: 1rem;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.object-tools li {
+    float: none !important;
+    display: inline-block;
 }
 
 .object-tools li a {
@@ -304,6 +340,29 @@ input[type="radio"] {
 .object-tools li a:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Ensure h1 and button align properly - only affect the title row */
+#content-main > div[style*="display: flex"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 1rem !important;
+}
+
+#content-main > div[style*="display: flex"] h1 {
+    margin: 0 !important;
+}
+
+/* Remove margin from changelist filter */
+#changelist-filter {
+    margin: 0 !important;
+}
+
+/* Add left padding to actions label */
+#changelist .actions label {
+    padding-left: 10px !important;
+    display: inline !important;
 }
 
 /* ============================================

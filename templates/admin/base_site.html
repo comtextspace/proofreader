@@ -32,8 +32,8 @@
 
         /* Custom theme toggle button */
         .custom-theme-toggle {
-            width: 30px;
-            height: 30px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
@@ -71,6 +71,41 @@
 
         body.theme-dark .custom-theme-toggle .fa-moon {
             display: none;
+        }
+
+        /* Override sidebar toggle width and color */
+        #toggle-nav-sidebar,
+        .toggle-nav-sidebar {
+            display: flex !important;
+            width: 12px !important;
+            min-width: 12px !important;
+            max-width: 12px !important;
+            flex: 0 0 12px !important;
+            flex-basis: 12px !important;
+            background: #94a3b8 !important;
+            background-color: #94a3b8 !important;
+            border-right-color: #94a3b8 !important;
+        }
+
+        #toggle-nav-sidebar:hover,
+        .toggle-nav-sidebar:hover {
+            background: #64748b !important;
+            background-color: #64748b !important;
+            border-right-color: #64748b !important;
+        }
+
+        body.theme-dark #toggle-nav-sidebar,
+        body.theme-dark .toggle-nav-sidebar {
+            background: #334155 !important;
+            background-color: #334155 !important;
+            border-right-color: #334155 !important;
+        }
+
+        body.theme-dark #toggle-nav-sidebar:hover,
+        body.theme-dark .toggle-nav-sidebar:hover {
+            background: #475569 !important;
+            background-color: #475569 !important;
+            border-right-color: #475569 !important;
         }
     </style>
 {% endblock %}

@@ -54,6 +54,17 @@ button {
     font-size: 0.875rem !important;
 }
 
+/* Action submit button - make it taller */
+.actions button[type="submit"],
+.actions .button {
+    padding: 0.75rem 1.3rem !important;
+    font-size: 0.9rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 38px !important;
+}
+
 .button:hover,
 input[type="submit"]:hover,
 input[type="button"]:hover,
@@ -134,6 +145,11 @@ select:focus {
     outline: none !important;
 }
 
+/* Increase select dropdown height */
+select {
+    min-height: 2.5rem !important;
+}
+
 /* Tables */
 #result_list {
     border: 1px solid #e2e8f0;
@@ -209,13 +225,18 @@ a:hover {
 
 /* Language flags */
 .i18n_flag {
-    width: 16px;
-    vertical-align: text-top;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    vertical-align: middle;
     transition: transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .i18n_flag:hover {
     transform: scale(1.1);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* User tools */
@@ -250,6 +271,14 @@ a:hover {
 input[type="checkbox"],
 input[type="radio"] {
     accent-color: #667eea;
+}
+
+/* Sidebar toggle button - make it narrower */
+#toggle-nav-sidebar,
+.toggle-nav-sidebar {
+    width: 12px !important;
+    min-width: 12px !important;
+    max-width: 12px !important;
 }
 
 /* Calendar widget */

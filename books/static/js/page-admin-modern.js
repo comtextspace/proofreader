@@ -69,8 +69,6 @@ document.addEventListener('DOMContentLoaded', function() {
             style.id = 'django-admin-dark-mode';
             style.textContent = `
                 body.dark-mode #header {
-                    background: var(--card-bg) !important;
-                    color: var(--text-color) !important;
                 }
 
                 body.dark-mode #branding h1 {

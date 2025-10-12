@@ -213,12 +213,91 @@ class AssignmentFilter(ForeignKeyFilter):
             return queryset.user_assignments(user)
 
 
+@admin.action(description=_("Назначить выбранные страницы себе"))
+def assign_pages_to_self(modeladmin, request, queryset):
+    """
+    Creates or updates assignments for selected pages to current user.
+    Groups pages by book and creates compact page range strings.
+    Note: This action doesn't require action_value field.
+    """
+    user = request.user
+
+    # Group pages by book
+    pages_by_book = {}
+    for page in queryset.select_related('book').order_by('book', 'number'):
+        if page.book.id not in pages_by_book:
+            pages_by_book[page.book.id] = {'book': page.book, 'pages': []}
+        pages_by_book[page.book.id]['pages'].append(page.number)
+
+    # Helper function to convert list of page numbers to compact string format
+    def pages_to_string(page_numbers):
+        """Convert list of integers to compact string like '1-5,10,15-20'"""
+        if not page_numbers:
+            return ''
+
+        page_numbers = sorted(set(page_numbers))
+        ranges = []
+        start = page_numbers[0]
+        end = page_numbers[0]
+
+        for num in page_numbers[1:]:
+            if num == end + 1:
+                end = num
+            else:
+                ranges.append(f'{start}-{end}' if start != end else str(start))
+                start = end = num
+        ranges.append(f'{start}-{end}' if start != end else str(start))
+
+        return ','.join(ranges)
+
+    created_count = 0
+    updated_count = 0
+
+    # Create or update assignments for each book
+    for book_data in pages_by_book.values():
+        book = book_data['book']
+        new_pages = book_data['pages']
+        new_pages_str = pages_to_string(new_pages)
+
+        # Check if assignment already exists
+        existing_assignment = Assignment.objects.filter(user=user, book=book).first()
+
+        if existing_assignment:
+            # Merge with existing pages
+            from books.managers import PagesQuerySet
+
+            existing_pages = PagesQuerySet._get_list_of_int_from_comma_separated_string(existing_assignment.pages)
+            merged_pages = sorted(set(existing_pages + new_pages))
+            existing_assignment.pages = pages_to_string(merged_pages)
+            existing_assignment.save()
+            updated_count += 1
+        else:
+            # Create new assignment
+            Assignment.objects.create(user=user, book=book, pages=new_pages_str)
+            created_count += 1
+
+    # Show success message
+    if created_count > 0:
+        messages.success(request, _('Создано назначений: %(count)d') % {'count': created_count})
+    if updated_count > 0:
+        messages.success(request, _('Обновлено назначений: %(count)d') % {'count': updated_count})
+
+    total_pages = sum(len(data['pages']) for data in pages_by_book.values())
+    messages.info(request, _('Назначено страниц: %(count)d') % {'count': total_pages})
+
+
 @admin.action(description=_("Запустить задачу по нумерации страниц"))
 def numerate_pages(modeladmin, request, queryset):
     page = queryset.first()
 
+    action_value = request.POST.get('action_value')
+
+    if not action_value:
+        messages.add_message(request, messages.ERROR, _('Введите начальный номер страницы'))
+        return
+
     try:
-        start_number = int(request.POST.get('action_value')) - 1
+        start_number = int(action_value) - 1
     except ValueError:
         messages.add_message(request, messages.ERROR, _('Введите целое число'))
         return
@@ -235,7 +314,7 @@ def numerate_pages(modeladmin, request, queryset):
 @admin.register(Page)
 class PageAdmin(CustomHistoryAdmin):
     form = PageAdminForm
-    actions = [numerate_pages]
+    actions = [assign_pages_to_self, numerate_pages]
     action_form = ActionValueForm
     change_form_template = "admin/page_change_form.html"
     list_display = ["number", "book", "modified", 'status']

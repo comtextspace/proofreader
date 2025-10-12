@@ -17,7 +17,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>const disableCKEditor = '{% trans "Отключить редактор" %}', enableCKEditor = '{% trans "Включить редактор" %}';</script>
 {% endblock %}
 
 {% block content %}
@@ -50,11 +49,37 @@
                         <input type="number" id="text-size-input" value="14" min="10" max="30">
                     </div>
                     <div class="editor-buttons">
+                        <button type="button" class="btn-icon" id="boldBtn" title="{% trans 'Жирный (Ctrl+B)' %}">
+                            <i class="fas fa-bold"></i>
+                        </button>
+                        <button type="button" class="btn-icon" id="italicBtn" title="{% trans 'Курсив (Ctrl+I)' %}">
+                            <i class="fas fa-italic"></i>
+                        </button>
+                        <div class="custom-dropdown" style="display: inline-block; position: relative;">
+                            <button type="button" class="btn-icon" id="paragraphDropdown" title="{% trans 'Параграфы' %}">
+                                <i class="fas fa-paragraph"></i>
+                            </button>
+                            <div class="dropdown-menu" id="paragraphMenu" style="display: none;">
+                                <a class="dropdown-item" href="#" data-action="h1">{% trans 'Заголовок 1' %}</a>
+                                <a class="dropdown-item" href="#" data-action="h2">{% trans 'Заголовок 2' %}</a>
+                                <a class="dropdown-item" href="#" data-action="h3">{% trans 'Заголовок 3' %}</a>
+                                <a class="dropdown-item" href="#" data-action="paragraph">{% trans 'Параграф' %}</a>
+                            </div>
+                        </div>
+                        <div class="custom-dropdown" style="display: inline-block; position: relative;">
+                            <button type="button" class="btn-icon" id="footnotesDropdown" title="{% trans 'Сноски' %}">
+                                <i class="fas fa-superscript"></i>
+                            </button>
+                            <div class="dropdown-menu" id="footnotesMenu" style="display: none;">
+                                <a class="dropdown-item" href="#" data-action="reference">{% trans 'Ссылка' %}</a>
+                                <a class="dropdown-item" href="#" data-action="single">{% trans 'Одностраничная' %}</a>
+                                <a class="dropdown-item" href="#" data-action="start">{% trans 'Начало' %}</a>
+                                <a class="dropdown-item" href="#" data-action="continuation">{% trans 'Продолжение' %}</a>
+                                <a class="dropdown-item" href="#" data-action="end">{% trans 'Окончание' %}</a>
+                            </div>
+                        </div>
                         <button type="button" class="btn-icon" id="correctTextButton" title="{% trans 'Улучшить форматирование' %}">
                             <i class="fas fa-magic"></i>
-                        </button>
-                        <button type="button" class="btn-icon" id="enableCKEditor" title="{% trans 'Включить редактор' %}">
-                            <i class="fas fa-code"></i>
                         </button>
                         <button type="button" class="btn-icon" id="undoBtn" title="{% trans 'Отменить (Ctrl+Z)' %}">
                             <i class="fas fa-undo"></i>

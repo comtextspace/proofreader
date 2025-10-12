@@ -704,6 +704,56 @@ document.addEventListener('DOMContentLoaded', function() {
             const beforeText = textarea.value.substring(0, start);
             const afterText = textarea.value.substring(end);
 
+            // Handle simple reference case (no selection needed)
+            if (style === 'reference') {
+                // Insert [^X] at cursor position
+                const reference = '[^X]';
+                textarea.value = beforeText + reference + afterText;
+
+                // Select the X so user can type a number
+                const xPosition = start + 2; // Position after [^
+                textarea.selectionStart = xPosition;
+                textarea.selectionEnd = xPosition + 1;
+
+                // Trigger input event for undo/redo tracking
+                const event = new Event('input', { bubbles: true });
+                textarea.dispatchEvent(event);
+
+                // Refocus textarea
+                textarea.focus();
+
+                // Add event listener to replace X when user types
+                const replaceHandler = function(e) {
+                    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                        e.preventDefault();
+
+                        const currentText = textarea.value;
+                        const newChar = e.key;
+
+                        // Replace the X
+                        const beforeX = currentText.substring(0, xPosition);
+                        const afterX = currentText.substring(xPosition + 1);
+                        textarea.value = beforeX + newChar + afterX;
+
+                        // Position cursor after the reference
+                        const newCursorPos = xPosition + 1 + 1; // +1 for char, +1 for ]
+                        textarea.selectionStart = newCursorPos;
+                        textarea.selectionEnd = newCursorPos;
+
+                        // Trigger input event
+                        const inputEvent = new Event('input', { bubbles: true });
+                        textarea.dispatchEvent(inputEvent);
+
+                        // Remove this event listener after first use
+                        textarea.removeEventListener('keydown', replaceHandler);
+                    }
+                };
+
+                textarea.addEventListener('keydown', replaceHandler);
+                return;
+            }
+
+            // For other styles, text selection is required
             if (!selectedText) {
                 // No text selected, do nothing
                 return;
@@ -715,7 +765,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Apply style based on action
             switch (style) {
                 case 'single':
-                    // Одностроничное: [^X]{ text }[^X]
+                    // Одностраничная: [^X]{ text }[^X]
                     prefix = '[^X]{';
                     suffix = '}[^X]';
                     break;
@@ -739,10 +789,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Apply the formatting
             textarea.value = beforeText + prefix + selectedText + suffix + afterText;
 
-            // Position cursor after the inserted text
-            const newCursorPos = start + prefix.length + selectedText.length + suffix.length;
-            textarea.selectionStart = newCursorPos;
-            textarea.selectionEnd = newCursorPos;
+            // Select the first X so user can type a number to replace it
+            // Find position of first X (it's at position 2 in the prefix: [^X)
+            const firstXPosition = start + 2; // Position after [^
+            textarea.selectionStart = firstXPosition;
+            textarea.selectionEnd = firstXPosition + 1; // Select the X
 
             // Trigger input event for undo/redo tracking
             const event = new Event('input', { bubbles: true });
@@ -750,6 +801,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Refocus textarea
             textarea.focus();
+
+            // Add event listener to replace both X's when user types
+            const replaceHandler = function(e) {
+                // Only handle single character keys (numbers, letters)
+                if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                    e.preventDefault();
+
+                    const currentText = textarea.value;
+                    const newChar = e.key;
+
+                    // Calculate the position of the second X
+                    // First X is at: start + 2
+                    // After first X: we have "]" + rest of prefix + selectedText + suffix
+                    // Second X is in the suffix at position: start + prefix.length + selectedText.length + suffix.indexOf('X')
+                    const secondXPosition = start + prefix.length + selectedText.length + suffix.indexOf('X');
+
+                    // Split the text at both X positions
+                    const beforeFirstX = currentText.substring(0, firstXPosition);
+                    const betweenXs = currentText.substring(firstXPosition + 1, secondXPosition);
+                    const afterSecondX = currentText.substring(secondXPosition + 1);
+
+                    // Build new text with both X's replaced
+                    textarea.value = beforeFirstX + newChar + betweenXs + newChar + afterSecondX;
+
+                    // Position cursor after the entire footnote
+                    const newCursorPos = beforeFirstX.length + newChar.length + betweenXs.length + newChar.length + (suffix.length - suffix.indexOf('X') - 1);
+                    textarea.selectionStart = newCursorPos;
+                    textarea.selectionEnd = newCursorPos;
+
+                    // Trigger input event
+                    const inputEvent = new Event('input', { bubbles: true });
+                    textarea.dispatchEvent(inputEvent);
+
+                    // Remove this event listener after first use
+                    textarea.removeEventListener('keydown', replaceHandler);
+                }
+            };
+
+            // Add the event listener
+            textarea.addEventListener('keydown', replaceHandler);
         }
     }
 

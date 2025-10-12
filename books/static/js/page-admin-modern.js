@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeFloatingButtons();
     initializeUndoRedo();
     initializeFormButtons();
+    initializeMarkdownButtons();
 
     // Dark Mode Functionality
     function initializeDarkMode() {
@@ -512,6 +513,246 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(`Selected: ${words} words, ${chars} characters`);
     }
 
+    // Markdown Formatting Buttons
+    function initializeMarkdownButtons() {
+        const textarea = document.querySelector('.modern-textarea');
+        if (!textarea) return;
+
+        // Bold button
+        document.getElementById('boldBtn')?.addEventListener('click', () => {
+            wrapSelectedText(textarea, '**', '**');
+        });
+
+        // Italic button
+        document.getElementById('italicBtn')?.addEventListener('click', () => {
+            wrapSelectedText(textarea, '*', '*');
+        });
+
+        // Paragraph dropdown toggle
+        const dropdownBtn = document.getElementById('paragraphDropdown');
+        const dropdownMenu = document.getElementById('paragraphMenu');
+
+        dropdownBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isVisible = dropdownMenu.style.display === 'block';
+            dropdownMenu.style.display = isVisible ? 'none' : 'block';
+            // Close other dropdowns
+            const footnotesMenu = document.getElementById('footnotesMenu');
+            if (footnotesMenu) footnotesMenu.style.display = 'none';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (dropdownMenu && !dropdownMenu.contains(e.target) && e.target !== dropdownBtn) {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+
+        // Paragraph dropdown items
+        document.querySelectorAll('#paragraphMenu .dropdown-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const action = e.currentTarget.getAttribute('data-action');
+                applyParagraphStyle(textarea, action);
+                dropdownMenu.style.display = 'none';
+            });
+        });
+
+        // Footnotes dropdown toggle
+        const footnotesBtn = document.getElementById('footnotesDropdown');
+        const footnotesMenu = document.getElementById('footnotesMenu');
+
+        footnotesBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isVisible = footnotesMenu.style.display === 'block';
+            footnotesMenu.style.display = isVisible ? 'none' : 'block';
+            // Close other dropdowns
+            if (dropdownMenu) dropdownMenu.style.display = 'none';
+        });
+
+        // Close footnotes dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (footnotesMenu && !footnotesMenu.contains(e.target) && e.target !== footnotesBtn) {
+                footnotesMenu.style.display = 'none';
+            }
+        });
+
+        // Footnotes dropdown items
+        document.querySelectorAll('#footnotesMenu .dropdown-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const action = e.currentTarget.getAttribute('data-action');
+                applyFootnoteStyle(textarea, action);
+                footnotesMenu.style.display = 'none';
+            });
+        });
+
+        // Keyboard shortcuts for markdown
+        textarea.addEventListener('keydown', (e) => {
+            // Ctrl+B - Bold
+            if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                e.preventDefault();
+                document.getElementById('boldBtn')?.click();
+            }
+
+            // Ctrl+I - Italic
+            if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+                e.preventDefault();
+                document.getElementById('italicBtn')?.click();
+            }
+        });
+
+        function wrapSelectedText(textarea, prefix, suffix) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            const beforeText = textarea.value.substring(0, start);
+            const afterText = textarea.value.substring(end);
+
+            if (selectedText) {
+                // Check if text is already wrapped
+                const beforePrefix = beforeText.slice(-prefix.length);
+                const afterSuffix = afterText.slice(0, suffix.length);
+
+                if (beforePrefix === prefix && afterSuffix === suffix) {
+                    // Remove wrapping
+                    textarea.value = beforeText.slice(0, -prefix.length) + selectedText + afterText.slice(suffix.length);
+                    textarea.selectionStart = start - prefix.length;
+                    textarea.selectionEnd = end - prefix.length;
+                } else {
+                    // Add wrapping
+                    textarea.value = beforeText + prefix + selectedText + suffix + afterText;
+                    textarea.selectionStart = start + prefix.length;
+                    textarea.selectionEnd = end + prefix.length;
+                }
+            } else {
+                // No selection, insert markers with cursor between them
+                textarea.value = beforeText + prefix + suffix + afterText;
+                textarea.selectionStart = start + prefix.length;
+                textarea.selectionEnd = start + prefix.length;
+            }
+
+            // Trigger input event for undo/redo tracking
+            const event = new Event('input', { bubbles: true });
+            textarea.dispatchEvent(event);
+
+            // Refocus textarea
+            textarea.focus();
+        }
+
+        function applyParagraphStyle(textarea, style) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+
+            // Find the start of the current line
+            let lineStart = start;
+            while (lineStart > 0 && text[lineStart - 1] !== '\n') {
+                lineStart--;
+            }
+
+            // Find the end of the current line
+            let lineEnd = end;
+            while (lineEnd < text.length && text[lineEnd] !== '\n') {
+                lineEnd++;
+            }
+
+            const beforeLine = text.substring(0, lineStart);
+            const currentLine = text.substring(lineStart, lineEnd);
+            const afterLine = text.substring(lineEnd);
+
+            let newLine = currentLine;
+
+            // Remove existing heading markers
+            newLine = newLine.replace(/^#+\s*/, '');
+
+            // Apply new style
+            switch (style) {
+                case 'h1':
+                    newLine = '# ' + newLine;
+                    break;
+                case 'h2':
+                    newLine = '## ' + newLine;
+                    break;
+                case 'h3':
+                    newLine = '### ' + newLine;
+                    break;
+                case 'paragraph':
+                    // Already removed headers above
+                    break;
+            }
+
+            textarea.value = beforeLine + newLine + afterLine;
+
+            // Adjust cursor position
+            const newCursorPos = lineStart + newLine.length;
+            textarea.selectionStart = newCursorPos;
+            textarea.selectionEnd = newCursorPos;
+
+            // Trigger input event for undo/redo tracking
+            const event = new Event('input', { bubbles: true });
+            textarea.dispatchEvent(event);
+
+            // Refocus textarea
+            textarea.focus();
+        }
+
+        function applyFootnoteStyle(textarea, style) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            const beforeText = textarea.value.substring(0, start);
+            const afterText = textarea.value.substring(end);
+
+            if (!selectedText) {
+                // No text selected, do nothing
+                return;
+            }
+
+            let prefix = '';
+            let suffix = '';
+
+            // Apply style based on action
+            switch (style) {
+                case 'single':
+                    // Одностроничное: [^X]{ text }[^X]
+                    prefix = '[^X]{';
+                    suffix = '}[^X]';
+                    break;
+                case 'start':
+                    // Начало: [^X]{ text ~[^X]
+                    prefix = '[^X]{';
+                    suffix = '~[^X]';
+                    break;
+                case 'continuation':
+                    // Продолжение: [^X]~ text ~[^X]
+                    prefix = '[^X]~';
+                    suffix = '~[^X]';
+                    break;
+                case 'end':
+                    // Окончание: [^X]~ text }[^X]
+                    prefix = '[^X]~';
+                    suffix = '}[^X]';
+                    break;
+            }
+
+            // Apply the formatting
+            textarea.value = beforeText + prefix + selectedText + suffix + afterText;
+
+            // Position cursor after the inserted text
+            const newCursorPos = start + prefix.length + selectedText.length + suffix.length;
+            textarea.selectionStart = newCursorPos;
+            textarea.selectionEnd = newCursorPos;
+
+            // Trigger input event for undo/redo tracking
+            const event = new Event('input', { bubbles: true });
+            textarea.dispatchEvent(event);
+
+            // Refocus textarea
+            textarea.focus();
+        }
+    }
+
     // Add CSS animations
     const style = document.createElement('style');
     style.textContent = `
@@ -544,6 +785,52 @@ document.addEventListener('DOMContentLoaded', function() {
 
         .page-image:active {
             cursor: grabbing;
+        }
+
+        .custom-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            background: var(--card-bg, #fff);
+            border: 1px solid var(--border-color, #ddd);
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            padding: 0.5rem 0;
+            min-width: 160px;
+            margin-top: 0.25rem;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            color: var(--text-color, #333);
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--hover-bg, #f5f5f5);
+            color: var(--text-color, #333);
+        }
+
+        /* Dark mode support for dropdown */
+        body.dark-mode .dropdown-menu {
+            background: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        body.dark-mode .dropdown-item {
+            color: var(--text-color);
+        }
+
+        body.dark-mode .dropdown-item:hover {
+            background-color: var(--toolbar-bg);
         }
     `;
     document.head.appendChild(style);

@@ -72,4 +72,4 @@ class PageAdminForm(forms.ModelForm):
 
 
 class ActionValueForm(ActionForm):
-    action_value = forms.CharField(label=_('значение'))
+    action_value = forms.CharField(label=_('значение'), required=False)

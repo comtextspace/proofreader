@@ -269,4 +269,17 @@ jobs:
             exit 1
           fi
 
+          # Restart nginx to pick up any new static files
+          echo "=== Restarting nginx ==="
+          docker compose -f docker-compose.dev.yml restart nginx
+          sleep 5
+
+          # Verify nginx is running
+          if docker compose -f docker-compose.dev.yml ps nginx | grep -q "Up"; then
+            echo "✅ Nginx restarted successfully"
+          else
+            echo "⚠️ Warning: Nginx restart may have failed"
+            docker compose -f docker-compose.dev.yml logs nginx --tail=20
+          fi
+
           echo "=== ✅ Dev deployment completed successfully! ==="

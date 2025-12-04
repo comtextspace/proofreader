@@ -10,6 +10,24 @@ from .managers import PagesQuerySet
 from .tasks import extract_text_from_image_task, split_pdf_to_pages_task
 
 
+class ExportSource(models.Model):
+    """GitHub repository configuration for book exports."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100, verbose_name=_("Название"))
+    repo = models.CharField(max_length=200, verbose_name=_("Репозиторий"), help_text=_("Формат: username/repository"))
+    branch = models.CharField(max_length=100, default="main", verbose_name=_("Ветка"))
+    directory = models.CharField(max_length=200, default="books", verbose_name=_("Директория"))
+
+    def __str__(self):
+        return f"{self.name} ({self.repo})"
+
+    class Meta:
+        db_table = '"book"."export_source"'
+        verbose_name = _("Источник экспорта")
+        verbose_name_plural = _("Источники экспорта")
+
+
 class Author(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
@@ -29,6 +47,14 @@ class Book(LifecycleModelMixin, models.Model):
     author = models.ForeignKey(Author, on_delete=models.PROTECT, related_name="books", verbose_name=_("Автор"))
     pdf = models.FileField(upload_to="pdfs/", null=True, blank=True)
     total_pages_in_pdf = models.IntegerField(null=True, blank=True)
+    export_source = models.ForeignKey(
+        ExportSource,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="books",
+        verbose_name=_("Источник экспорта"),
+    )
 
     class Meta:
         db_table = '"book"."book"'

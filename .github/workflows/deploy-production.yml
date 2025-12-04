@@ -63,6 +63,8 @@ jobs:
         key: ${{ secrets.PROD_DEPLOY_KEY }}
         port: ${{ secrets.PROD_DEPLOY_PORT || 22 }}
         script: |
+          set -e  # Exit immediately if any command fails
+          
           # Set deployment path for production
           DEPLOY_PATH="${{ secrets.PROD_DEPLOY_PATH }}"
           if [ -z "$DEPLOY_PATH" ]; then
@@ -111,13 +113,50 @@ jobs:
           mkdir -p "$BACKUP_DIR"
           docker compose -f docker-compose.prod.yml exec -T db pg_dump -U postgres postgres | gzip > "$BACKUP_DIR/backup_$(date +%Y%m%d_%H%M%S).sql.gz" || echo "Backup failed, continuing anyway..."
 
+          # Check available disk space
+          echo "=== Checking disk space ==="
+          df -h /
+          AVAILABLE_SPACE=$(df / | tail -1 | awk '{print $4}' | sed 's/G//')
+          if (( $(echo "$AVAILABLE_SPACE < 2" | bc -l) )); then
+            echo "⚠️ Warning: Low disk space detected (${AVAILABLE_SPACE}GB available)"
+            echo "Performing Docker cleanup..."
+            
+            # Remove unused images
+            docker image prune -a -f || true
+            
+            # Remove build cache
+            docker builder prune -a -f || true
+            
+            # Remove unused volumes (be careful with this)
+            docker volume prune -f || true
+            
+            echo "=== Disk space after cleanup ==="
+            df -h /
+          fi
+
           # Log in to GitHub Container Registry
+          echo "Logging in to GitHub Container Registry..."
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          
+          if [ $? -ne 0 ]; then
+            echo "❌ ERROR: Failed to login to GitHub Container Registry"
+            exit 1
+          fi
 
           # Pull latest images
-          docker compose -f docker-compose.prod.yml pull
+          echo "Pulling latest images..."
+          if ! docker compose -f docker-compose.prod.yml pull; then
+            echo "❌ ERROR: Failed to pull Docker images"
+            echo "This might be due to:"
+            echo "  - Network issues"
+            echo "  - Insufficient disk space"
+            echo "  - Authentication problems"
+            df -h /
+            exit 1
+          fi
 
           # Deploy with zero-downtime
+          echo "Starting services..."
           docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
           # Wait for services to be ready
@@ -132,7 +171,7 @@ jobs:
           # Compile messages (if using internationalization)
           docker compose -f docker-compose.prod.yml exec -T web python manage.py compilemessages || echo "Message compilation failed"
 
-          # Clean up old images
+          # Clean up old images after successful deployment
           docker image prune -f
 
           # Keep only last 5 backups

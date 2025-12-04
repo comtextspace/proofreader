@@ -12,12 +12,18 @@ from accounts.models import Assignment
 from core.admin_filter import ForeignKeyFilter
 from core.admin_utils import CustomHistoryAdmin, add_request_object_to_admin_form
 from .admin_forms import ActionValueForm, PageAdminForm
-from .models import Author, Book, Page
+from .models import Author, Book, ExportSource, Page
 from .services.book_export import export_book
 from .services.github_upload import upload_books_to_github
 from .tasks import extract_text_from_image_task, split_pdf_to_pages_task
 
 User = get_user_model()
+
+
+@admin.register(ExportSource)
+class ExportSourceAdmin(admin.ModelAdmin):
+    list_display = ["name", "repo", "branch", "directory"]
+    search_fields = ['name', 'repo']
 
 
 @admin.register(Author)
@@ -39,18 +45,17 @@ def download_as_text_file(modeladmin, request, queryset):
 def upload_to_github(modeladmin, request, queryset):
     from django.conf import settings
 
-    # Check if GitHub settings are configured
-    if not getattr(settings, 'GITHUB_TOKEN', None) or not getattr(settings, 'GITHUB_REPO', None):
-        messages.error(
-            request, _('GitHub настройки не сконфигурированы. Добавьте GITHUB_TOKEN и GITHUB_REPO в settings.')
-        )
+    # Check if GitHub token is configured
+    if not getattr(settings, 'GITHUB_TOKEN', None):
+        messages.error(request, _('GitHub токен не сконфигурирован. Добавьте GITHUB_TOKEN в settings.'))
         return
 
     results = upload_books_to_github(queryset)
 
     # Process results and show messages
     successful = [r for r in results if r['success']]
-    failed = [r for r in results if not r['success']]
+    skipped = [r for r in results if r.get('skipped')]
+    failed = [r for r in results if not r['success'] and not r.get('skipped')]
 
     if successful:
         success_msg = _('Успешно загружено в GitHub: ') + ', '.join([r['book'] for r in successful])
@@ -60,6 +65,10 @@ def upload_to_github(modeladmin, request, queryset):
         for result in successful:
             if 'url' in result:
                 messages.info(request, mark_safe(f"<a href='{result['url']}' target='_blank'>{result['book']}</a>"))
+
+    if skipped:
+        skipped_books = ', '.join([r['book'] for r in skipped])
+        messages.warning(request, _('Пропущено (не указан источник экспорта): ') + skipped_books)
 
     if failed:
         for result in failed:
@@ -114,7 +123,7 @@ class BookAdmin(admin.ModelAdmin):
         'view_pages_link',
     ]
     fieldsets = (
-        (None, {'fields': ('name', 'author', 'pdf')}),
+        (None, {'fields': ('name', 'author', 'pdf', 'export_source')}),
         (
             _('Страницы'),
             {
@@ -130,7 +139,7 @@ class BookAdmin(admin.ModelAdmin):
             },
         ),
     )
-    autocomplete_fields = ['author']
+    autocomplete_fields = ['author', 'export_source']
     inlines = [AssignmentAdminInline]
 
     def changelist_view(self, request, extra_context=None):

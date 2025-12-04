@@ -98,6 +98,8 @@ jobs:
             git clone -b master https://github.com/comtextspace/proofreader.git .
           else
             echo "Pulling latest changes..."
+            # Ensure remote is set to HTTPS (not SSH) for CI/CD
+            git remote set-url origin https://github.com/comtextspace/proofreader.git
             git pull origin master
           fi
 

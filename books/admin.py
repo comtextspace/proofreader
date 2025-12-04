@@ -102,6 +102,7 @@ class BookAdmin(admin.ModelAdmin):
     list_display = [
         "name",
         "author",
+        "export_source",
         'status',
         'total_pages_in_pdf',
         'pages_count',
@@ -111,6 +112,7 @@ class BookAdmin(admin.ModelAdmin):
         'pages_done_count',
         'view_pages_link',
     ]
+    list_editable = ["export_source"]
     list_filter = ['author']
     search_fields = ['name', 'author__name']
     readonly_fields = [

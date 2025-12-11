@@ -59,7 +59,7 @@ class GitHubUploadService:
         content = export_book(book)
 
         # Prepare file path
-        filename = f"{book.name}.md"
+        filename = f"{book.export_name}.md"
         file_path = f"{self.target_dir}/{filename}"
 
         # Encode content to base64 (required by GitHub API)

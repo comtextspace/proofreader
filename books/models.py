@@ -55,6 +55,12 @@ class Book(LifecycleModelMixin, models.Model):
         related_name="books",
         verbose_name=_("Источник экспорта"),
     )
+    export_name = models.CharField(
+        max_length=200,
+        default="",
+        verbose_name=_("Имя файла для экспорта"),
+        help_text=_("Имя файла при экспорте в GitHub (без расширения)"),
+    )
 
     class Meta:
         db_table = '"book"."book"'

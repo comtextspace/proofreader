@@ -108,9 +108,8 @@ class BookAdmin(admin.ModelAdmin):
         'status',
         'total_pages_in_pdf',
         'pages_count',
-        'pages_processing_count',
-        'pages_ready_count',
-        'pages_in_progress_count',
+        'pages_recognized_count',
+        'pages_in_work_count',
         'pages_done_count',
         'view_pages_link',
     ]
@@ -120,9 +119,8 @@ class BookAdmin(admin.ModelAdmin):
     readonly_fields = [
         'status',
         'pages_count',
-        'pages_processing_count',
-        'pages_ready_count',
-        'pages_in_progress_count',
+        'pages_recognized_count',
+        'pages_in_work_count',
         'pages_done_count',
         'view_pages_link',
     ]
@@ -135,9 +133,8 @@ class BookAdmin(admin.ModelAdmin):
                     'view_pages_link',
                     'status',
                     'pages_count',
-                    'pages_processing_count',
-                    'pages_ready_count',
-                    'pages_in_progress_count',
+                    'pages_recognized_count',
+                    'pages_in_work_count',
                     'pages_done_count',
                 )
             },
@@ -158,33 +155,50 @@ class BookAdmin(admin.ModelAdmin):
             .get_queryset(request)
             .annotate(
                 pages_count=models.Count('pages'),
-                pages_processing_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.PROCESSING)),
-                pages_ready_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.READY)),
-                pages_in_progress_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.IN_PROGRESS)),
+                pages_recognized_count=models.Count(
+                    'pages',
+                    filter=~models.Q(pages__status=Page.Status.PROCESSING),
+                ),
+                pages_in_work_count=models.Count(
+                    'pages',
+                    filter=models.Q(
+                        pages__status__in=[
+                            Page.Status.IN_PROGRESS,
+                            Page.Status.FORMATTING,
+                            Page.Status.CHECK,
+                        ]
+                    ),
+                ),
                 pages_done_count=models.Count('pages', filter=models.Q(pages__status=Page.Status.DONE)),
             )
         )
 
     def status(self, obj):
-        if obj.pages_processing_count > 0:
+        total_pages = obj.total_pages_in_pdf or 0
+        if obj.pages_count < total_pages:
+            return _('Разделение')
+        elif obj.pages_recognized_count < obj.pages_count:
             return _('Распознавание')
-        elif obj.pages_done_count == obj.total_pages_in_pdf:
+        elif obj.pages_count > 0 and obj.pages_done_count == obj.pages_count:
             return _('Завершено')
-        else:
+        elif obj.pages_count > 0:
             return _('Вычитка')
+        else:
+            return '-'
 
+    @admin.display(description=_('Разделено'))
     def pages_count(self, obj):
         return obj.pages_count
 
-    def pages_processing_count(self, obj):
-        return obj.pages_processing_count
+    @admin.display(description=_('Распознано'))
+    def pages_recognized_count(self, obj):
+        return obj.pages_recognized_count
 
-    def pages_ready_count(self, obj):
-        return obj.pages_ready_count
+    @admin.display(description=_('В работе'))
+    def pages_in_work_count(self, obj):
+        return obj.pages_in_work_count
 
-    def pages_in_progress_count(self, obj):
-        return obj.pages_in_progress_count
-
+    @admin.display(description=_('Завершено'))
     def pages_done_count(self, obj):
         return obj.pages_done_count
 

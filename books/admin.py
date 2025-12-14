@@ -85,8 +85,9 @@ def process_unprocessed_pages(modeladmin, request, queryset):
 @admin.action(description=_("Повторно запустить задачи по разделению страниц"))
 def continue_pages_splittings(modeladmin, request, queryset):
     for book in queryset:
-        last_page = book.pages.order_by('-number').first().values_list('number', flat=True)
-        split_pdf_to_pages_task.delay(book.id, start_page=last_page + 1)
+        last_page_number = book.pages.order_by('-number').values_list('number', flat=True).first()
+        start_page = (last_page_number or 0) + 1
+        split_pdf_to_pages_task.delay(book.id, start_page=start_page)
     messages.add_message(request, messages.INFO, _('Задачи по разделению страниц запущены'))
 
 

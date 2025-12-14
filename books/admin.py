@@ -13,7 +13,20 @@ from django.utils.translation import gettext_lazy as _
 
 def _make_content_disposition(filename):
     """Create Content-Disposition header with proper encoding for non-ASCII filenames."""
-    ascii_filename = filename.encode('ascii', 'ignore').decode('ascii') or 'download'
+    # Get file extension
+    if '.' in filename:
+        name, ext = filename.rsplit('.', 1)
+        ext = f'.{ext}'
+    else:
+        name, ext = filename, ''
+
+    # Create ASCII fallback - keep only ASCII chars, use 'book' if empty
+    ascii_name = name.encode('ascii', 'ignore').decode('ascii').strip()
+    if not ascii_name:
+        ascii_name = 'book'
+    ascii_filename = f'{ascii_name}{ext}'
+
+    # URL-encode the full filename for modern browsers
     encoded_filename = quote(filename)
     return f"attachment; filename=\"{ascii_filename}\"; filename*=UTF-8''{encoded_filename}"
 

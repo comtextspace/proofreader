@@ -1,4 +1,11 @@
+import io
 import re
+
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 
 
 def _working_with_pages_end(pages):
@@ -139,3 +146,194 @@ def export_book(book):
     text = _join_pages_with_rules(pages_texts)
     text = _merge_annotations(text)
     return text
+
+
+def _register_cyrillic_font():
+    """Register a font that supports Cyrillic characters."""
+    try:
+        pdfmetrics.getFont('DejaVuSans')
+    except KeyError:
+        import os
+
+        # Common font paths for DejaVu Sans
+        font_paths = [
+            '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+            '/usr/share/fonts/TTF/DejaVuSans.ttf',
+            '/Library/Fonts/DejaVuSans.ttf',
+            os.path.expanduser('~/.fonts/DejaVuSans.ttf'),
+        ]
+
+        for font_path in font_paths:
+            if os.path.exists(font_path):
+                pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
+                return 'DejaVuSans'
+
+        # Fallback to Helvetica if DejaVu not found
+        return 'Helvetica'
+
+    return 'DejaVuSans'
+
+
+def export_book_as_pdf(book):
+    """Export book as PDF with proper formatting."""
+    from books.models import Page
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=50,
+        leftMargin=50,
+        topMargin=50,
+        bottomMargin=50,
+    )
+
+    font_name = _register_cyrillic_font()
+    styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle(
+        'BookTitle',
+        parent=styles['Heading1'],
+        fontName=font_name,
+        fontSize=18,
+        spaceAfter=20,
+        alignment=1,  # Center
+    )
+
+    body_style = ParagraphStyle(
+        'BookBody',
+        parent=styles['Normal'],
+        fontName=font_name,
+        fontSize=11,
+        leading=14,
+        spaceAfter=6,
+        firstLineIndent=20,
+    )
+
+    page_marker_style = ParagraphStyle(
+        'PageMarker',
+        parent=styles['Normal'],
+        fontName=font_name,
+        fontSize=9,
+        textColor='gray',
+        alignment=1,  # Center
+        spaceBefore=10,
+        spaceAfter=10,
+    )
+
+    story = []
+
+    # Add title
+    title = book.name
+    if book.author:
+        title = f"{book.author.name}<br/>{book.name}"
+    story.append(Paragraph(title, title_style))
+    story.append(Spacer(1, 20))
+
+    # Get text content
+    pages = Page.objects.filter(book=book).order_by('number')
+    pages_texts = _working_with_pages_end(pages)
+
+    for page_num, page_text in enumerate(pages_texts, start=1):
+        # Add page marker
+        story.append(Paragraph(f"[{page_num}]", page_marker_style))
+
+        # Process text - split into paragraphs and escape special characters
+        paragraphs = page_text.split('\n\n')
+        for para in paragraphs:
+            para = para.strip()
+            if para:
+                # Escape XML special characters
+                para = para.replace('&', '&amp;')
+                para = para.replace('<', '&lt;')
+                para = para.replace('>', '&gt;')
+                # Replace newlines with line breaks
+                para = para.replace('\n', '<br/>')
+                story.append(Paragraph(para, body_style))
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.getvalue()
+
+
+def export_book_as_epub(book):
+    """Export book as EPUB with proper formatting."""
+    from ebooklib import epub
+
+    from books.models import Page
+
+    epub_book = epub.EpubBook()
+
+    # Set metadata
+    identifier = f"proofreader-book-{book.id}"
+    epub_book.set_identifier(identifier)
+    epub_book.set_title(book.name)
+    epub_book.set_language('ru')
+
+    if book.author:
+        epub_book.add_author(book.author.name)
+
+    # CSS styles
+    style = '''
+    body { font-family: Georgia, serif; line-height: 1.6; }
+    h1 { text-align: center; margin-bottom: 2em; }
+    .page-marker { text-align: center; color: gray; font-size: 0.8em; margin: 1em 0; }
+    p { text-indent: 1.5em; margin: 0.5em 0; }
+    '''
+    nav_css = epub.EpubItem(
+        uid="style_nav",
+        file_name="style/nav.css",
+        media_type="text/css",
+        content=style,
+    )
+    epub_book.add_item(nav_css)
+
+    # Get pages
+    pages = Page.objects.filter(book=book).order_by('number')
+    pages_texts = _working_with_pages_end(pages)
+
+    # Create title page
+    title_content = f'<h1>{book.name}</h1>'
+    if book.author:
+        title_content = f'<h1>{book.author.name}<br/><br/>{book.name}</h1>'
+
+    title_chapter = epub.EpubHtml(title='Титульная страница', file_name='title.xhtml', lang='ru')
+    title_chapter.content = f'<html><body>{title_content}</body></html>'
+    title_chapter.add_item(nav_css)
+    epub_book.add_item(title_chapter)
+
+    # Create content chapter
+    content_html = ''
+    for page_num, page_text in enumerate(pages_texts, start=1):
+        content_html += f'<p class="page-marker">[{page_num}]</p>'
+
+        paragraphs = page_text.split('\n\n')
+        for para in paragraphs:
+            para = para.strip()
+            if para:
+                # Escape HTML special characters
+                para = para.replace('&', '&amp;')
+                para = para.replace('<', '&lt;')
+                para = para.replace('>', '&gt;')
+                para = para.replace('\n', '<br/>')
+                content_html += f'<p>{para}</p>'
+
+    content_chapter = epub.EpubHtml(title=book.name, file_name='content.xhtml', lang='ru')
+    content_chapter.content = f'<html><body>{content_html}</body></html>'
+    content_chapter.add_item(nav_css)
+    epub_book.add_item(content_chapter)
+
+    # Define Table of Contents and spine
+    epub_book.toc = [
+        epub.Link('title.xhtml', 'Титульная страница', 'title'),
+        epub.Link('content.xhtml', book.name, 'content'),
+    ]
+    epub_book.add_item(epub.EpubNcx())
+    epub_book.add_item(epub.EpubNav())
+    epub_book.spine = ['nav', title_chapter, content_chapter]
+
+    # Write to buffer
+    buffer = io.BytesIO()
+    epub.write_epub(buffer, epub_book)
+    buffer.seek(0)
+    return buffer.getvalue()

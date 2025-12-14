@@ -36,6 +36,8 @@ django-model-utils = "^4.3.1"
 django-admin-autocomplete-filter = "^0.7.1"
 toml = "^0.10.2"
 requests = "^2.32.5"
+reportlab = "^4.4.6"
+ebooklib = "^0.20"
 
 
 [tool.poetry.group.dev.dependencies]

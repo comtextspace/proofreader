@@ -13,7 +13,7 @@ from core.admin_filter import ForeignKeyFilter
 from core.admin_utils import CustomHistoryAdmin, add_request_object_to_admin_form
 from .admin_forms import ActionValueForm, PageAdminForm
 from .models import Author, Book, ExportSource, Page
-from .services.book_export import export_book
+from .services.book_export import export_book, export_book_as_epub, export_book_as_pdf
 from .services.github_upload import upload_books_to_github
 from .tasks import extract_text_from_image_task, split_pdf_to_pages_task
 
@@ -38,6 +38,24 @@ def download_as_text_file(modeladmin, request, queryset):
     text = export_book(book)
     response = HttpResponse(text, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename="{book.name}.md"'
+    return response
+
+
+@admin.action(description=_("Скачать книгу в формате PDF"))
+def download_as_pdf_file(modeladmin, request, queryset):
+    book = queryset.first()
+    pdf_content = export_book_as_pdf(book)
+    response = HttpResponse(pdf_content, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{book.name}.pdf"'
+    return response
+
+
+@admin.action(description=_("Скачать книгу в формате EPUB"))
+def download_as_epub_file(modeladmin, request, queryset):
+    book = queryset.first()
+    epub_content = export_book_as_epub(book)
+    response = HttpResponse(epub_content, content_type='application/epub+zip')
+    response['Content-Disposition'] = f'attachment; filename="{book.name}.epub"'
     return response
 
 
@@ -99,7 +117,14 @@ class AssignmentAdminInline(admin.TabularInline):
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    actions = [download_as_text_file, upload_to_github, process_unprocessed_pages, continue_pages_splittings]
+    actions = [
+        download_as_text_file,
+        download_as_pdf_file,
+        download_as_epub_file,
+        upload_to_github,
+        process_unprocessed_pages,
+        continue_pages_splittings,
+    ]
     list_display = [
         "name",
         "author",

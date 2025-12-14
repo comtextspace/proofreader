@@ -1,11 +1,42 @@
 import io
+import os
 import re
+import tempfile
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+
+
+def _parse_export_pages(export_pages_str):
+    """
+    Parse export_pages string and return tuple (start, end) or None if empty.
+    Format: "4-15" returns (4, 15)
+    """
+    if not export_pages_str or not export_pages_str.strip():
+        return None
+
+    match = re.match(r'^(\d+)-(\d+)$', export_pages_str.strip())
+    if match:
+        return int(match.group(1)), int(match.group(2))
+
+    return None
+
+
+def _get_pages_for_export(book):
+    """Get pages for export based on book.export_pages setting."""
+    from books.models import Page
+
+    pages = Page.objects.filter(book=book).order_by('number')
+
+    page_range = _parse_export_pages(book.export_pages)
+    if page_range:
+        start, end = page_range
+        pages = pages.filter(number__gte=start, number__lte=end)
+
+    return pages
 
 
 def _working_with_pages_end(pages):
@@ -139,9 +170,7 @@ def _merge_annotations(text):
 
 
 def export_book(book):
-    from books.models import Page
-
-    pages = Page.objects.filter(book=book).order_by('number')
+    pages = _get_pages_for_export(book)
     pages_texts = _working_with_pages_end(pages)
     text = _join_pages_with_rules(pages_texts)
     text = _merge_annotations(text)
@@ -153,8 +182,6 @@ def _register_cyrillic_font():
     try:
         pdfmetrics.getFont('DejaVuSans')
     except KeyError:
-        import os
-
         # Common font paths for DejaVu Sans
         font_paths = [
             '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
@@ -176,8 +203,6 @@ def _register_cyrillic_font():
 
 def export_book_as_pdf(book):
     """Export book as PDF with proper formatting."""
-    from books.models import Page
-
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(
         buffer,
@@ -231,7 +256,7 @@ def export_book_as_pdf(book):
     story.append(Spacer(1, 20))
 
     # Get text content
-    pages = Page.objects.filter(book=book).order_by('number')
+    pages = _get_pages_for_export(book)
     pages_texts = _working_with_pages_end(pages)
 
     for page_num, page_text in enumerate(pages_texts, start=1):
@@ -256,11 +281,18 @@ def export_book_as_pdf(book):
     return buffer.getvalue()
 
 
+def _escape_html(text):
+    """Escape HTML special characters."""
+    text = text.replace('&', '&amp;')
+    text = text.replace('<', '&lt;')
+    text = text.replace('>', '&gt;')
+    text = text.replace('"', '&quot;')
+    return text
+
+
 def export_book_as_epub(book):
     """Export book as EPUB with proper formatting."""
     from ebooklib import epub
-
-    from books.models import Page
 
     epub_book = epub.EpubBook()
 
@@ -289,13 +321,15 @@ def export_book_as_epub(book):
     epub_book.add_item(nav_css)
 
     # Get pages
-    pages = Page.objects.filter(book=book).order_by('number')
+    pages = _get_pages_for_export(book)
     pages_texts = _working_with_pages_end(pages)
 
-    # Create title page
-    title_content = f'<h1>{book.name}</h1>'
+    # Create title page (escape HTML in title)
+    escaped_name = _escape_html(book.name)
+    title_content = f'<h1>{escaped_name}</h1>'
     if book.author:
-        title_content = f'<h1>{book.author.name}<br/><br/>{book.name}</h1>'
+        escaped_author = _escape_html(book.author.name)
+        title_content = f'<h1>{escaped_author}<br/><br/>{escaped_name}</h1>'
 
     title_chapter = epub.EpubHtml(title='Титульная страница', file_name='title.xhtml', lang='ru')
     title_chapter.content = f'<html><body>{title_content}</body></html>'
@@ -311,10 +345,7 @@ def export_book_as_epub(book):
         for para in paragraphs:
             para = para.strip()
             if para:
-                # Escape HTML special characters
-                para = para.replace('&', '&amp;')
-                para = para.replace('<', '&lt;')
-                para = para.replace('>', '&gt;')
+                para = _escape_html(para)
                 para = para.replace('\n', '<br/>')
                 content_html += f'<p>{para}</p>'
 
@@ -332,8 +363,15 @@ def export_book_as_epub(book):
     epub_book.add_item(epub.EpubNav())
     epub_book.spine = ['nav', title_chapter, content_chapter]
 
-    # Write to buffer
-    buffer = io.BytesIO()
-    epub.write_epub(buffer, epub_book)
-    buffer.seek(0)
-    return buffer.getvalue()
+    # Write to temp file (ebooklib works more reliably with file paths)
+    with tempfile.NamedTemporaryFile(suffix='.epub', delete=False) as tmp:
+        tmp_path = tmp.name
+
+    epub.write_epub(tmp_path, epub_book)
+
+    with open(tmp_path, 'rb') as f:
+        content = f.read()
+
+    os.unlink(tmp_path)
+
+    return content

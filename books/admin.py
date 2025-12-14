@@ -1,3 +1,5 @@
+from urllib.parse import quote
+
 from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
@@ -7,6 +9,27 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+
+
+def _make_content_disposition(filename):
+    """Create Content-Disposition header with proper encoding for non-ASCII filenames."""
+    # Get file extension
+    if '.' in filename:
+        name, ext = filename.rsplit('.', 1)
+        ext = f'.{ext}'
+    else:
+        name, ext = filename, ''
+
+    # Create ASCII fallback - keep only ASCII chars, use 'book' if empty
+    ascii_name = name.encode('ascii', 'ignore').decode('ascii').strip()
+    if not ascii_name:
+        ascii_name = 'book'
+    ascii_filename = f'{ascii_name}{ext}'
+
+    # URL-encode the full filename for modern browsers
+    encoded_filename = quote(filename)
+    return f"attachment; filename=\"{ascii_filename}\"; filename*=UTF-8''{encoded_filename}"
+
 
 from accounts.models import Assignment
 from core.admin_filter import ForeignKeyFilter
@@ -32,31 +55,36 @@ class AuthorAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
+def _create_download_response(content, content_type, filename):
+    """Create HTTP response for file download with proper headers."""
+    response = HttpResponse(content, content_type=content_type)
+    response['Content-Length'] = len(content)
+    response['Content-Disposition'] = _make_content_disposition(filename)
+    # Disable nginx buffering for large files
+    response['X-Accel-Buffering'] = 'no'
+    return response
+
+
 @admin.action(description=_("Скачать книгу текстовым файлом"))
 def download_as_text_file(modeladmin, request, queryset):
-    book = queryset.first()  # Assuming you want to download pages for one book at a time
+    book = queryset.first()
     text = export_book(book)
-    response = HttpResponse(text, content_type='text/plain')
-    response['Content-Disposition'] = f'attachment; filename="{book.name}.md"'
-    return response
+    content = text.encode('utf-8')
+    return _create_download_response(content, 'text/plain; charset=utf-8', f'{book.name}.md')
 
 
 @admin.action(description=_("Скачать книгу в формате PDF"))
 def download_as_pdf_file(modeladmin, request, queryset):
     book = queryset.first()
-    pdf_content = export_book_as_pdf(book)
-    response = HttpResponse(pdf_content, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{book.name}.pdf"'
-    return response
+    content = export_book_as_pdf(book)
+    return _create_download_response(content, 'application/pdf', f'{book.name}.pdf')
 
 
 @admin.action(description=_("Скачать книгу в формате EPUB"))
 def download_as_epub_file(modeladmin, request, queryset):
     book = queryset.first()
-    epub_content = export_book_as_epub(book)
-    response = HttpResponse(epub_content, content_type='application/epub+zip')
-    response['Content-Disposition'] = f'attachment; filename="{book.name}.epub"'
-    return response
+    content = export_book_as_epub(book)
+    return _create_download_response(content, 'application/epub+zip', f'{book.name}.epub')
 
 
 @admin.action(description=_("Загрузить в GitHub репозиторий"))

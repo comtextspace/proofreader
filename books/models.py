@@ -105,6 +105,9 @@ class Page(LifecycleModelMixin, TimeStampedModel, models.Model):
         db_table = '"book"."page"'
         verbose_name = _("Страница")
         verbose_name_plural = _("Страницы")
+        constraints = [
+            models.UniqueConstraint(fields=['book', 'number'], name='unique_book_page_number'),
+        ]
 
     @hook(AFTER_CREATE, on_commit=True, when="image", is_not=None)
     def extract_text_from_image(self):

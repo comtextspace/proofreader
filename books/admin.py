@@ -42,31 +42,36 @@ class AuthorAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
+def _create_download_response(content, content_type, filename):
+    """Create HTTP response for file download with proper headers."""
+    response = HttpResponse(content, content_type=content_type)
+    response['Content-Length'] = len(content)
+    response['Content-Disposition'] = _make_content_disposition(filename)
+    # Disable nginx buffering for large files
+    response['X-Accel-Buffering'] = 'no'
+    return response
+
+
 @admin.action(description=_("Скачать книгу текстовым файлом"))
 def download_as_text_file(modeladmin, request, queryset):
     book = queryset.first()
     text = export_book(book)
-    response = HttpResponse(text, content_type='text/plain; charset=utf-8')
-    response['Content-Disposition'] = _make_content_disposition(f'{book.name}.md')
-    return response
+    content = text.encode('utf-8')
+    return _create_download_response(content, 'text/plain; charset=utf-8', f'{book.name}.md')
 
 
 @admin.action(description=_("Скачать книгу в формате PDF"))
 def download_as_pdf_file(modeladmin, request, queryset):
     book = queryset.first()
-    pdf_content = export_book_as_pdf(book)
-    response = HttpResponse(pdf_content, content_type='application/pdf')
-    response['Content-Disposition'] = _make_content_disposition(f'{book.name}.pdf')
-    return response
+    content = export_book_as_pdf(book)
+    return _create_download_response(content, 'application/pdf', f'{book.name}.pdf')
 
 
 @admin.action(description=_("Скачать книгу в формате EPUB"))
 def download_as_epub_file(modeladmin, request, queryset):
     book = queryset.first()
-    epub_content = export_book_as_epub(book)
-    response = HttpResponse(epub_content, content_type='application/epub+zip')
-    response['Content-Disposition'] = _make_content_disposition(f'{book.name}.epub')
-    return response
+    content = export_book_as_epub(book)
+    return _create_download_response(content, 'application/epub+zip', f'{book.name}.epub')
 
 
 @admin.action(description=_("Загрузить в GitHub репозиторий"))

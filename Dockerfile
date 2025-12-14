@@ -10,6 +10,7 @@ RUN /opt/venv/bin/pip install --upgrade pip setuptools wheel
 RUN /opt/venv/bin/pip install poetry==$POETRY_VERSION
 
 ENV PATH="/opt/venv/bin:$PATH"
+ENV VIRTUAL_ENV="/opt/venv"
 
 RUN apt-get install -y tesseract-ocr-rus libtesseract-dev poppler-utils
 
@@ -17,8 +18,9 @@ WORKDIR /code
 
 COPY poetry.lock pyproject.toml /code/
 
-RUN poetry config virtualenvs.create false --local
-RUN poetry install --only main --no-cache
-RUN pip install --upgrade setuptools
+RUN poetry config virtualenvs.in-project false --local && \
+    poetry config virtualenvs.path /opt/venv --local && \
+    poetry config virtualenvs.create false --local
+RUN poetry install --only main
 
 COPY . /code/

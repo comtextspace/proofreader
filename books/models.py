@@ -61,6 +61,13 @@ class Book(LifecycleModelMixin, models.Model):
         verbose_name=_("Имя файла для экспорта"),
         help_text=_("Имя файла при экспорте в GitHub (без расширения)"),
     )
+    export_pages = models.CharField(
+        max_length=50,
+        blank=True,
+        default="",
+        verbose_name=_("Страницы для экспорта"),
+        help_text=_("Интервал страниц для экспорта (например, 4-15). Пустое значение - экспорт всех страниц."),
+    )
 
     class Meta:
         db_table = '"book"."book"'

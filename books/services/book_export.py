@@ -10,6 +10,35 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 
 
+def _parse_export_pages(export_pages_str):
+    """
+    Parse export_pages string and return tuple (start, end) or None if empty.
+    Format: "4-15" returns (4, 15)
+    """
+    if not export_pages_str or not export_pages_str.strip():
+        return None
+
+    match = re.match(r'^(\d+)-(\d+)$', export_pages_str.strip())
+    if match:
+        return int(match.group(1)), int(match.group(2))
+
+    return None
+
+
+def _get_pages_for_export(book):
+    """Get pages for export based on book.export_pages setting."""
+    from books.models import Page
+
+    pages = Page.objects.filter(book=book).order_by('number')
+
+    page_range = _parse_export_pages(book.export_pages)
+    if page_range:
+        start, end = page_range
+        pages = pages.filter(number__gte=start, number__lte=end)
+
+    return pages
+
+
 def _working_with_pages_end(pages):
     return [re.sub(r'[ \n]+$', '', page.text) for page in pages if page.text]
 
@@ -141,9 +170,7 @@ def _merge_annotations(text):
 
 
 def export_book(book):
-    from books.models import Page
-
-    pages = Page.objects.filter(book=book).order_by('number')
+    pages = _get_pages_for_export(book)
     pages_texts = _working_with_pages_end(pages)
     text = _join_pages_with_rules(pages_texts)
     text = _merge_annotations(text)
@@ -176,8 +203,6 @@ def _register_cyrillic_font():
 
 def export_book_as_pdf(book):
     """Export book as PDF with proper formatting."""
-    from books.models import Page
-
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(
         buffer,
@@ -231,7 +256,7 @@ def export_book_as_pdf(book):
     story.append(Spacer(1, 20))
 
     # Get text content
-    pages = Page.objects.filter(book=book).order_by('number')
+    pages = _get_pages_for_export(book)
     pages_texts = _working_with_pages_end(pages)
 
     for page_num, page_text in enumerate(pages_texts, start=1):
@@ -269,8 +294,6 @@ def export_book_as_epub(book):
     """Export book as EPUB with proper formatting."""
     from ebooklib import epub
 
-    from books.models import Page
-
     epub_book = epub.EpubBook()
 
     # Set metadata
@@ -298,7 +321,7 @@ def export_book_as_epub(book):
     epub_book.add_item(nav_css)
 
     # Get pages
-    pages = Page.objects.filter(book=book).order_by('number')
+    pages = _get_pages_for_export(book)
     pages_texts = _working_with_pages_end(pages)
 
     # Create title page (escape HTML in title)

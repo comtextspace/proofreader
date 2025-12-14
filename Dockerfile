@@ -3,7 +3,7 @@ FROM ubuntu:latest
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-ENV POETRY_VERSION=1.5.1
+ENV POETRY_VERSION=2.2.1
 RUN apt-get update && apt-get install -y python3 python3-pip python3-venv gettext
 RUN python3 -m venv /opt/venv
 RUN /opt/venv/bin/pip install --upgrade pip setuptools wheel
@@ -18,6 +18,7 @@ WORKDIR /code
 COPY poetry.lock pyproject.toml /code/
 
 RUN poetry config virtualenvs.create false --local
-RUN poetry install --only main
+RUN poetry install --only main --no-cache
+RUN pip install --upgrade setuptools
 
 COPY . /code/

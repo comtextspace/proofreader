@@ -1,5 +1,7 @@
 import io
+import os
 import re
+import tempfile
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
@@ -153,8 +155,6 @@ def _register_cyrillic_font():
     try:
         pdfmetrics.getFont('DejaVuSans')
     except KeyError:
-        import os
-
         # Common font paths for DejaVu Sans
         font_paths = [
             '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
@@ -256,6 +256,15 @@ def export_book_as_pdf(book):
     return buffer.getvalue()
 
 
+def _escape_html(text):
+    """Escape HTML special characters."""
+    text = text.replace('&', '&amp;')
+    text = text.replace('<', '&lt;')
+    text = text.replace('>', '&gt;')
+    text = text.replace('"', '&quot;')
+    return text
+
+
 def export_book_as_epub(book):
     """Export book as EPUB with proper formatting."""
     from ebooklib import epub
@@ -292,10 +301,12 @@ def export_book_as_epub(book):
     pages = Page.objects.filter(book=book).order_by('number')
     pages_texts = _working_with_pages_end(pages)
 
-    # Create title page
-    title_content = f'<h1>{book.name}</h1>'
+    # Create title page (escape HTML in title)
+    escaped_name = _escape_html(book.name)
+    title_content = f'<h1>{escaped_name}</h1>'
     if book.author:
-        title_content = f'<h1>{book.author.name}<br/><br/>{book.name}</h1>'
+        escaped_author = _escape_html(book.author.name)
+        title_content = f'<h1>{escaped_author}<br/><br/>{escaped_name}</h1>'
 
     title_chapter = epub.EpubHtml(title='Титульная страница', file_name='title.xhtml', lang='ru')
     title_chapter.content = f'<html><body>{title_content}</body></html>'
@@ -311,10 +322,7 @@ def export_book_as_epub(book):
         for para in paragraphs:
             para = para.strip()
             if para:
-                # Escape HTML special characters
-                para = para.replace('&', '&amp;')
-                para = para.replace('<', '&lt;')
-                para = para.replace('>', '&gt;')
+                para = _escape_html(para)
                 para = para.replace('\n', '<br/>')
                 content_html += f'<p>{para}</p>'
 
@@ -332,8 +340,15 @@ def export_book_as_epub(book):
     epub_book.add_item(epub.EpubNav())
     epub_book.spine = ['nav', title_chapter, content_chapter]
 
-    # Write to buffer
-    buffer = io.BytesIO()
-    epub.write_epub(buffer, epub_book)
-    buffer.seek(0)
-    return buffer.getvalue()
+    # Write to temp file (ebooklib works more reliably with file paths)
+    with tempfile.NamedTemporaryFile(suffix='.epub', delete=False) as tmp:
+        tmp_path = tmp.name
+
+    epub.write_epub(tmp_path, epub_book)
+
+    with open(tmp_path, 'rb') as f:
+        content = f.read()
+
+    os.unlink(tmp_path)
+
+    return content

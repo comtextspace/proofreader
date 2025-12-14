@@ -1,3 +1,5 @@
+from urllib.parse import quote
+
 from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
@@ -7,6 +9,14 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+
+
+def _make_content_disposition(filename):
+    """Create Content-Disposition header with proper encoding for non-ASCII filenames."""
+    ascii_filename = filename.encode('ascii', 'ignore').decode('ascii') or 'download'
+    encoded_filename = quote(filename)
+    return f"attachment; filename=\"{ascii_filename}\"; filename*=UTF-8''{encoded_filename}"
+
 
 from accounts.models import Assignment
 from core.admin_filter import ForeignKeyFilter
@@ -34,10 +44,10 @@ class AuthorAdmin(admin.ModelAdmin):
 
 @admin.action(description=_("Скачать книгу текстовым файлом"))
 def download_as_text_file(modeladmin, request, queryset):
-    book = queryset.first()  # Assuming you want to download pages for one book at a time
+    book = queryset.first()
     text = export_book(book)
-    response = HttpResponse(text, content_type='text/plain')
-    response['Content-Disposition'] = f'attachment; filename="{book.name}.md"'
+    response = HttpResponse(text, content_type='text/plain; charset=utf-8')
+    response['Content-Disposition'] = _make_content_disposition(f'{book.name}.md')
     return response
 
 
@@ -46,7 +56,7 @@ def download_as_pdf_file(modeladmin, request, queryset):
     book = queryset.first()
     pdf_content = export_book_as_pdf(book)
     response = HttpResponse(pdf_content, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{book.name}.pdf"'
+    response['Content-Disposition'] = _make_content_disposition(f'{book.name}.pdf')
     return response
 
 
@@ -55,7 +65,7 @@ def download_as_epub_file(modeladmin, request, queryset):
     book = queryset.first()
     epub_content = export_book_as_epub(book)
     response = HttpResponse(epub_content, content_type='application/epub+zip')
-    response['Content-Disposition'] = f'attachment; filename="{book.name}.epub"'
+    response['Content-Disposition'] = _make_content_disposition(f'{book.name}.epub')
     return response
 
 

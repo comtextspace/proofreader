@@ -528,6 +528,11 @@ document.addEventListener('DOMContentLoaded', function() {
             wrapSelectedText(textarea, '*', '*');
         });
 
+        // Underscore button
+        document.getElementById('underscoreBtn')?.addEventListener('click', () => {
+            wrapSelectedText(textarea, '_', '_');
+        });
+
         // Paragraph dropdown toggle
         const dropdownBtn = document.getElementById('paragraphDropdown');
         const dropdownMenu = document.getElementById('paragraphMenu');
@@ -599,6 +604,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
                 e.preventDefault();
                 document.getElementById('italicBtn')?.click();
+            }
+
+            // Ctrl+U - Underscore
+            if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+                e.preventDefault();
+                document.getElementById('underscoreBtn')?.click();
             }
         });
 

@@ -55,6 +55,9 @@
                         <button type="button" class="btn-icon" id="italicBtn" title="{% trans 'Курсив (Ctrl+I)' %}">
                             <i class="fas fa-italic"></i>
                         </button>
+                        <button type="button" class="btn-icon" id="underscoreBtn" title="{% trans 'Подчёркивание (Ctrl+U)' %}">
+                            <i class="fas fa-underline"></i>
+                        </button>
                         <div class="custom-dropdown" style="display: inline-block; position: relative;">
                             <button type="button" class="btn-icon" id="paragraphDropdown" title="{% trans 'Параграфы' %}">
                                 <i class="fas fa-paragraph"></i>
@@ -231,6 +234,10 @@
         <div class="shortcut-item">
             <span>{% trans "Уменьшить" %}</span>
             <span class="shortcut-key">Ctrl+-</span>
+        </div>
+        <div class="shortcut-item">
+            <span>{% trans "Подчёркивание" %}</span>
+            <span class="shortcut-key">Ctrl+U</span>
         </div>
     </div>
 {% endblock %}

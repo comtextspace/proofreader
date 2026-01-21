@@ -10,6 +10,15 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from accounts.models import Assignment
+from core.admin_filter import ForeignKeyFilter
+from core.admin_utils import CustomHistoryAdmin, add_request_object_to_admin_form
+from .admin_forms import ActionValueForm, PageAdminForm
+from .models import Author, Book, ExportSource, Page
+from .services.book_export import export_book, export_book_as_epub, export_book_as_pdf
+from .services.github_upload import upload_books_to_github
+from .tasks import extract_text_from_image_task, split_pdf_to_pages_task
+
 
 def _make_content_disposition(filename):
     """Create Content-Disposition header with proper encoding for non-ASCII filenames."""
@@ -30,15 +39,6 @@ def _make_content_disposition(filename):
     encoded_filename = quote(filename)
     return f"attachment; filename=\"{ascii_filename}\"; filename*=UTF-8''{encoded_filename}"
 
-
-from accounts.models import Assignment
-from core.admin_filter import ForeignKeyFilter
-from core.admin_utils import CustomHistoryAdmin, add_request_object_to_admin_form
-from .admin_forms import ActionValueForm, PageAdminForm
-from .models import Author, Book, ExportSource, Page
-from .services.book_export import export_book, export_book_as_epub, export_book_as_pdf
-from .services.github_upload import upload_books_to_github
-from .tasks import extract_text_from_image_task, split_pdf_to_pages_task
 
 User = get_user_model()
 
@@ -459,6 +459,13 @@ class PageAdmin(CustomHistoryAdmin):
             next_page = Page.objects.filter(book=current_page.book, number=current_page.number + 1).last()
             return redirect(reverse("admin:books_page_change", args=(next_page.id,)))
 
+        elif 'go_to_page' in request.POST:
+            target_number = request.POST.get('go_to_page_number')
+            if target_number:
+                target_page = Page.objects.filter(book=current_page.book, number=int(target_number)).first()
+                if target_page:
+                    return redirect(reverse("admin:books_page_change", args=(target_page.id,)))
+
         # Add custom title with page information
         extra_context = extra_context or {}
         if object_id and current_page:
@@ -466,6 +473,7 @@ class PageAdmin(CustomHistoryAdmin):
             if current_page.number_in_book:
                 page_info = f'{current_page.number} ({current_page.number_in_book})'
             extra_context['title'] = f'Изменить Страницу: {current_page.book.name} - Страница {page_info}'
+            extra_context['total_pages'] = Page.objects.filter(book=current_page.book).count()
 
         return super().changeform_view(request, object_id, form_url, extra_context)  # noqa
 

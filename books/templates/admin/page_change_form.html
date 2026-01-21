@@ -144,7 +144,19 @@
             </div>
             <div class="metadata-item">
                 <span class="metadata-label">{% trans "Страница" %}</span>
-                <span class="metadata-value">{{ original.number }} / {{ original.book.total_pages_in_pdf|default:"N/A" }}</span>
+                <span class="metadata-value go-to-page-container">
+                    <input type="number"
+                           id="go-to-page-input"
+                           value="{{ original.number }}"
+                           min="1"
+                           max="{{ total_pages }}"
+                           class="go-to-page-input"
+                           title="{% trans 'Введите номер страницы и нажмите Enter' %}">
+                    <span class="page-total">/ {{ total_pages }}</span>
+                    <button type="button" class="go-to-page-btn" id="go-to-page-btn" title="{% trans 'Перейти к странице' %}">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </span>
             </div>
             <div class="metadata-item">
                 <span class="metadata-label">{% trans "Номер в книге" %}</span>
@@ -253,6 +265,9 @@
             <button type="submit" name="next_page" value="1">Next</button>
             <button type="submit" name="_save" value="1">Save and Next</button>
         {% endif %}
+        <!-- Go to page hidden elements -->
+        <input type="hidden" name="go_to_page_number" id="hidden-go-to-page-input" value="{{ original.number }}">
+        <button type="submit" name="go_to_page" id="hidden-go-to-page-btn" value="1">Go</button>
     </div>
 {% endblock %}
 

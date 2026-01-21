@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeUndoRedo();
     initializeFormButtons();
     initializeMarkdownButtons();
+    initializeGoToPage();
 
     // Dark Mode Functionality
     function initializeDarkMode() {
@@ -853,6 +854,41 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add the event listener
             textarea.addEventListener('keydown', replaceHandler);
         }
+    }
+
+    // Go to Page Navigation
+    function initializeGoToPage() {
+        const visibleInput = document.getElementById('go-to-page-input');
+        const visibleButton = document.getElementById('go-to-page-btn');
+        const hiddenInput = document.getElementById('hidden-go-to-page-input');
+        const hiddenButton = document.getElementById('hidden-go-to-page-btn');
+
+        if (!visibleInput || !hiddenInput || !hiddenButton) return;
+
+        // Function to navigate to page
+        function goToPage() {
+            const pageNumber = visibleInput.value;
+            if (pageNumber) {
+                hiddenInput.value = pageNumber;
+                hiddenButton.click();
+            }
+        }
+
+        // Handle button click
+        visibleButton?.addEventListener('click', goToPage);
+
+        // Handle Enter key press
+        visibleInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                goToPage();
+            }
+        });
+
+        // Select all text on focus for easy replacement
+        visibleInput.addEventListener('focus', function() {
+            this.select();
+        });
     }
 
     // Add CSS animations

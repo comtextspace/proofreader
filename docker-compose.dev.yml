@@ -34,6 +34,7 @@ services:
       - REDIS_URL=redis://redis:6379/1
       - CELERY_BROKER_URL=amqp://guest:@amqp:5672/
       - DEBUG=True
+      - LLM_CORRECTION_ENABLED=True
     env_file: ./docker.env
     volumes:
       - project-media:/code/media
@@ -89,6 +90,42 @@ services:
     entrypoint: redis-server --appendonly yes
     restart: always
 
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_models:/root/.ollama
+    restart: always
+
+  celery_llm_worker:
+    image: ghcr.io/comtextspace/proofreader:develop
+    command: celery -A taskapp.celery:app worker --loglevel=info -c 1 -Q llm
+    environment:
+      - SENTRY_DSN=https://068d46f1d057c6dc3154519ab00a82ed@o4506100246708224.ingest.sentry.io/4506100248608768
+      - LOGLEVEL=INFO
+      - DATABASE_URL=db://postgres:postgres@db:5432/postgres
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=amqp://guest:@amqp:5672/
+      - DEBUG=True
+      - LLM_CORRECTION_ENABLED=True
+      - LLM_OLLAMA_URL=http://ollama:11434
+      - LLM_MODEL_NAME=qwen2.5:7b
+    env_file: ./docker.env
+    volumes:
+      - project-media:/code/media
+      - project-static:/code/staticfiles
+    depends_on:
+      - db
+      - amqp
+      - redis
+      - ollama
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - frontend-dist:/usr/share/nginx/html
+
   nginx:
     image: nginx:latest
     ports:
@@ -96,9 +133,11 @@ services:
     volumes:
       - project-media:/media
       - project-static:/staticfiles
+      - frontend-dist:/frontend
       - ./conf/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - web
+      - frontend
 
 volumes:
     project-media:
@@ -107,3 +146,7 @@ volumes:
       name: proofreader-dev-static
     redis_data:
       name: proofreader-dev-redis
+    ollama_models:
+      name: proofreader-dev-ollama
+    frontend-dist:
+      name: proofreader-dev-frontend

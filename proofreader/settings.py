@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django_filters',
     'drf_yasg',
     'admin_auto_filters',
+    'corsheaders',
     # This project
     "books.apps.BooksConfig",
     "accounts.apps.AccountsConfig",
@@ -94,6 +95,7 @@ INSTALLED_APPS += ['taskapp.celery.CeleryAppConfig']
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
@@ -252,3 +254,21 @@ GITHUB_TOKEN = env('GITHUB_TOKEN', default=None)
 GITHUB_REPO = env('GITHUB_REPO', default=None)  # Format: 'username/repository'
 GITHUB_BRANCH = env('GITHUB_BRANCH', default='main')
 GITHUB_TARGET_DIR = env('GITHUB_TARGET_DIR', default='books')
+
+# LLM Text Correction
+# ------------------------------------------------------------------------------
+LLM_CORRECTION_ENABLED = env.bool('LLM_CORRECTION_ENABLED', default=False)
+LLM_OLLAMA_URL = env('LLM_OLLAMA_URL', default='http://ollama:11434')
+LLM_MODEL_NAME = env('LLM_MODEL_NAME', default='qwen2.5:7b')
+LLM_REQUEST_TIMEOUT = env.int('LLM_REQUEST_TIMEOUT', default=300)
+
+CELERY_TASK_ROUTES = {
+    'books.tasks.correct_text_with_llm_task': {'queue': 'llm'},
+}
+
+# CORS
+# ------------------------------------------------------------------------------
+if LOCAL_DEVELOP:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])

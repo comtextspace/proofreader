@@ -1,0 +1,115 @@
+from rest_framework import serializers
+
+from accounts.models import PageStatus
+from books.models import Author, Book, Page
+
+
+class AuthorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = ['id', 'name']
+
+
+class BookShortSerializer(serializers.ModelSerializer):
+    author = serializers.CharField(source='author.name', read_only=True)
+
+    class Meta:
+        model = Book
+        fields = ['id', 'name', 'author']
+
+
+class BookListSerializer(serializers.ModelSerializer):
+    author = serializers.CharField(source='author.name', read_only=True)
+    pages_count = serializers.IntegerField(read_only=True)
+    pages_done_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Book
+        fields = ['id', 'name', 'author', 'pages_count', 'pages_done_count', 'total_pages_in_pdf']
+
+
+class PageListSerializer(serializers.ModelSerializer):
+    book_name = serializers.CharField(source='book.name', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+
+    class Meta:
+        model = Page
+        fields = ['id', 'number', 'number_in_book', 'book', 'book_name', 'status', 'status_display', 'modified']
+
+
+class PageDetailSerializer(serializers.ModelSerializer):
+    book = BookShortSerializer(read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    available_statuses = serializers.SerializerMethodField()
+    total_pages = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Page
+        fields = [
+            'id',
+            'book',
+            'number',
+            'number_in_book',
+            'image',
+            'text',
+            'status',
+            'status_display',
+            'available_statuses',
+            'total_pages',
+            'modified',
+            'created',
+        ]
+
+    def get_available_statuses(self, obj):
+        request = self.context.get('request')
+        if not request or not hasattr(request, 'user'):
+            return [{'value': s[0], 'label': s[1]} for s in Page.Status.choices]
+
+        statuses = (
+            PageStatus.objects.filter(permission_groups__in=request.user.groups.all())
+            .distinct()
+            .values_list('status', flat=True)
+        )
+
+        if statuses:
+            return [{'value': s[0], 'label': s[1]} for s in Page.Status.choices if s[0] in statuses]
+
+        return [{'value': s[0], 'label': s[1]} for s in Page.Status.choices]
+
+    def get_total_pages(self, obj):
+        return obj.book.pages.count()
+
+
+class PageUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Page
+        fields = ['text', 'status', 'number_in_book']
+
+    def validate_status(self, value):
+        request = self.context.get('request')
+        if not request or not hasattr(request, 'user'):
+            return value
+
+        statuses = (
+            PageStatus.objects.filter(permission_groups__in=request.user.groups.all())
+            .distinct()
+            .values_list('status', flat=True)
+        )
+
+        if statuses and value not in statuses:
+            raise serializers.ValidationError("You don't have permission to set this status.")
+
+        return value
+
+
+class PageAdjacentSerializer(serializers.Serializer):
+    prev_id = serializers.UUIDField(allow_null=True)
+    next_id = serializers.UUIDField(allow_null=True)
+
+
+class PageHistorySerializer(serializers.Serializer):
+    history_id = serializers.IntegerField()
+    history_date = serializers.DateTimeField()
+    history_user = serializers.CharField(source='history_user.username', default=None)
+    text = serializers.CharField()
+    status = serializers.CharField()

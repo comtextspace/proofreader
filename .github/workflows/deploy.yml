@@ -269,7 +269,8 @@ jobs:
           docker compose -f docker-compose.dev.yml pull
 
           # Remove stale frontend volume so new image files take effect
-          docker compose -f docker-compose.dev.yml rm -sf frontend || true
+          # Must stop nginx too since it also mounts this volume
+          docker compose -f docker-compose.dev.yml rm -sf frontend nginx || true
           docker volume rm proofreader-dev-frontend || true
 
           # Deploy with zero-downtime

@@ -101,7 +101,7 @@ jobs:
         port: ${{ secrets.PROD_DEPLOY_PORT || 22 }}
         script: |
           set -e  # Exit immediately if any command fails
-          
+
           # Set deployment path for production
           DEPLOY_PATH="${{ secrets.PROD_DEPLOY_PATH }}"
           if [ -z "$DEPLOY_PATH" ]; then
@@ -159,16 +159,16 @@ jobs:
           if (( $(echo "$AVAILABLE_SPACE < 2" | bc -l) )); then
             echo "⚠️ Warning: Low disk space detected (${AVAILABLE_SPACE}GB available)"
             echo "Performing Docker cleanup..."
-            
+
             # Remove unused images
             docker image prune -a -f || true
-            
+
             # Remove build cache
             docker builder prune -a -f || true
-            
+
             # Remove unused volumes (be careful with this)
             docker volume prune -f || true
-            
+
             echo "=== Disk space after cleanup ==="
             df -h /
           fi
@@ -176,15 +176,19 @@ jobs:
           # Log in to GitHub Container Registry
           echo "Logging in to GitHub Container Registry..."
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-          
+
           if [ $? -ne 0 ]; then
             echo "❌ ERROR: Failed to login to GitHub Container Registry"
             exit 1
           fi
 
-          # Pull latest images
+          # Free disk space: remove dangling images and old ollama CUDA image
+          docker image prune -f || true
+          docker image rm ollama/ollama:latest 2>/dev/null || true
+
+          # Pull only app images (skip infra: postgres, redis, rabbitmq, nginx)
           echo "Pulling latest images..."
-          if ! docker compose -f docker-compose.prod.yml pull; then
+          if ! docker compose -f docker-compose.prod.yml pull web frontend; then
             echo "❌ ERROR: Failed to pull Docker images"
             echo "This might be due to:"
             echo "  - Network issues"
@@ -193,6 +197,11 @@ jobs:
             df -h /
             exit 1
           fi
+
+          # Remove stale frontend volume so new image files take effect
+          # Must stop nginx too since it also mounts this volume
+          docker compose -f docker-compose.prod.yml rm -sf frontend nginx || true
+          docker volume rm proofreader-prod-frontend || true
 
           # Deploy with zero-downtime
           echo "Starting services..."

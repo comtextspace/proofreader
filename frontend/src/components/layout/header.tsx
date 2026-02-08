@@ -19,7 +19,7 @@ export function Header() {
       <div className="flex h-16 items-center px-6">
         <Link to="/authors" className="flex items-center gap-2 font-semibold text-white">
           <BookOpen className="h-5 w-5" />
-          <span>Корректор</span>
+          <span>Proofreader</span>
         </Link>
 
         <div className="ml-auto flex items-center gap-3">

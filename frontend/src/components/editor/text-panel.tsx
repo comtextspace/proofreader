@@ -145,13 +145,15 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
   }, [text])
 
   return (
-    <div ref={containerRef} className="relative flex h-full flex-col overflow-hidden rounded-lg border">
-      <FormattingToolbar
-        editorView={editorView}
-        onCorrect={onCorrect}
-        isCorrectingLLM={isCorrectingLLM}
-      />
-      <div ref={editorRef} className="flex-1 overflow-auto" />
+    <div ref={containerRef} className="relative h-full">
+      <div className="flex h-full flex-col overflow-hidden rounded-lg border">
+        <FormattingToolbar
+          editorView={editorView}
+          onCorrect={onCorrect}
+          isCorrectingLLM={isCorrectingLLM}
+        />
+        <div ref={editorRef} className="flex-1 overflow-auto" />
+      </div>
       {editorView && selection && (
         <FloatingToolbar
           editorView={editorView}

@@ -98,7 +98,7 @@ export function FloatingToolbar({ editorView, containerRef, selection }: Floatin
     left = Math.max(4, Math.min(left, containerRect.width - toolbarWidth - 4))
 
     setPosition({
-      top: topY - 44, // toolbar height (~36px) + gap (8px)
+      top: Math.max(0, topY - 44), // toolbar height (~36px) + gap (8px), clamped to container
       left,
     })
   }, [editorView, containerRef, selection])

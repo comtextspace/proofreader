@@ -10,3 +10,14 @@ export async function refreshToken(refresh: string): Promise<{ access: string }>
   const response = await axios.post("/api/v1/users/token/refresh/", { refresh })
   return response.data
 }
+
+export interface RegisterData {
+  username: string
+  password: string
+  password_confirm: string
+  code: string
+}
+
+export async function register(data: RegisterData): Promise<void> {
+  await axios.post("/api/v1/users/register/", data)
+}

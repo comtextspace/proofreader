@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { AppLayout } from "@/components/layout/app-layout"
 import { ProtectedRoute } from "@/components/layout/protected-route"
 import { LoginPage } from "@/pages/login"
+import { RegisterPage } from "@/pages/register"
 import { AuthorListPage } from "@/pages/author-list"
 import { AuthorBooksPage } from "@/pages/author-books"
 import { BookPagesPage } from "@/pages/book-pages"
@@ -55,6 +56,7 @@ export default function App() {
         <AppInitializer>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route
               element={
                 <ProtectedRoute>

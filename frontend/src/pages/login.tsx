@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Navigate } from "react-router-dom"
+import { Link, Navigate, useLocation } from "react-router-dom"
 import { BookOpen, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,6 +8,8 @@ import { useAuth } from "@/hooks/use-auth"
 
 export function LoginPage() {
   const { login, isLoading, error, isAuthenticated } = useAuth()
+  const location = useLocation()
+  const registered = (location.state as { registered?: boolean })?.registered
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
 
@@ -30,11 +32,16 @@ export function LoginPage() {
           <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-primary shadow-primary-sm">
             <BookOpen className="h-7 w-7 text-white animate-logo-spin" />
           </div>
-          <CardTitle className="text-2xl">Корректор</CardTitle>
+          <CardTitle className="text-2xl">Proofreader</CardTitle>
           <p className="text-sm text-muted-foreground">Войдите в свой аккаунт</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {registered && (
+              <p className="text-sm text-green-600 dark:text-green-400">
+                Регистрация прошла успешно. Теперь вы можете войти.
+              </p>
+            )}
             <div className="space-y-2">
               <label htmlFor="username" className="text-sm font-medium">
                 Имя пользователя
@@ -76,6 +83,13 @@ export function LoginPage() {
                 "Войти"
               )}
             </Button>
+
+            <p className="text-center text-sm text-muted-foreground">
+              Нет аккаунта?{" "}
+              <Link to="/register" className="text-primary hover:underline">
+                Зарегистрироваться
+              </Link>
+            </p>
           </form>
         </CardContent>
       </Card>

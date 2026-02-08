@@ -42,3 +42,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 }))
+
+// Initialize eagerly so auth state is ready before first render
+useAuthStore.getState().initialize()

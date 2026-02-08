@@ -5,6 +5,7 @@ import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
 import { markdown } from "@codemirror/lang-markdown"
 import { oneDark } from "@codemirror/theme-one-dark"
 import { FormattingToolbar } from "./formatting-toolbar"
+import { FloatingToolbar } from "./floating-toolbar"
 import { useUIStore } from "@/stores/ui-store"
 
 interface TextPanelProps {
@@ -18,13 +19,17 @@ interface TextPanelProps {
 
 export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, isDark }: TextPanelProps) {
   const editorRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const viewRef = useRef<EditorView | null>(null)
   const [editorView, setEditorView] = useState<EditorView | null>(null)
+  const [selection, setSelection] = useState<{ from: number; to: number } | null>(null)
   const textSize = useUIStore((s) => s.textSize)
   const onChangeRef = useRef(onChange)
   onChangeRef.current = onChange
   const onSaveRef = useRef(onSave)
   onSaveRef.current = onSave
+  const onSelectionChangeRef = useRef(setSelection)
+  onSelectionChangeRef.current = setSelection
 
   const createEditor = useCallback(() => {
     if (!editorRef.current) return
@@ -88,6 +93,14 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
         if (update.docChanged) {
           onChangeRef.current(update.state.doc.toString())
         }
+        if (update.selectionSet || update.docChanged) {
+          const { from, to } = update.state.selection.main
+          if (from !== to) {
+            onSelectionChangeRef.current({ from, to })
+          } else {
+            onSelectionChangeRef.current(null)
+          }
+        }
       }),
       EditorView.lineWrapping,
       EditorView.theme({
@@ -132,13 +145,20 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
   }, [text])
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-lg border">
+    <div ref={containerRef} className="relative flex h-full flex-col overflow-hidden rounded-lg border">
       <FormattingToolbar
         editorView={editorView}
         onCorrect={onCorrect}
         isCorrectingLLM={isCorrectingLLM}
       />
       <div ref={editorRef} className="flex-1 overflow-auto" />
+      {editorView && selection && (
+        <FloatingToolbar
+          editorView={editorView}
+          containerRef={containerRef}
+          selection={selection}
+        />
+      )}
     </div>
   )
 }

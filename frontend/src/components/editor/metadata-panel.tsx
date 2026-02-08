@@ -27,7 +27,7 @@ export function MetadataPanel({
         <label className="text-xs font-medium text-muted-foreground">Book</label>
         <p className="mt-1">
           <Link
-            to={`/pages?book=${page.book.id}`}
+            to={`/books/${page.book.id}/pages`}
             className="text-sm font-medium hover:underline"
           >
             {page.book.name}

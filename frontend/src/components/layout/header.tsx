@@ -1,4 +1,4 @@
-import { BookOpen, LogOut, Moon, Sun } from "lucide-react"
+import { BookOpen, LogOut, Moon, Settings, Sun } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { useAuthStore } from "@/stores/auth-store"
@@ -17,7 +17,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 items-center px-6">
-        <Link to="/pages" className="flex items-center gap-2 font-semibold">
+        <Link to="/authors" className="flex items-center gap-2 font-semibold">
           <BookOpen className="h-5 w-5" />
           <span>Proofreader</span>
         </Link>
@@ -26,6 +26,12 @@ export function Header() {
           <Button variant="ghost" size="icon" onClick={toggleTheme} title="Toggle theme">
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
+
+          <Link to="/settings">
+            <Button variant="ghost" size="icon" title="Settings">
+              <Settings className="h-4 w-4" />
+            </Button>
+          </Link>
 
           {user && (
             <span className="text-sm text-muted-foreground">{user.username}</span>

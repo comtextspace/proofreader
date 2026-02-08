@@ -13,4 +13,7 @@ book_list_router.register('', books.api_views.BookListViewSet, basename='book-li
 pages_router = routers.DefaultRouter(trailing_slash=False)
 pages_router.register('', books.api_views.PagesViewSet, basename='pages')
 
+authors_router = routers.DefaultRouter(trailing_slash=False)
+authors_router.register('', books.api_views.AuthorViewSet, basename='authors')
+
 urlpatterns += books_router.urls

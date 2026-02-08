@@ -38,16 +38,11 @@ export function NavigationBar({ page, adjacent, onSave, onSaveAndNext, isSaving 
 
   return (
     <div className="flex items-center gap-2 border-b bg-background px-4 py-2">
-      <Button variant="ghost" size="sm" onClick={() => navigate("/pages")}>
+      <Button variant="ghost" size="sm" onClick={() => navigate(`/books/${page.book.id}/pages`)}>
         <ArrowLeft className="h-4 w-4" />
-        Pages
+        {page.book.name}
       </Button>
 
-      <div className="mx-2 h-5 w-px bg-border" />
-
-      <span className="text-sm font-medium">
-        {page.book.name}
-      </span>
       <span className="text-sm text-muted-foreground">
         / Page {page.number}
       </span>

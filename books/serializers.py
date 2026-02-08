@@ -10,6 +10,21 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
+class AuthorListSerializer(serializers.ModelSerializer):
+    books_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Author
+        fields = ['id', 'name', 'books_count']
+
+
+class AuthorCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = ['id', 'name']
+        read_only_fields = ['id']
+
+
 class BookShortSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='author.name', read_only=True)
 
@@ -20,12 +35,44 @@ class BookShortSerializer(serializers.ModelSerializer):
 
 class BookListSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='author.name', read_only=True)
+    author_id = serializers.UUIDField(source='author.id', read_only=True)
     pages_count = serializers.IntegerField(read_only=True)
     pages_done_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Book
-        fields = ['id', 'name', 'author', 'pages_count', 'pages_done_count', 'total_pages_in_pdf']
+        fields = ['id', 'name', 'author', 'author_id', 'pages_count', 'pages_done_count', 'total_pages_in_pdf']
+
+
+class BookDetailSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer(read_only=True)
+    pages_count = serializers.IntegerField(read_only=True)
+    pages_done_count = serializers.IntegerField(read_only=True)
+    pages_processing_count = serializers.IntegerField(read_only=True)
+    pages_recognized_count = serializers.IntegerField(read_only=True)
+    pages_in_work_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Book
+        fields = [
+            'id',
+            'name',
+            'author',
+            'pages_count',
+            'pages_done_count',
+            'pages_processing_count',
+            'pages_recognized_count',
+            'pages_in_work_count',
+            'total_pages_in_pdf',
+            'export_name',
+        ]
+
+
+class BookCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ['id', 'name', 'author', 'pdf']
+        read_only_fields = ['id']
 
 
 class PageListSerializer(serializers.ModelSerializer):

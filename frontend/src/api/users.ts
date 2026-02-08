@@ -13,5 +13,5 @@ export async function updateProfile(data: { text_size?: number }): Promise<User>
 
 export async function fetchAssignments(): Promise<Assignment[]> {
   const response = await apiClient.get("/users/me/assignments/")
-  return response.data
+  return response.data.results ?? response.data
 }

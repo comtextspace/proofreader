@@ -1,13 +1,18 @@
 from django.conf import settings
+from django.db.models import Count, Q
 from django.http import HttpResponse
 from django_filters import rest_framework as django_filters
 from rest_framework import filters, mixins, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-from books.models import Book, Page
+from books.models import Author, Book, Page
 from books.serializers import (
+    AuthorCreateSerializer,
+    AuthorListSerializer,
+    BookCreateSerializer,
+    BookDetailSerializer,
     BookListSerializer,
     PageAdjacentSerializer,
     PageDetailSerializer,
@@ -15,8 +20,34 @@ from books.serializers import (
     PageListSerializer,
     PageUpdateSerializer,
 )
-from books.services.book_export import export_book
+from books.services.book_export import export_book, export_book_as_epub, export_book_as_pdf
 from core.base_classes.views import ParentViewSet
+
+
+class AuthorViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
+    lookup_field = 'id'
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name']
+    ordering_fields = ['name']
+    ordering = ['name']
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [IsAdminUser()]
+        return [IsAuthenticated()]
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return AuthorCreateSerializer
+        return AuthorListSerializer
+
+    def get_queryset(self):
+        return Author.objects.annotate(books_count=Count('books'))
 
 
 class BooksViewset(ParentViewSet):
@@ -33,22 +64,74 @@ class BooksViewset(ParentViewSet):
         return response
 
 
-class BookListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = BookListSerializer
+class BookFilter(django_filters.FilterSet):
+    author = django_filters.UUIDFilter(field_name='author__id')
+
+    class Meta:
+        model = Book
+        fields = ['author']
+
+
+class BookListViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
     lookup_field = 'id'
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [django_filters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_class = BookFilter
     search_fields = ['name', 'author__name']
     ordering_fields = ['name']
     ordering = ['name']
 
-    def get_queryset(self):
-        from django.db.models import Count, Q
+    def get_permissions(self):
+        if self.action == 'create':
+            return [IsAdminUser()]
+        return [IsAuthenticated()]
 
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return BookCreateSerializer
+        if self.action == 'retrieve':
+            return BookDetailSerializer
+        return BookListSerializer
+
+    def get_queryset(self):
         return Book.objects.select_related('author').annotate(
             pages_count=Count('pages'),
             pages_done_count=Count('pages', filter=Q(pages__status=Page.Status.DONE)),
+            pages_processing_count=Count('pages', filter=Q(pages__status=Page.Status.PROCESSING)),
+            pages_recognized_count=Count('pages', filter=Q(pages__status=Page.Status.READY)),
+            pages_in_work_count=Count(
+                'pages',
+                filter=Q(pages__status__in=[Page.Status.IN_PROGRESS, Page.Status.FORMATTING, Page.Status.CHECK]),
+            ),
         )
+
+    @action(detail=True, methods=['get'], url_path='download-text')
+    def download_text(self, request, id=None):
+        book = self.get_object()
+        text = export_book(book)
+        response = HttpResponse(text, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename="{book.name}.md"'
+        return response
+
+    @action(detail=True, methods=['get'], url_path='download-pdf')
+    def download_pdf(self, request, id=None):
+        book = self.get_object()
+        content = export_book_as_pdf(book)
+        response = HttpResponse(content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{book.name}.pdf"'
+        return response
+
+    @action(detail=True, methods=['get'], url_path='download-epub')
+    def download_epub(self, request, id=None):
+        book = self.get_object()
+        content = export_book_as_epub(book)
+        response = HttpResponse(content, content_type='application/epub+zip')
+        response['Content-Disposition'] = f'attachment; filename="{book.name}.epub"'
+        return response
 
 
 class PageFilter(django_filters.FilterSet):

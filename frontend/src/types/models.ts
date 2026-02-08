@@ -6,6 +6,12 @@ export interface User {
   groups: string[]
 }
 
+export interface Author {
+  id: string
+  name: string
+  books_count: number
+}
+
 export interface Book {
   id: string
   name: string
@@ -13,9 +19,23 @@ export interface Book {
 }
 
 export interface BookList extends Book {
+  author_id: string
   pages_count: number
   pages_done_count: number
   total_pages_in_pdf: number | null
+}
+
+export interface BookDetail {
+  id: string
+  name: string
+  author: { id: string; name: string }
+  pages_count: number
+  pages_done_count: number
+  pages_processing_count: number
+  pages_recognized_count: number
+  pages_in_work_count: number
+  total_pages_in_pdf: number | null
+  export_name: string
 }
 
 export interface PageListItem {

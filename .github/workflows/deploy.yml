@@ -265,8 +265,12 @@ jobs:
           # Log in to GitHub Container Registry
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-          # Pull latest images
-          docker compose -f docker-compose.dev.yml pull
+          # Free disk space: remove dangling images and old ollama CUDA image
+          docker image prune -f || true
+          docker image rm ollama/ollama:latest 2>/dev/null || true
+
+          # Pull only app images (skip infra: postgres, redis, rabbitmq, ollama, nginx)
+          docker compose -f docker-compose.dev.yml pull web frontend
 
           # Remove stale frontend volume so new image files take effect
           # Must stop nginx too since it also mounts this volume
@@ -287,9 +291,6 @@ jobs:
 
           # Compile messages (if using internationalization)
           docker compose -f docker-compose.dev.yml exec -T web python manage.py compilemessages || echo "Message compilation failed"
-
-          # Clean up old images
-          docker image prune -f
 
           # Health check and service status
           echo "=== Service Status ==="

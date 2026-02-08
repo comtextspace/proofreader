@@ -12,7 +12,7 @@ logs:
 
 test:
 	docker compose exec web python manage.py test
-	
+
 create:
 	docker exec -it proofreader-web-1 python3 manage.py createsuperuser
 
@@ -33,3 +33,18 @@ rebuild-prod:
 restart-prod:
 	docker compose -f docker-compose.prod.yml down
 	docker compose -f docker-compose.prod.yml up -d
+
+pull-llm-model:
+	docker compose -f docker-compose.dev.yml exec ollama ollama pull qwen2.5:7b
+
+pull-llm-model-prod:
+	docker compose -f docker-compose.prod.yml exec ollama ollama pull qwen2.5:7b
+
+frontend-dev:
+	cd frontend && npm run dev
+
+frontend-build:
+	cd frontend && npm run build
+
+frontend-install:
+	cd frontend && npm install

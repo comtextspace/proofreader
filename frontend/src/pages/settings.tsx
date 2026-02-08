@@ -19,18 +19,28 @@ export function SettingsPage() {
   }, [])
 
   return (
-    <div className="mx-auto h-full max-w-3xl space-y-8 overflow-auto p-6">
-      <h1 className="text-2xl font-bold">Settings</h1>
+    <div className="mx-auto h-full max-w-6xl space-y-8 overflow-auto p-6">
+      <div className="flex items-center gap-4">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary/10 text-2xl font-bold text-primary">
+          {user?.username?.charAt(0).toUpperCase() ?? "?"}
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold">{user?.username ?? "..."}</h1>
+          <p className="text-sm text-muted-foreground">
+            {user?.groups.length ? user.groups.join(", ") : "Нет групп"}
+          </p>
+        </div>
+      </div>
 
-      <section className="space-y-4 rounded-lg border p-5">
-        <h2 className="text-lg font-semibold">Profile</h2>
+      <section className="space-y-4 rounded-xl border bg-card p-5 transition-shadow duration-300 hover:shadow-md">
+        <h2 className="text-lg font-semibold">Профиль</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="text-xs font-medium text-muted-foreground">Username</label>
+            <label className="text-xs font-medium text-muted-foreground">Имя пользователя</label>
             <p className="mt-1 text-sm font-medium">{user?.username ?? "—"}</p>
           </div>
           <div>
-            <label className="text-xs font-medium text-muted-foreground">Groups</label>
+            <label className="text-xs font-medium text-muted-foreground">Группы</label>
             <div className="mt-1 flex flex-wrap gap-1">
               {user?.groups.length ? (
                 user.groups.map((g) => (
@@ -46,8 +56,8 @@ export function SettingsPage() {
         </div>
       </section>
 
-      <section className="space-y-4 rounded-lg border p-5">
-        <h2 className="text-lg font-semibold">Assignments</h2>
+      <section className="space-y-4 rounded-xl border bg-card p-5 transition-shadow duration-300 hover:shadow-md">
+        <h2 className="text-lg font-semibold">Назначения</h2>
         {assignmentsLoading ? (
           <div className="space-y-2">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -55,14 +65,14 @@ export function SettingsPage() {
             ))}
           </div>
         ) : assignments.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No assignments yet.</p>
+          <p className="text-sm text-muted-foreground">Назначений пока нет.</p>
         ) : (
           <div className="overflow-x-auto rounded-lg border">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b bg-muted/50">
-                  <th className="px-4 py-3 text-left font-medium">Book</th>
-                  <th className="px-4 py-3 text-left font-medium">Pages</th>
+                <tr className="bg-gradient-primary text-white">
+                  <th className="px-4 py-3 text-left font-semibold">Книга</th>
+                  <th className="px-4 py-3 text-left font-semibold">Страницы</th>
                   <th className="w-10 px-4 py-3" />
                 </tr>
               </thead>
@@ -70,7 +80,7 @@ export function SettingsPage() {
                 {assignments.map((a) => (
                   <tr
                     key={a.id}
-                    className="cursor-pointer border-b transition-colors hover:bg-muted/50"
+                    className="cursor-pointer border-b transition-all duration-200 hover:bg-primary/5"
                     onClick={() => navigate(`/books/${a.book_id}/pages?assigned=true`)}
                   >
                     <td className="px-4 py-3 font-medium">{a.book_name}</td>

@@ -10,7 +10,7 @@ export function ImagePanel({ imageUrl }: ImagePanelProps) {
   if (!imageUrl) {
     return (
       <div className="flex h-full items-center justify-center rounded-lg border bg-muted/30">
-        <p className="text-muted-foreground">No image available</p>
+        <p className="text-muted-foreground">Изображение недоступно</p>
       </div>
     )
   }
@@ -26,17 +26,17 @@ export function ImagePanel({ imageUrl }: ImagePanelProps) {
         {({ zoomIn, zoomOut, resetTransform }) => (
           <>
             <div className="flex items-center gap-1 border-b bg-muted/30 px-2 py-1.5">
-              <span className="text-xs font-medium text-muted-foreground">Image</span>
+              <span className="text-xs font-medium text-muted-foreground">Изображение</span>
               <div className="ml-auto flex items-center gap-0.5">
-                <Button variant="ghost" size="icon" className="h-7 w-7" title="Zoom in (Ctrl++)"
+                <Button variant="ghost" size="icon" className="h-7 w-7" title="Приблизить"
                   onClick={() => zoomIn()}>
                   <ZoomIn className="h-3.5 w-3.5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7" title="Zoom out (Ctrl+-)"
+                <Button variant="ghost" size="icon" className="h-7 w-7" title="Отдалить"
                   onClick={() => zoomOut()}>
                   <ZoomOut className="h-3.5 w-3.5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7" title="Fit to screen"
+                <Button variant="ghost" size="icon" className="h-7 w-7" title="По размеру экрана"
                   onClick={() => resetTransform()}>
                   <Maximize2 className="h-3.5 w-3.5" />
                 </Button>

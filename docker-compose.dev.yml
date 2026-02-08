@@ -120,6 +120,7 @@ services:
       - ollama
 
   frontend:
+    image: ghcr.io/comtextspace/proofreader-frontend:develop
     build:
       context: ./frontend
       dockerfile: Dockerfile

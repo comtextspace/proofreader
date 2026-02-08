@@ -24,7 +24,7 @@ export function MetadataPanel({
   return (
     <div className="grid grid-cols-2 gap-4 rounded-lg border bg-card p-4 sm:grid-cols-3 lg:grid-cols-6">
       <div>
-        <label className="text-xs font-medium text-muted-foreground">Book</label>
+        <label className="text-xs font-medium text-muted-foreground">Книга</label>
         <p className="mt-1">
           <Link
             to={`/books/${page.book.id}/pages`}
@@ -36,14 +36,14 @@ export function MetadataPanel({
       </div>
 
       <div>
-        <label className="text-xs font-medium text-muted-foreground">Page</label>
+        <label className="text-xs font-medium text-muted-foreground">Страница</label>
         <p className="mt-1 text-sm">
           {page.number} / {page.total_pages}
         </p>
       </div>
 
       <div>
-        <label className="text-xs font-medium text-muted-foreground">Page in Book</label>
+        <label className="text-xs font-medium text-muted-foreground">Стр. в книге</label>
         <Input
           value={numberInBook}
           onChange={(e) => onNumberInBookChange(e.target.value)}
@@ -53,7 +53,7 @@ export function MetadataPanel({
       </div>
 
       <div>
-        <label className="text-xs font-medium text-muted-foreground">Status</label>
+        <label className="text-xs font-medium text-muted-foreground">Статус</label>
         <Select
           options={page.available_statuses.map((s) => ({ value: s.value, label: s.label }))}
           value={status}
@@ -63,7 +63,7 @@ export function MetadataPanel({
       </div>
 
       <div>
-        <label className="text-xs font-medium text-muted-foreground">Text Size</label>
+        <label className="text-xs font-medium text-muted-foreground">Размер текста</label>
         <div className="mt-1 flex items-center gap-2">
           <input
             type="range"
@@ -78,7 +78,7 @@ export function MetadataPanel({
       </div>
 
       <div>
-        <label className="text-xs font-medium text-muted-foreground">Modified</label>
+        <label className="text-xs font-medium text-muted-foreground">Изменено</label>
         <p className="mt-1 text-sm text-muted-foreground">
           {new Date(page.modified).toLocaleString()}
         </p>

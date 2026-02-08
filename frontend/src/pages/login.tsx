@@ -21,40 +21,43 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary">
-            <BookOpen className="h-6 w-6 text-primary-foreground" />
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-body p-4 dark:bg-background">
+      <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
+      <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-warning/5 blur-3xl" />
+
+      <Card className="relative z-10 w-full max-w-md shadow-primary-lg">
+        <CardHeader className="pt-8 pb-4 text-center">
+          <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-primary shadow-primary-sm">
+            <BookOpen className="h-7 w-7 text-white animate-logo-spin" />
           </div>
-          <CardTitle className="text-2xl">Proofreader</CardTitle>
-          <p className="text-sm text-muted-foreground">Sign in to your account</p>
+          <CardTitle className="text-2xl">Корректор</CardTitle>
+          <p className="text-sm text-muted-foreground">Войдите в свой аккаунт</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="username" className="text-sm font-medium">
-                Username
+                Имя пользователя
               </label>
               <Input
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your username"
+                placeholder="Введите имя пользователя"
                 required
                 autoFocus
               />
             </div>
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
-                Password
+                Пароль
               </label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder="Введите пароль"
                 required
               />
             </div>
@@ -63,14 +66,14 @@ export function LoginPage() {
               <p className="text-sm text-destructive">{error}</p>
             )}
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full bg-gradient-primary shadow-primary-sm hover:shadow-primary-lg transition-all duration-300 hover:-translate-y-0.5" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Signing in...
+                  Вход...
                 </>
               ) : (
-                "Sign in"
+                "Войти"
               )}
             </Button>
           </form>

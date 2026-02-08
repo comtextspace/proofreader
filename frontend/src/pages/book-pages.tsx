@@ -1,15 +1,21 @@
 import { useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import {
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  Clock,
   Download,
+  FileText,
+  Loader2 as LoaderIcon,
   Search,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { StatusBadge } from "@/components/pages/status-badge"
+import { StatsCard } from "@/components/ui/stats-card"
+import { ProgressBar } from "@/components/ui/progress-bar"
 import { useBook } from "@/hooks/use-books"
 import { usePages } from "@/hooks/use-pages"
 import { useAuthStore } from "@/stores/auth-store"
@@ -73,13 +79,13 @@ export function BookPagesPage() {
   return (
     <div className="mx-auto h-full max-w-6xl space-y-6 overflow-auto p-6">
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <button onClick={() => navigate("/authors")} className="hover:text-foreground">
-          Authors
+        <button onClick={() => navigate("/authors")} className="hover:text-primary transition-colors">
+          Авторы
         </button>
         <ChevronRight className="h-3 w-3" />
         <button
           onClick={() => book && navigate(`/authors/${book.author.id}/books`)}
-          className="hover:text-foreground"
+          className="hover:text-primary transition-colors"
         >
           {book?.author.name ?? "..."}
         </button>
@@ -88,22 +94,12 @@ export function BookPagesPage() {
       </div>
 
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{book?.name ?? "Loading..."}</h1>
-          {book && (
-            <p className="text-sm text-muted-foreground">
-              {book.pages_count} pages
-              {book.pages_done_count > 0 && ` / ${book.pages_done_count} done`}
-              {book.pages_processing_count > 0 && ` / ${book.pages_processing_count} processing`}
-              {book.total_pages_in_pdf && ` / ${book.total_pages_in_pdf} in PDF`}
-            </p>
-          )}
-        </div>
+        <h1 className="text-2xl font-bold">{book?.name ?? "Загрузка..."}</h1>
         {user?.is_admin && (
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => handleDownload("text")}>
               <Download className="mr-1 h-3.5 w-3.5" />
-              Text
+              Текст
             </Button>
             <Button variant="outline" size="sm" onClick={() => handleDownload("pdf")}>
               <Download className="mr-1 h-3.5 w-3.5" />
@@ -117,11 +113,26 @@ export function BookPagesPage() {
         )}
       </div>
 
+      {book && (
+        <>
+          <ProgressBar
+            value={book.pages_count > 0 ? (book.pages_done_count / book.pages_count) * 100 : 0}
+            label="Общий прогресс"
+          />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <StatsCard icon={FileText} label="Всего страниц" value={book.pages_count} />
+            <StatsCard icon={CheckCircle2} label="Готово" value={book.pages_done_count} />
+            <StatsCard icon={Clock} label="В работе" value={book.pages_in_work_count} />
+            <StatsCard icon={LoaderIcon} label="В обработке" value={book.pages_processing_count} />
+          </div>
+        </>
+      )}
+
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search pages..."
+            placeholder="Поиск страниц..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setOffset(0) }}
             className="w-48 pl-9"
@@ -130,7 +141,7 @@ export function BookPagesPage() {
 
         <Select
           options={statusOptions}
-          placeholder="All statuses"
+          placeholder="Все статусы"
           value={status}
           onChange={(e) => { setStatus(e.target.value); setOffset(0) }}
           className="w-40"
@@ -141,7 +152,7 @@ export function BookPagesPage() {
           size="sm"
           onClick={() => { setAssigned(!assigned); setOffset(0) }}
         >
-          My pages
+          Мои страницы
         </Button>
       </div>
 
@@ -153,24 +164,24 @@ export function BookPagesPage() {
         </div>
       ) : data?.results.length === 0 ? (
         <div className="flex h-48 items-center justify-center text-muted-foreground">
-          No pages found.
+          Страницы не найдены.
         </div>
       ) : (
         <div className="overflow-x-auto rounded-lg border">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium">#</th>
-                <th className="px-4 py-3 text-left font-medium">Page in Book</th>
-                <th className="px-4 py-3 text-left font-medium">Status</th>
-                <th className="px-4 py-3 text-left font-medium">Modified</th>
+              <tr className="bg-gradient-primary text-white">
+                <th className="px-4 py-3 text-left font-semibold">#</th>
+                <th className="px-4 py-3 text-left font-semibold">Стр. в книге</th>
+                <th className="px-4 py-3 text-left font-semibold">Статус</th>
+                <th className="px-4 py-3 text-left font-semibold">Изменено</th>
               </tr>
             </thead>
             <tbody>
               {data?.results.map((page) => (
                 <tr
                   key={page.id}
-                  className="cursor-pointer border-b transition-colors hover:bg-muted/50"
+                  className="cursor-pointer border-b transition-all duration-200 hover:bg-primary/5"
                   onClick={() => navigate(`/pages/${page.id}/edit`)}
                 >
                   <td className="px-4 py-3 font-mono">{page.number}</td>
@@ -191,7 +202,7 @@ export function BookPagesPage() {
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages}
+            Страница {currentPage} из {totalPages}
           </span>
           <div className="flex gap-2">
             <Button
@@ -201,7 +212,7 @@ export function BookPagesPage() {
               disabled={offset === 0}
             >
               <ChevronLeft className="h-4 w-4" />
-              Previous
+              Назад
             </Button>
             <Button
               variant="outline"
@@ -209,7 +220,7 @@ export function BookPagesPage() {
               onClick={() => setOffset(offset + PAGE_SIZE)}
               disabled={!data?.next}
             >
-              Next
+              Далее
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

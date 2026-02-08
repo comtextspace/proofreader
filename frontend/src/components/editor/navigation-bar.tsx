@@ -44,7 +44,7 @@ export function NavigationBar({ page, adjacent, onSave, onSaveAndNext, isSaving 
       </Button>
 
       <span className="text-sm text-muted-foreground">
-        / Page {page.number}
+        / Страница {page.number}
       </span>
 
       <div className="mx-2 h-5 w-px bg-border" />
@@ -53,7 +53,7 @@ export function NavigationBar({ page, adjacent, onSave, onSaveAndNext, isSaving 
         <Input
           value={goToPage}
           onChange={(e) => setGoToPage(e.target.value)}
-          placeholder="Go to #"
+          placeholder="К стр. #"
           className="h-7 w-20 text-xs"
         />
       </form>
@@ -64,7 +64,7 @@ export function NavigationBar({ page, adjacent, onSave, onSaveAndNext, isSaving 
           size="sm"
           onClick={() => adjacent?.prev_id && navigate(`/pages/${adjacent.prev_id}/edit`)}
           disabled={!adjacent?.prev_id}
-          title="Previous page (Alt+Left)"
+          title="Предыдущая (Alt+Left)"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -74,20 +74,20 @@ export function NavigationBar({ page, adjacent, onSave, onSaveAndNext, isSaving 
           size="sm"
           onClick={() => adjacent?.next_id && navigate(`/pages/${adjacent.next_id}/edit`)}
           disabled={!adjacent?.next_id}
-          title="Next page (Alt+Right)"
+          title="Следующая (Alt+Right)"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
 
         <div className="mx-1 h-5 w-px bg-border" />
 
-        <Button size="sm" onClick={onSave} disabled={isSaving}>
+        <Button size="sm" onClick={onSave} disabled={isSaving} className="bg-gradient-primary shadow-primary-sm hover:shadow-primary-lg">
           {isSaving ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <Save className="h-4 w-4" />
           )}
-          Save
+          Сохранить
         </Button>
 
         {adjacent?.next_id && (
@@ -96,14 +96,14 @@ export function NavigationBar({ page, adjacent, onSave, onSaveAndNext, isSaving 
             variant="secondary"
             onClick={onSaveAndNext}
             disabled={isSaving}
-            className="bg-warning text-warning-foreground hover:bg-warning/90"
+            className="bg-gradient-warning text-warning-foreground hover:shadow-md"
           >
             {isSaving ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Save className="h-4 w-4" />
             )}
-            Save & Next
+            Сохранить и далее
           </Button>
         )}
       </div>

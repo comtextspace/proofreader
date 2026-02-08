@@ -21,14 +21,14 @@ export function useAuth() {
       setUser(profile)
       navigate("/pages")
     } catch (err: unknown) {
-      let message = "Invalid credentials"
+      let message = "Неверные данные"
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 401) {
-          message = "Invalid username or password"
+          message = "Неверное имя пользователя или пароль"
         } else if (err.response?.data?.detail) {
           message = err.response.data.detail
         } else if (!err.response) {
-          message = "Unable to connect to server"
+          message = "Не удалось подключиться к серверу"
         }
       }
       setError(message)

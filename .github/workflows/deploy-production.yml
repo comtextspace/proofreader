@@ -50,8 +50,45 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
+  build-and-push-frontend:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata for frontend
+      id: meta-frontend
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend
+        tags: |
+          type=raw,value=latest
+          type=sha,prefix=prod-
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+
+    - name: Build and push frontend Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        push: true
+        tags: ${{ steps.meta-frontend.outputs.tags }}
+        labels: ${{ steps.meta-frontend.outputs.labels }}
+
   deploy:
-    needs: build-and-push
+    needs: [build-and-push, build-and-push-frontend]
     runs-on: ubuntu-latest
 
     steps:
@@ -145,7 +182,7 @@ jobs:
           # Verify all critical services are running
           FAILED_SERVICES=""
 
-          for service in web nginx celery_worker db redis; do
+          for service in web nginx celery_worker db redis frontend; do
             if ! docker compose -f docker-compose.prod.yml ps $service | grep -q "Up"; then
               echo "❌ ERROR: Service $service is not running!"
               docker compose -f docker-compose.prod.yml logs $service --tail=50

@@ -9,7 +9,7 @@ export function PageEditPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-3.5rem)] items-center justify-center">
+      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     )
@@ -17,8 +17,8 @@ export function PageEditPage() {
 
   if (error || !page) {
     return (
-      <div className="flex h-[calc(100vh-3.5rem)] items-center justify-center">
-        <p className="text-destructive">Failed to load page.</p>
+      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
+        <p className="text-destructive">Не удалось загрузить страницу.</p>
       </div>
     )
   }

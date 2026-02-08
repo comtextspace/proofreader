@@ -36,9 +36,9 @@ export function PageListPage() {
   return (
     <div className="mx-auto h-full max-w-7xl space-y-6 overflow-auto p-6">
       <div>
-        <h1 className="text-2xl font-bold">Pages</h1>
+        <h1 className="text-2xl font-bold">Страницы</h1>
         <p className="text-sm text-muted-foreground">
-          {data ? `${data.count} pages total` : "Loading..."}
+          {data ? `${data.count} стр. всего` : "Загрузка..."}
         </p>
       </div>
 
@@ -58,7 +58,7 @@ export function PageListPage() {
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages}
+            Страница {currentPage} из {totalPages}
           </span>
           <div className="flex gap-2">
             <Button
@@ -68,7 +68,7 @@ export function PageListPage() {
               disabled={offset === 0}
             >
               <ChevronLeft className="h-4 w-4" />
-              Previous
+              Назад
             </Button>
             <Button
               variant="outline"
@@ -76,7 +76,7 @@ export function PageListPage() {
               onClick={() => setOffset(offset + PAGE_SIZE)}
               disabled={!data?.next}
             >
-              Next
+              Далее
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

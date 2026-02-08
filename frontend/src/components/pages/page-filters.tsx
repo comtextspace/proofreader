@@ -43,7 +43,7 @@ export function PageFilters({
       <div className="relative">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search pages..."
+          placeholder="Поиск страниц..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-48 pl-9"
@@ -52,7 +52,7 @@ export function PageFilters({
 
       <Select
         options={bookOptions}
-        placeholder="All books"
+        placeholder="Все книги"
         value={book}
         onChange={(e) => onBookChange(e.target.value)}
         className="w-52"
@@ -60,7 +60,7 @@ export function PageFilters({
 
       <Select
         options={statusOptions}
-        placeholder="All statuses"
+        placeholder="Все статусы"
         value={status}
         onChange={(e) => onStatusChange(e.target.value)}
         className="w-40"
@@ -71,7 +71,7 @@ export function PageFilters({
         size="sm"
         onClick={() => onAssignedChange(!assigned)}
       >
-        My pages
+        Мои страницы
       </Button>
     </div>
   )

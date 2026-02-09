@@ -21,7 +21,7 @@ export function KeyboardShortcutsPanel() {
       <Button
         variant="outline"
         size="icon"
-        className="fixed bottom-4 right-4 z-50 h-10 w-10 rounded-full bg-gradient-primary text-white shadow-primary-sm hover:shadow-primary-lg hover:-translate-y-0.5 transition-all duration-300 border-0"
+        className="fixed bottom-14 right-4 z-50 h-10 w-10 rounded-full bg-gradient-primary text-white shadow-primary-sm hover:shadow-primary-lg hover:-translate-y-0.5 transition-all duration-300 border-0"
         onClick={() => setIsOpen(!isOpen)}
         title="Клавиатурные сокращения"
       >
@@ -29,7 +29,7 @@ export function KeyboardShortcutsPanel() {
       </Button>
 
       {isOpen && (
-        <div className="fixed bottom-16 right-4 z-50 w-64 rounded-lg border bg-card p-4 shadow-xl">
+        <div className="fixed bottom-26 right-4 z-50 w-64 rounded-lg border bg-card p-4 shadow-xl">
           <h3 className="mb-3 text-sm font-semibold">Клавиатурные сокращения</h3>
           <div className="space-y-2">
             {shortcuts.map((s) => (

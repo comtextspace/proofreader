@@ -152,7 +152,7 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
           onCorrect={onCorrect}
           isCorrectingLLM={isCorrectingLLM}
         />
-        <div ref={editorRef} className="flex-1 overflow-auto" />
+        <div ref={editorRef} className="flex-1 overflow-hidden" />
       </div>
       {editorView && selection && (
         <FloatingToolbar

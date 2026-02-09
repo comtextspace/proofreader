@@ -17,7 +17,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full bg-gradient-primary shadow-primary-sm">
       <div className="flex h-16 items-center px-6">
-        <Link to="/authors" className="flex items-center gap-2 font-semibold text-white">
+        <Link to="/books" className="flex items-center gap-2 font-semibold text-white">
           <BookOpen className="h-5 w-5" />
           <span>Proofreader</span>
         </Link>

@@ -2,7 +2,6 @@ import { useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import {
   CheckCircle2,
-  ChevronLeft,
   ChevronRight,
   Clock,
   Download,
@@ -14,14 +13,14 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
-import { StatusBadge } from "@/components/pages/status-badge"
+import { PageHeatmap } from "@/components/pages/page-heatmap"
 import { StatsCard } from "@/components/ui/stats-card"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { useBook } from "@/hooks/use-books"
 import { usePages } from "@/hooks/use-pages"
 import { useAuthStore } from "@/stores/auth-store"
 import { downloadBookText, downloadBookPdf, downloadBookEpub } from "@/api/books"
-import { ALL_STATUSES, STATUS_CONFIG, PAGE_SIZE } from "@/lib/constants"
+import { ALL_STATUSES, STATUS_CONFIG } from "@/lib/constants"
 
 function triggerDownload(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob)
@@ -42,20 +41,15 @@ export function BookPagesPage() {
   const [status, setStatus] = useState("")
   const [assigned, setAssigned] = useState(searchParams.get("assigned") === "true")
   const [search, setSearch] = useState("")
-  const [offset, setOffset] = useState(0)
 
   const { data, isLoading } = usePages({
     book: bookId,
     status: status || undefined,
     assigned: assigned || undefined,
     search: search || undefined,
-    limit: PAGE_SIZE,
-    offset,
+    limit: 9999,
     ordering: "number",
   })
-
-  const totalPages = data ? Math.ceil(data.count / PAGE_SIZE) : 0
-  const currentPage = Math.floor(offset / PAGE_SIZE) + 1
 
   const statusOptions = ALL_STATUSES.map((s) => ({
     value: s,
@@ -81,15 +75,8 @@ export function BookPagesPage() {
     <div className="flex h-full flex-col">
       <div className="mx-auto w-full max-w-6xl shrink-0 space-y-6 px-6 pt-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <button onClick={() => navigate("/authors")} className="hover:text-primary transition-colors">
-            Авторы
-          </button>
-          <ChevronRight className="h-3 w-3" />
-          <button
-            onClick={() => book && navigate(`/authors/${book.author.id}/books`)}
-            className="hover:text-primary transition-colors"
-          >
-            {book?.author.name ?? "..."}
+          <button onClick={() => navigate("/books")} className="hover:text-primary transition-colors">
+            Книги
           </button>
           <ChevronRight className="h-3 w-3" />
           <span className="text-foreground">{book?.name ?? "..."}</span>
@@ -137,7 +124,7 @@ export function BookPagesPage() {
             <Input
               placeholder="Поиск страниц..."
               value={search}
-              onChange={(e) => { setSearch(e.target.value); setOffset(0) }}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-48 pl-9"
             />
           </div>
@@ -146,106 +133,31 @@ export function BookPagesPage() {
             options={statusOptions}
             placeholder="Все статусы"
             value={status}
-            onChange={(e) => { setStatus(e.target.value); setOffset(0) }}
+            onChange={(e) => setStatus(e.target.value)}
             className="w-40"
           />
 
           <Button
             variant={assigned ? "default" : "outline"}
             size="sm"
-            onClick={() => { setAssigned(!assigned); setOffset(0) }}
+            onClick={() => setAssigned(!assigned)}
           >
             Мои страницы
           </Button>
         </div>
       </div>
 
-      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-6">
+      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-6 overflow-auto px-6 py-6">
         {isLoading ? (
-          <div className="space-y-2">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="h-12 animate-pulse rounded-md bg-muted" />
-            ))}
+          <div className="flex h-48 items-center justify-center">
+            <LoaderIcon className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : data?.results.length === 0 ? (
           <div className="flex h-48 items-center justify-center text-muted-foreground">
             Страницы не найдены.
           </div>
         ) : (
-          <div className="flex min-h-0 flex-1 flex-col rounded-lg border">
-            <table className="w-full shrink-0 text-sm">
-              <colgroup>
-                <col style={{ width: "10%" }} />
-                <col style={{ width: "30%" }} />
-                <col style={{ width: "30%" }} />
-                <col style={{ width: "30%" }} />
-              </colgroup>
-              <thead>
-                <tr className="bg-gradient-primary text-white">
-                  <th className="rounded-tl-lg px-4 py-3 text-left font-semibold">#</th>
-                  <th className="px-4 py-3 text-left font-semibold">Стр. в книге</th>
-                  <th className="px-4 py-3 text-left font-semibold">Статус</th>
-                  <th className="rounded-tr-lg px-4 py-3 text-left font-semibold">Изменено</th>
-                </tr>
-              </thead>
-            </table>
-            <div className="scrollbar-thin min-h-0 flex-1 overflow-auto">
-              <table className="w-full text-sm">
-                <colgroup>
-                  <col style={{ width: "10%" }} />
-                  <col style={{ width: "30%" }} />
-                  <col style={{ width: "30%" }} />
-                  <col style={{ width: "30%" }} />
-                </colgroup>
-                <tbody>
-                  {data?.results.map((page) => (
-                    <tr
-                      key={page.id}
-                      className="cursor-pointer border-b transition-all duration-200 hover:bg-primary/5"
-                      onClick={() => navigate(`/pages/${page.id}/edit`)}
-                    >
-                      <td className="px-4 py-3 font-mono">{page.number}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{page.number_in_book ?? "-"}</td>
-                      <td className="px-4 py-3">
-                        <StatusBadge status={page.status} />
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">
-                        {new Date(page.modified).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {totalPages > 1 && (
-          <div className="flex shrink-0 items-center justify-between">
-            <span className="text-sm text-muted-foreground">
-              Страница {currentPage} из {totalPages}
-            </span>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
-                disabled={offset === 0}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Назад
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setOffset(offset + PAGE_SIZE)}
-                disabled={!data?.next}
-              >
-                Далее
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+          <PageHeatmap pages={data?.results ?? []} />
         )}
       </div>
     </div>

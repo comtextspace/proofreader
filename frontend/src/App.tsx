@@ -7,6 +7,7 @@ import { LoginPage } from "@/pages/login"
 import { RegisterPage } from "@/pages/register"
 import { AuthorListPage } from "@/pages/author-list"
 import { AuthorBooksPage } from "@/pages/author-books"
+import { BookListPage } from "@/pages/book-list"
 import { BookPagesPage } from "@/pages/book-pages"
 import { PageEditPage } from "@/pages/page-edit"
 import { SettingsPage } from "@/pages/settings"
@@ -64,13 +65,14 @@ export default function App() {
                 </ProtectedRoute>
               }
             >
+              <Route path="/books" element={<BookListPage />} />
               <Route path="/authors" element={<AuthorListPage />} />
               <Route path="/authors/:authorId/books" element={<AuthorBooksPage />} />
               <Route path="/books/:bookId/pages" element={<BookPagesPage />} />
               <Route path="/pages/:id/edit" element={<PageEditPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
-            <Route path="*" element={<Navigate to="/authors" replace />} />
+            <Route path="*" element={<Navigate to="/books" replace />} />
           </Routes>
         </AppInitializer>
       </BrowserRouter>

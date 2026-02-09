@@ -2,8 +2,7 @@ import { useCallback, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { TextPanel } from "./text-panel"
 import { ImagePanel } from "./image-panel"
-import { MetadataPanel } from "./metadata-panel"
-import { NavigationBar } from "./navigation-bar"
+import { UnifiedBottomBar } from "./unified-bottom-bar"
 import { KeyboardShortcutsPanel } from "./keyboard-shortcuts-panel"
 import { useLLMCorrection, usePageAdjacent, useUpdatePage } from "@/hooks/use-pages"
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts"
@@ -71,14 +70,6 @@ export function PageEditor({ page }: PageEditorProps) {
 
   return (
     <div className="flex h-full flex-col">
-      <NavigationBar
-        page={page}
-        adjacent={adjacent}
-        onSave={handleSave}
-        onSaveAndNext={handleSaveAndNext}
-        isSaving={updateMutation.isPending}
-      />
-
       <div className="grid flex-1 grid-cols-1 gap-4 overflow-hidden p-4 lg:grid-cols-2">
         <TextPanel
           text={text}
@@ -91,15 +82,17 @@ export function PageEditor({ page }: PageEditorProps) {
         <ImagePanel imageUrl={page.image} />
       </div>
 
-      <div className="px-4 pb-4">
-        <MetadataPanel
-          page={page}
-          status={status}
-          numberInBook={numberInBook}
-          onStatusChange={setStatus}
-          onNumberInBookChange={setNumberInBook}
-        />
-      </div>
+      <UnifiedBottomBar
+        page={page}
+        adjacent={adjacent}
+        status={status}
+        numberInBook={numberInBook}
+        onStatusChange={setStatus}
+        onNumberInBookChange={setNumberInBook}
+        onSave={handleSave}
+        onSaveAndNext={handleSaveAndNext}
+        isSaving={updateMutation.isPending}
+      />
 
       <KeyboardShortcutsPanel />
     </div>

@@ -1,26 +1,22 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import {
-  CheckCircle2,
   ChevronRight,
-  Clock,
   Download,
-  FileText,
   Loader2 as LoaderIcon,
-  ScanEye,
   Search,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { PageHeatmap } from "@/components/pages/page-heatmap"
-import { StatsCard } from "@/components/ui/stats-card"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { useBook } from "@/hooks/use-books"
 import { usePages } from "@/hooks/use-pages"
 import { useAuthStore } from "@/stores/auth-store"
 import { downloadBookText, downloadBookPdf, downloadBookEpub } from "@/api/books"
 import { ALL_STATUSES, STATUS_CONFIG } from "@/lib/constants"
+import type { PageStatus } from "@/types/models"
 
 function triggerDownload(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob)
@@ -55,6 +51,14 @@ export function BookPagesPage() {
     value: s,
     label: STATUS_CONFIG[s].label,
   }))
+
+  const statusCounts = useMemo(() => {
+    const counts = Object.fromEntries(ALL_STATUSES.map((s) => [s, 0])) as Record<PageStatus, number>
+    for (const page of data?.results ?? []) {
+      counts[page.status] = (counts[page.status] ?? 0) + 1
+    }
+    return counts
+  }, [data?.results])
 
   async function handleDownload(format: "text" | "pdf" | "epub") {
     if (!book) return
@@ -103,19 +107,10 @@ export function BookPagesPage() {
         </div>
 
         {book && (
-          <>
-            <ProgressBar
-              value={book.pages_count > 0 ? (book.pages_done_count / book.pages_count) * 100 : 0}
-              label="Общий прогресс"
-            />
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-              <StatsCard icon={FileText} label="Всего страниц" value={book.pages_count} />
-              <StatsCard icon={CheckCircle2} label="Готово" value={book.pages_done_count} />
-              <StatsCard icon={Clock} label="В работе" value={book.pages_in_work_count} />
-              <StatsCard icon={ScanEye} label="Распознано" value={book.pages_recognized_count} />
-              <StatsCard icon={LoaderIcon} label="В обработке" value={book.pages_processing_count} />
-            </div>
-          </>
+          <ProgressBar
+            value={book.pages_count > 0 ? (book.pages_done_count / book.pages_count) * 100 : 0}
+            label={`Общий прогресс (${book.pages_count} стр.)`}
+          />
         )}
 
         <div className="flex flex-wrap items-center gap-3">
@@ -157,7 +152,7 @@ export function BookPagesPage() {
             Страницы не найдены.
           </div>
         ) : (
-          <PageHeatmap pages={data?.results ?? []} />
+          <PageHeatmap pages={data?.results ?? []} counts={statusCounts} />
         )}
       </div>
     </div>

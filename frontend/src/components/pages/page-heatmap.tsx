@@ -22,14 +22,15 @@ const STATUS_TEXT: Record<PageStatus, string> = {
 
 interface PageHeatmapProps {
   pages: PageListItem[]
+  counts: Record<PageStatus, number>
 }
 
-export function PageHeatmap({ pages }: PageHeatmapProps) {
+export function PageHeatmap({ pages, counts }: PageHeatmapProps) {
   const navigate = useNavigate()
 
   return (
     <div>
-      <HeatmapLegend />
+      <StatusBar counts={counts} />
       <div className="flex flex-wrap gap-1">
         {pages.map((page) => {
           const colorClass = `${STATUS_BG[page.status] ?? "bg-muted"} ${STATUS_TEXT[page.status] ?? "text-muted-foreground"}`
@@ -51,13 +52,16 @@ export function PageHeatmap({ pages }: PageHeatmapProps) {
   )
 }
 
-function HeatmapLegend() {
+function StatusBar({ counts }: { counts: Record<PageStatus, number> }) {
   return (
-    <div className="sticky top-0 z-10 bg-background pb-4 flex flex-wrap items-center gap-3 text-xs">
+    <div className="sticky top-0 z-10 bg-background pb-4 grid grid-cols-3 gap-2 sm:grid-cols-6">
       {ALL_STATUSES.map((status) => (
-        <div key={status} className="flex items-center gap-1.5">
-          <div className={`h-3 w-3 rounded ${STATUS_BG[status] ?? "bg-muted"}`} />
-          <span className="text-muted-foreground">{STATUS_CONFIG[status].label}</span>
+        <div
+          key={status}
+          className={`rounded-lg px-3 py-1.5 text-center ${STATUS_BG[status]} ${STATUS_TEXT[status]}`}
+        >
+          <div className="text-[10px] leading-tight opacity-80">{STATUS_CONFIG[status].label}</div>
+          <div className="text-sm font-bold leading-tight">{counts[status]}</div>
         </div>
       ))}
     </div>

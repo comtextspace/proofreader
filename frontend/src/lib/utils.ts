@@ -13,10 +13,10 @@ export function getBookStatus(
     return { label: "Пустая", className: "bg-muted text-muted-foreground" }
   }
   if (pagesProcessing) {
-    return { label: "Обработка", className: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300" }
+    return { label: "Обработка", className: "bg-blue-50 text-blue-700 dark:bg-blue-400/15 dark:text-blue-400" }
   }
   if (book.pages_done_count === book.pages_count) {
-    return { label: "Готово", className: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" }
+    return { label: "Готово", className: "bg-green-50 text-green-700 dark:bg-green-400/15 dark:text-green-400" }
   }
-  return { label: "В работе", className: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300" }
+  return { label: "В работе", className: "bg-orange-50 text-orange-700 dark:bg-orange-400/15 dark:text-orange-400" }
 }

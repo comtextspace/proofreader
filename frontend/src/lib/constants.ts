@@ -1,12 +1,12 @@
 import type { PageStatus } from "@/types/models"
 
 export const STATUS_CONFIG: Record<PageStatus, { label: string; color: string; bgClass: string }> = {
-  processing: { label: "Обработка", color: "text-blue-600", bgClass: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300" },
-  redy: { label: "Распознано", color: "text-yellow-600", bgClass: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300" },
-  in_progress: { label: "В работе", color: "text-orange-600", bgClass: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300" },
-  formatting: { label: "Форматирование", color: "text-purple-600", bgClass: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300" },
-  check: { label: "Проверка", color: "text-cyan-600", bgClass: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300" },
-  done: { label: "Готово", color: "text-green-600", bgClass: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" },
+  processing: { label: "Обработка", color: "text-blue-400", bgClass: "bg-blue-50 text-blue-700 dark:bg-blue-400/15 dark:text-blue-400" },
+  redy: { label: "Распознано", color: "text-yellow-400", bgClass: "bg-yellow-50 text-yellow-700 dark:bg-yellow-400/15 dark:text-yellow-400" },
+  in_progress: { label: "В работе", color: "text-orange-400", bgClass: "bg-orange-50 text-orange-700 dark:bg-orange-400/15 dark:text-orange-400" },
+  formatting: { label: "Форматирование", color: "text-purple-400", bgClass: "bg-purple-50 text-purple-700 dark:bg-purple-400/15 dark:text-purple-400" },
+  check: { label: "Проверка", color: "text-cyan-400", bgClass: "bg-cyan-50 text-cyan-700 dark:bg-cyan-400/15 dark:text-cyan-400" },
+  done: { label: "Готово", color: "text-green-400", bgClass: "bg-green-50 text-green-700 dark:bg-green-400/15 dark:text-green-400" },
 }
 
 export const ALL_STATUSES: PageStatus[] = ["processing", "redy", "in_progress", "formatting", "check", "done"]

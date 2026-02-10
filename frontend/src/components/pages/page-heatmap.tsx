@@ -3,21 +3,21 @@ import { ALL_STATUSES, STATUS_CONFIG } from "@/lib/constants"
 import type { PageListItem, PageStatus } from "@/types/models"
 
 const STATUS_BG: Record<PageStatus, string> = {
-  processing: "bg-blue-200 dark:bg-blue-800",
-  redy: "bg-yellow-200 dark:bg-yellow-800",
-  in_progress: "bg-orange-200 dark:bg-orange-800",
-  formatting: "bg-purple-200 dark:bg-purple-800",
-  check: "bg-cyan-200 dark:bg-cyan-800",
-  done: "bg-green-200 dark:bg-green-800",
+  processing: "bg-blue-100 dark:bg-blue-400/15",
+  redy: "bg-yellow-100 dark:bg-yellow-400/15",
+  in_progress: "bg-orange-100 dark:bg-orange-400/15",
+  formatting: "bg-purple-100 dark:bg-purple-400/15",
+  check: "bg-cyan-100 dark:bg-cyan-400/15",
+  done: "bg-green-100 dark:bg-green-400/15",
 }
 
 const STATUS_TEXT: Record<PageStatus, string> = {
-  processing: "text-blue-900 dark:text-blue-100",
-  redy: "text-yellow-900 dark:text-yellow-100",
-  in_progress: "text-orange-900 dark:text-orange-100",
-  formatting: "text-purple-900 dark:text-purple-100",
-  check: "text-cyan-900 dark:text-cyan-100",
-  done: "text-green-900 dark:text-green-100",
+  processing: "text-blue-700 dark:text-blue-400",
+  redy: "text-yellow-700 dark:text-yellow-400",
+  in_progress: "text-orange-700 dark:text-orange-400",
+  formatting: "text-purple-700 dark:text-purple-400",
+  check: "text-cyan-700 dark:text-cyan-400",
+  done: "text-green-700 dark:text-green-400",
 }
 
 interface PageHeatmapProps {

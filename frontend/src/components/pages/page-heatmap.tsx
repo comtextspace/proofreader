@@ -28,7 +28,7 @@ export function PageHeatmap({ pages }: PageHeatmapProps) {
   const navigate = useNavigate()
 
   return (
-    <div className="space-y-4">
+    <div>
       <HeatmapLegend />
       <div className="flex flex-wrap gap-1">
         {pages.map((page) => {
@@ -53,7 +53,7 @@ export function PageHeatmap({ pages }: PageHeatmapProps) {
 
 function HeatmapLegend() {
   return (
-    <div className="flex flex-wrap items-center gap-3 text-xs">
+    <div className="sticky top-0 z-10 bg-background pb-4 flex flex-wrap items-center gap-3 text-xs">
       {ALL_STATUSES.map((status) => (
         <div key={status} className="flex items-center gap-1.5">
           <div className={`h-3 w-3 rounded ${STATUS_BG[status] ?? "bg-muted"}`} />

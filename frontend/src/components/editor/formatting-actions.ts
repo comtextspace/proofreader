@@ -72,7 +72,9 @@ export function insertFootnote(view: EditorView, template: string) {
 }
 
 export function correctText(view: EditorView) {
-  const text = view.state.doc.toString()
+  let text = view.state.doc.toString()
+  // Merge words split across lines with a hyphen (e.g. "абстраги-\nруются" → "абстрагируются")
+  text = text.replace(/(\S)-\s*\n(\S)/g, "$1$2")
   const corrected = text.replace(/(?<!\n)\n(?!($|\n))/g, " ")
   if (corrected !== text) {
     view.dispatch({

@@ -142,7 +142,7 @@ export function BookPagesPage() {
         </div>
       </div>
 
-      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-6 overflow-auto px-6 py-6">
+      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-6 overflow-auto scrollbar-thin px-6 py-6">
         {isLoading ? (
           <div className="flex h-48 items-center justify-center">
             <LoaderIcon className="h-8 w-8 animate-spin text-muted-foreground" />

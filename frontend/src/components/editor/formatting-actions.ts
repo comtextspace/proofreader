@@ -65,8 +65,10 @@ export function insertFootnote(view: EditorView, template: string) {
       text = selected
   }
 
+  const firstX = text.indexOf(n)
   view.dispatch({
     changes: { from, to, insert: text },
+    selection: { anchor: from + firstX, head: from + firstX + n.length },
   })
   view.focus()
 }

@@ -34,7 +34,7 @@ export function PageHeatmap({ pages, counts }: PageHeatmapProps) {
   return (
     <div>
       <StatusBar counts={counts} />
-      <div className="flex flex-wrap gap-1">
+      <div className="grid gap-1 pt-1 w-full" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(28px, 1fr))" }}>
         {pages.map((page) => (
           <PageTile
             key={page.id}
@@ -124,7 +124,7 @@ function PageTile({ page, cache, onClick }: PageTileProps) {
   return (
     <div ref={tileRef} className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <button
-        className={`flex h-7 w-7 items-center justify-center rounded text-[10px] font-mono
+        className={`flex aspect-square w-full items-center justify-center rounded text-[10px] font-mono
           cursor-pointer transition-all hover:ring-2 hover:ring-primary hover:scale-110
           ${colorClass}`}
         onClick={onClick}

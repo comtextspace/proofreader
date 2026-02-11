@@ -69,6 +69,10 @@ export interface StatusOption {
   label: string
 }
 
+export interface PagePreview {
+  text_preview: string
+}
+
 export interface PageAdjacent {
   prev_id: string | null
   next_id: string | null

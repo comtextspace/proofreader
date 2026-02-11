@@ -205,6 +205,11 @@ class PagesViewSet(
         serializer = PageHistorySerializer(history, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get'])
+    def preview(self, request, id=None):
+        page = self.get_object()
+        return Response({'text_preview': page.text})
+
     @action(detail=True, methods=['post'])
     def correct(self, request, id=None):
         page = self.get_object()

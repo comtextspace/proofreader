@@ -45,6 +45,11 @@ export async function fetchPageHistory(id: string): Promise<PageHistory[]> {
   return response.data
 }
 
+export async function fetchPagePreview(id: string): Promise<{ text_preview: string }> {
+  const response = await apiClient.get(`/pages/${id}/preview`)
+  return response.data
+}
+
 export async function triggerLLMCorrection(id: string): Promise<{ detail: string }> {
   const response = await apiClient.post(`/pages/${id}/correct`)
   return response.data

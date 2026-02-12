@@ -152,7 +152,7 @@ function PageTile({ page, cache, onClick }: PageTileProps) {
 
 function StatusBar({ counts }: { counts: Record<PageStatus, number> }) {
   return (
-    <div className="sticky top-0 z-10 bg-background pb-4 grid grid-cols-3 gap-2 sm:grid-cols-6">
+    <div className="sticky top-0 z-10 bg-background pt-6 pb-4 grid grid-cols-3 gap-2 sm:grid-cols-6">
       {ALL_STATUSES.map((status) => (
         <div
           key={status}

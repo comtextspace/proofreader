@@ -30,7 +30,7 @@ class BookShortSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = ['id', 'name', 'author']
+        fields = ['id', 'name', 'author', 'is_locked']
 
 
 class BookListSerializer(serializers.ModelSerializer):
@@ -65,6 +65,7 @@ class BookDetailSerializer(serializers.ModelSerializer):
             'pages_in_work_count',
             'total_pages_in_pdf',
             'export_name',
+            'is_locked',
         ]
 
 

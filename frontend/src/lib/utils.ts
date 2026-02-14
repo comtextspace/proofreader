@@ -18,5 +18,5 @@ export function getBookStatus(
   if (book.pages_done_count === book.pages_count) {
     return { label: "Готово", className: "bg-green-50 text-green-700 dark:bg-green-400/15 dark:text-green-400" }
   }
-  return { label: "В работе", className: "bg-orange-50 text-orange-700 dark:bg-orange-400/15 dark:text-orange-400" }
+  return { label: "Вычитка", className: "bg-orange-50 text-orange-700 dark:bg-orange-400/15 dark:text-orange-400" }
 }

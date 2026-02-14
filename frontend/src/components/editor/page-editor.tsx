@@ -17,6 +17,7 @@ export function PageEditor({ page }: PageEditorProps) {
   const navigate = useNavigate()
   const theme = useUIStore((s) => s.theme)
   const isDark = theme === "dark"
+  const isLocked = page.book.is_locked
 
   const [text, setText] = useState(page.text)
   const [status, setStatus] = useState<string>(page.status)
@@ -78,6 +79,7 @@ export function PageEditor({ page }: PageEditorProps) {
           onCorrect={handleCorrect}
           isCorrectingLLM={llmMutation.isPending}
           isDark={isDark}
+          readOnly={isLocked}
         />
         <ImagePanel imageUrl={page.image} />
       </div>
@@ -92,6 +94,7 @@ export function PageEditor({ page }: PageEditorProps) {
         onSave={handleSave}
         onSaveAndNext={handleSaveAndNext}
         isSaving={updateMutation.isPending}
+        isLocked={isLocked}
       />
 
       <KeyboardShortcutsPanel />

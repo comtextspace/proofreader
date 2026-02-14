@@ -15,9 +15,10 @@ interface TextPanelProps {
   onCorrect: () => void
   isCorrectingLLM: boolean
   isDark: boolean
+  readOnly?: boolean
 }
 
-export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, isDark }: TextPanelProps) {
+export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, isDark, readOnly }: TextPanelProps) {
   const editorRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const viewRef = useRef<EditorView | null>(null)
@@ -114,6 +115,10 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
       extensions.push(oneDark)
     }
 
+    if (readOnly) {
+      extensions.push(EditorState.readOnly.of(true))
+    }
+
     const state = EditorState.create({
       doc: text,
       extensions,
@@ -126,7 +131,7 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
 
     viewRef.current = view
     setEditorView(view)
-  }, [isDark, textSize]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isDark, textSize, readOnly]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     createEditor()
@@ -146,13 +151,13 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
 
   return (
     <div ref={containerRef} className="relative h-full">
-      <div className="flex h-full flex-col overflow-hidden rounded-lg border">
+      <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border">
         <FormattingToolbar
           editorView={editorView}
           onCorrect={onCorrect}
           isCorrectingLLM={isCorrectingLLM}
         />
-        <div ref={editorRef} className="flex-1 overflow-hidden" />
+        <div ref={editorRef} className="min-h-0 flex-1 overflow-hidden" />
       </div>
       {editorView && selection && (
         <FloatingToolbar

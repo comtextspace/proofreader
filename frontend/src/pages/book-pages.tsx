@@ -4,6 +4,7 @@ import {
   ChevronRight,
   Download,
   Loader2 as LoaderIcon,
+  Lock,
   Search,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -87,8 +88,16 @@ export function BookPagesPage() {
         </div>
 
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">{book?.name ?? "Загрузка..."}</h1>
-          {user?.is_admin && (
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold">{book?.name ?? "Загрузка..."}</h1>
+            {book?.is_locked && (
+              <span className="inline-flex items-center gap-1 rounded-md bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive">
+                <Lock className="h-3 w-3" />
+                Только чтение
+              </span>
+            )}
+          </div>
+          {user?.is_admin && !book?.is_locked && (
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => handleDownload("text")}>
                 <Download className="mr-1 h-3.5 w-3.5" />

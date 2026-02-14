@@ -16,6 +16,7 @@ export interface Book {
   id: string
   name: string
   author: string
+  is_locked: boolean
 }
 
 export interface BookList extends Book {
@@ -36,6 +37,7 @@ export interface BookDetail {
   pages_in_work_count: number
   total_pages_in_pdf: number | null
   export_name: string
+  is_locked: boolean
 }
 
 export interface PageListItem {

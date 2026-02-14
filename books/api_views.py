@@ -112,6 +112,8 @@ class BookListViewSet(
     @action(detail=True, methods=['get'], url_path='download-text')
     def download_text(self, request, id=None):
         book = self.get_object()
+        if book.is_locked:
+            return Response({'detail': 'Книга заблокирована для экспорта.'}, status=403)
         text = export_book(book)
         response = HttpResponse(text, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename="{book.name}.md"'
@@ -120,6 +122,8 @@ class BookListViewSet(
     @action(detail=True, methods=['get'], url_path='download-pdf')
     def download_pdf(self, request, id=None):
         book = self.get_object()
+        if book.is_locked:
+            return Response({'detail': 'Книга заблокирована для экспорта.'}, status=403)
         content = export_book_as_pdf(book)
         response = HttpResponse(content, content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="{book.name}.pdf"'
@@ -128,6 +132,8 @@ class BookListViewSet(
     @action(detail=True, methods=['get'], url_path='download-epub')
     def download_epub(self, request, id=None):
         book = self.get_object()
+        if book.is_locked:
+            return Response({'detail': 'Книга заблокирована для экспорта.'}, status=403)
         content = export_book_as_epub(book)
         response = HttpResponse(content, content_type='application/epub+zip')
         response['Content-Disposition'] = f'attachment; filename="{book.name}.epub"'
@@ -159,7 +165,7 @@ class PagesViewSet(
     lookup_field = 'id'
     filter_backends = [django_filters.DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_class = PageFilter
-    search_fields = ['number', 'number_in_book']
+    search_fields = ['^number', '^number_in_book']
     ordering_fields = ['number', 'modified', 'book__name']
     ordering = ['book__name', 'number']
 
@@ -174,6 +180,9 @@ class PagesViewSet(
         return PageDetailSerializer
 
     def update(self, request, *args, **kwargs):
+        page = self.get_object()
+        if page.book.is_locked:
+            return Response({'detail': 'Книга заблокирована для редактирования.'}, status=403)
         kwargs['partial'] = True
         return super().update(request, *args, **kwargs)
 

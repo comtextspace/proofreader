@@ -133,7 +133,7 @@ function PageTile({ page, cache, onClick }: PageTileProps) {
       </button>
       {(loading || preview !== null) && (
         <div
-          className="fixed z-50 w-[28rem] h-[70vh] overflow-hidden rounded-lg border bg-popover px-6 py-5 shadow-2xl pointer-events-none text-[8px] leading-[1.4]"
+          className="fixed z-50 w-[28rem] h-[70vh] overflow-hidden rounded-lg border bg-popover px-6 py-5 shadow-2xl pointer-events-none text-[11px] leading-[1.5]"
           style={tooltipStyle}
         >
           {loading ? (

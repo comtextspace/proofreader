@@ -28,7 +28,7 @@ export function TextSizePopover() {
         <Type className="h-3.5 w-3.5" />
       </Button>
       {open && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 rounded-lg border bg-popover p-3 shadow-lg">
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-44 rounded-lg border bg-popover p-3 shadow-lg">
           <label className="text-xs font-medium text-muted-foreground">
             Размер текста
           </label>
@@ -39,7 +39,7 @@ export function TextSizePopover() {
               max={24}
               value={textSize}
               onChange={(e) => setTextSize(Number(e.target.value))}
-              className="h-2 flex-1"
+              className="h-1.5 flex-1 appearance-none rounded-full bg-muted cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-0"
             />
             <span className="text-xs text-muted-foreground w-6 text-right">{textSize}</span>
           </div>

@@ -24,6 +24,7 @@ interface UnifiedBottomBarProps {
   onSave: () => void
   onSaveAndNext: () => void
   isSaving: boolean
+  isLocked?: boolean
 }
 
 export function UnifiedBottomBar({
@@ -36,6 +37,7 @@ export function UnifiedBottomBar({
   onSave,
   onSaveAndNext,
   isSaving,
+  isLocked,
 }: UnifiedBottomBarProps) {
   const navigate = useNavigate()
   const [goToPage, setGoToPage] = useState("")
@@ -75,6 +77,7 @@ export function UnifiedBottomBar({
         className="h-7 w-16 shrink-0 text-xs"
         placeholder="Стр."
         title="Страница в книге"
+        disabled={isLocked}
       />
 
       <Select
@@ -82,6 +85,7 @@ export function UnifiedBottomBar({
         value={status}
         onChange={(e) => onStatusChange(e.target.value)}
         className="h-7 w-36 shrink-0 text-xs"
+        disabled={isLocked}
       />
 
       <form onSubmit={handleGoToPage} className="flex shrink-0 items-center gap-1">
@@ -125,26 +129,30 @@ export function UnifiedBottomBar({
 
         <div className="mx-1 h-4 w-px bg-border" />
 
-        <Button
-          size="sm"
-          className="h-7 text-xs bg-gradient-primary shadow-primary-sm hover:shadow-primary-lg"
-          onClick={onSave}
-          disabled={isSaving}
-        >
-          {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-          Сохранить
-        </Button>
-        {adjacent?.next_id && (
-          <Button
-            size="sm"
-            variant="secondary"
-            className="h-7 text-xs bg-gradient-warning text-warning-foreground hover:shadow-md"
-            onClick={onSaveAndNext}
-            disabled={isSaving}
-          >
-            {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-            Далее
-          </Button>
+        {!isLocked && (
+          <>
+            <Button
+              size="sm"
+              className="h-7 text-xs bg-gradient-primary shadow-primary-sm hover:shadow-primary-lg"
+              onClick={onSave}
+              disabled={isSaving}
+            >
+              {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+              Сохранить
+            </Button>
+            {adjacent?.next_id && (
+              <Button
+                size="sm"
+                variant="secondary"
+                className="h-7 text-xs bg-gradient-warning text-warning-foreground hover:shadow-md"
+                onClick={onSaveAndNext}
+                disabled={isSaving}
+              >
+                {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                Далее
+              </Button>
+            )}
+          </>
         )}
       </div>
     </div>

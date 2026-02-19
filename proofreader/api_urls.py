@@ -4,7 +4,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from books.api_urls import authors_router, book_list_router, pages_router
+from books.api_urls import authors_router, book_list_router, bookmarks_router, pages_router
 
 app_name = "api"
 urlpatterns = [
@@ -13,6 +13,7 @@ urlpatterns = [
     path("pages/", include(pages_router.urls)),
     path("authors/", include(authors_router.urls)),
     path("users/", include("accounts.api_urls")),
+    path("bookmarks/", include(bookmarks_router.urls)),
 ]
 
 if settings.DEBUG:

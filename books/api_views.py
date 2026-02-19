@@ -12,13 +12,15 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from books.cache import get_pages_list_cache_version
-from books.models import Author, Book, Page
+from books.models import Author, Book, Bookmark, Page
 from books.serializers import (
     AuthorCreateSerializer,
     AuthorListSerializer,
     BookCreateSerializer,
     BookDetailSerializer,
     BookListSerializer,
+    BookmarkCreateSerializer,
+    BookmarkSerializer,
     PageAdjacentSerializer,
     PageDetailSerializer,
     PageHistorySerializer,
@@ -259,3 +261,35 @@ class PagesViewSet(
 
         correct_text_with_llm_task.delay(page.id)
         return Response({'detail': 'LLM correction task started.'})
+
+
+class BookmarkFilter(django_filters.FilterSet):
+    book = django_filters.UUIDFilter(field_name="page__book__id")
+
+    class Meta:
+        model = Bookmark
+        fields = ["book"]
+
+
+class BookmarkViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    permission_classes = [IsAuthenticated]
+    lookup_field = "id"
+    filter_backends = [django_filters.DjangoFilterBackend, filters.OrderingFilter]
+    filterset_class = BookmarkFilter
+    ordering = ["-created"]
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return BookmarkCreateSerializer
+        return BookmarkSerializer
+
+    def get_queryset(self):
+        return Bookmark.objects.filter(user=self.request.user).select_related("page", "page__book")
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

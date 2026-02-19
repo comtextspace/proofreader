@@ -2,6 +2,8 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   ArrowLeft,
+  Bookmark,
+  BookmarkCheck,
   ChevronLeft,
   ChevronRight,
   Loader2,
@@ -12,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { TextSizePopover } from "./text-size-popover"
 import { fetchPages } from "@/api/pages"
+import { useCreateBookmark, useDeleteBookmark } from "@/hooks/use-bookmarks"
 import type { PageAdjacent, PageDetail } from "@/types/models"
 
 interface UnifiedBottomBarProps {
@@ -41,6 +44,19 @@ export function UnifiedBottomBar({
 }: UnifiedBottomBarProps) {
   const navigate = useNavigate()
   const [goToPage, setGoToPage] = useState("")
+
+  const createBookmark = useCreateBookmark()
+  const deleteBookmark = useDeleteBookmark()
+  const isBookmarkLoading = createBookmark.isPending || deleteBookmark.isPending
+
+  function handleToggleBookmark() {
+    if (isBookmarkLoading) return
+    if (page.is_bookmarked && page.bookmark_id) {
+      deleteBookmark.mutate(page.bookmark_id)
+    } else {
+      createBookmark.mutate(page.id)
+    }
+  }
 
   async function handleGoToPage(e: React.FormEvent) {
     e.preventDefault()
@@ -98,6 +114,21 @@ export function UnifiedBottomBar({
       </form>
 
       <TextSizePopover />
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className={`h-7 w-7 shrink-0 p-0 ${page.is_bookmarked ? "text-amber-500 hover:text-amber-600" : "text-muted-foreground hover:text-foreground"}`}
+        onClick={handleToggleBookmark}
+        disabled={isBookmarkLoading}
+        title={page.is_bookmarked ? "Убрать закладку" : "Добавить закладку"}
+      >
+        {page.is_bookmarked ? (
+          <BookmarkCheck className="h-3.5 w-3.5" />
+        ) : (
+          <Bookmark className="h-3.5 w-3.5" />
+        )}
+      </Button>
 
       <div className="mx-1 h-4 w-px bg-border" />
 

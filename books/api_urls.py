@@ -16,4 +16,7 @@ pages_router.register('', books.api_views.PagesViewSet, basename='pages')
 authors_router = routers.DefaultRouter(trailing_slash=False)
 authors_router.register('', books.api_views.AuthorViewSet, basename='authors')
 
+bookmarks_router = routers.DefaultRouter(trailing_slash=False)
+bookmarks_router.register('', books.api_views.BookmarkViewSet, basename='bookmarks')
+
 urlpatterns += books_router.urls

@@ -64,6 +64,8 @@ export interface PageDetail {
   total_pages: number
   modified: string
   created: string
+  is_bookmarked: boolean
+  bookmark_id: string | null
 }
 
 export interface StatusOption {
@@ -108,6 +110,15 @@ export interface PaginatedResponse<T> {
   next: string | null
   previous: string | null
   results: T[]
+}
+
+export interface Bookmark {
+  id: string
+  page: string
+  page_number: number
+  book_id: string
+  book_name: string
+  created: string
 }
 
 export interface TokenPair {

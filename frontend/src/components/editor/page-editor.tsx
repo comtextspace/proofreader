@@ -80,6 +80,12 @@ export function PageEditor({ page }: PageEditorProps) {
           isCorrectingLLM={llmMutation.isPending}
           isDark={isDark}
           readOnly={isLocked}
+          onNavigatePrev={() => {
+            if (adjacent?.prev_id) navigate(`/pages/${adjacent.prev_id}/edit`)
+          }}
+          onNavigateNext={() => {
+            if (adjacent?.next_id) navigate(`/pages/${adjacent.next_id}/edit`)
+          }}
         />
         <ImagePanel imageUrl={page.image} />
       </div>

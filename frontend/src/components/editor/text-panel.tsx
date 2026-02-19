@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import { EditorState } from "@codemirror/state"
+import { EditorState, Prec } from "@codemirror/state"
 import { EditorView, keymap, lineNumbers } from "@codemirror/view"
-import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
+import { defaultKeymap, history, historyKeymap, redo } from "@codemirror/commands"
 import { markdown } from "@codemirror/lang-markdown"
 import { oneDark } from "@codemirror/theme-one-dark"
 import { FormattingToolbar } from "./formatting-toolbar"
@@ -16,9 +16,11 @@ interface TextPanelProps {
   isCorrectingLLM: boolean
   isDark: boolean
   readOnly?: boolean
+  onNavigatePrev?: () => void
+  onNavigateNext?: () => void
 }
 
-export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, isDark, readOnly }: TextPanelProps) {
+export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, isDark, readOnly, onNavigatePrev, onNavigateNext }: TextPanelProps) {
   const editorRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const viewRef = useRef<EditorView | null>(null)
@@ -29,6 +31,10 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
   onChangeRef.current = onChange
   const onSaveRef = useRef(onSave)
   onSaveRef.current = onSave
+  const onNavigatePrevRef = useRef(onNavigatePrev)
+  onNavigatePrevRef.current = onNavigatePrev
+  const onNavigateNextRef = useRef(onNavigateNext)
+  onNavigateNextRef.current = onNavigateNext
   const onSelectionChangeRef = useRef(setSelection)
   onSelectionChangeRef.current = setSelection
 
@@ -89,7 +95,39 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
             return true
           },
         },
+        {
+          key: "Ctrl-u",
+          run: (view: EditorView) => {
+            const { from, to } = view.state.selection.main
+            const selected = view.state.sliceDoc(from, to)
+            view.dispatch({
+              changes: { from, to, insert: `_${selected}_` },
+              selection: { anchor: from + 1, head: to + 1 },
+            })
+            return true
+          },
+        },
+        {
+          key: "Mod-y",
+          run: (view: EditorView) => redo(view),
+        },
       ]),
+      Prec.highest(keymap.of([
+        {
+          key: "Alt-ArrowLeft",
+          run: () => {
+            onNavigatePrevRef.current?.()
+            return true
+          },
+        },
+        {
+          key: "Alt-ArrowRight",
+          run: () => {
+            onNavigateNextRef.current?.()
+            return true
+          },
+        },
+      ])),
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
           onChangeRef.current(update.state.doc.toString())

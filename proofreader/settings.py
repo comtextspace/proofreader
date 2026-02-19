@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django_filters',
     'drf_yasg',
     'admin_auto_filters',
+    'massadmin',
     'corsheaders',
     # This project
     "books.apps.BooksConfig",

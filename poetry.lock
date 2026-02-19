@@ -572,6 +572,21 @@ files = [
 Django = ">=3.2"
 
 [[package]]
+name = "django-mass-edit"
+version = "3.5.0"
+description = "Make bulk changes in the Django admin interface"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "django-mass-edit-3.5.0.tar.gz", hash = "sha256:4da202ef31862d1978088c38ca7dfb98d0ee7456e031e81d83885978065068b6"},
+    {file = "django_mass_edit-3.5.0-py3-none-any.whl", hash = "sha256:ac1be9b519d2464111e859299fa7081793cf7fa431c21f546471c3cc9183cb1f"},
+]
+
+[package.dependencies]
+django = "*"
+
+[[package]]
 name = "django-model-utils"
 version = "4.3.1"
 description = "Django model mixins and utilities"
@@ -2113,4 +2128,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "b8e59a4e486c717856ab2b54f9c8a73859302df77aa4081735706e9e1e1d28c0"
+content-hash = "33f1cc6c18558f9ab3c4fe651ecd29c70b5e4082449a820e496500a1261c23cb"

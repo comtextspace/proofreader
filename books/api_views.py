@@ -1,4 +1,8 @@
+import hashlib
+import json
+
 from django.conf import settings
+from django.core.cache import cache
 from django.db.models import Count, Q
 from django.http import HttpResponse
 from django_filters import rest_framework as django_filters
@@ -7,6 +11,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
+from books.cache import get_pages_list_cache_version
 from books.models import Author, Book, Page
 from books.serializers import (
     AuthorCreateSerializer,
@@ -168,6 +173,30 @@ class PagesViewSet(
     search_fields = ['^number', '^number_in_book']
     ordering_fields = ['number', 'modified', 'book__name']
     ordering = ['book__name', 'number']
+
+    def list(self, request, *args, **kwargs):
+        query_params = sorted((key, tuple(values)) for key, values in request.query_params.lists())
+        payload = json.dumps(
+            {'user_id': str(request.user.id), 'query_params': query_params, 'version': get_pages_list_cache_version()},
+            sort_keys=True,
+            separators=(',', ':'),
+        )
+        cache_key = f'pages:list:{hashlib.sha256(payload.encode("utf-8")).hexdigest()}'
+
+        try:
+            cached_response = cache.get(cache_key)
+            if cached_response is not None:
+                return Response(cached_response)
+        except Exception:
+            pass
+
+        response = super().list(request, *args, **kwargs)
+        if response.status_code == 200:
+            try:
+                cache.set(cache_key, response.data, timeout=settings.PAGE_LIST_CACHE_TTL)
+            except Exception:
+                pass
+        return response
 
     def get_queryset(self):
         return Page.objects.select_related('book', 'book__author').order_by('book__name', 'number')

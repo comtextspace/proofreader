@@ -6,3 +6,6 @@ class BooksConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'books'
     verbose_name = _('Книги')
+
+    def ready(self):
+        from books import signals  # noqa: F401

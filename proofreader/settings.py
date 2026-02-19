@@ -193,6 +193,14 @@ CELERY_RESULT_EXTENDED = True
 CELERY_RESULT_EXPIRES = 60 * 60 * 24 * 7
 
 REDIS_URL = env('REDIS_URL', default='redis://redis:6379/1')
+PAGE_LIST_CACHE_TTL = env.int('PAGE_LIST_CACHE_TTL', default=120)
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': REDIS_URL,
+    }
+}
 
 # Media files
 MEDIA_URL = env('DJANGO_MEDIA_URL', default='/media/')

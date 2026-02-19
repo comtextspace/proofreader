@@ -3,13 +3,14 @@ from django.contrib.auth.admin import UserAdmin
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from massadmin.massadmin import MassEditMixin
 
 from .forms import CustomUserChangeForm
 from .models import Assignment, CustomUser, PageStatus, UserSettings
 
 
 @admin.register(CustomUser)
-class CustomUserAdmin(UserAdmin):
+class CustomUserAdmin(MassEditMixin, UserAdmin):
     form = CustomUserChangeForm
     model = CustomUser
 

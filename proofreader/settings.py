@@ -34,6 +34,27 @@ LOCAL_DEVELOP = DEBUG and (
 )
 ALLOWED_HOSTS = ["*"]
 
+
+def _normalize_origin(value: str) -> str:
+    value = value.strip().rstrip("/")
+    if not value:
+        return ""
+    if value.startswith(("http://", "https://")):
+        return value
+    return f"https://{value}"
+
+
+CSRF_TRUSTED_ORIGINS = [o for o in (_normalize_origin(v) for v in env.list("CSRF_TRUSTED_ORIGINS", default=[])) if o]
+if domain := env("DOMAIN", default=""):
+    normalized_domain = _normalize_origin(domain)
+    if normalized_domain and normalized_domain not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(normalized_domain)
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=not DEBUG)
+SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=not DEBUG)
+
 # Application definition
 
 

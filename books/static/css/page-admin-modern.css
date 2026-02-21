@@ -442,6 +442,11 @@ body.dark-mode {
     transition: var(--transition);
 }
 
+.metadata-panel select option {
+    background: var(--textarea-bg);
+    color: var(--textarea-color);
+}
+
 .metadata-panel input[type="number"]:focus,
 .metadata-panel select:focus {
     outline: none;

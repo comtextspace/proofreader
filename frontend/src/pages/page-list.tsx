@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { PageFilters } from "@/components/pages/page-filters"
 import { PageTable } from "@/components/pages/page-table"
@@ -7,9 +8,10 @@ import { usePages } from "@/hooks/use-pages"
 import { PAGE_SIZE } from "@/lib/constants"
 
 export function PageListPage() {
+  const [searchParams] = useSearchParams()
   const [book, setBook] = useState("")
   const [status, setStatus] = useState("")
-  const [assigned, setAssigned] = useState(false)
+  const [assigned, setAssigned] = useState(searchParams.get("assigned") === "true")
   const [search, setSearch] = useState("")
   const [offset, setOffset] = useState(0)
 

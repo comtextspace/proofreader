@@ -77,7 +77,11 @@ export function AuthorBooksPage() {
                     <td className="px-4 py-3 font-medium">
                       <span className="inline-flex items-center gap-1.5">
                         {book.name}
-                        {book.is_locked && <Lock className="h-3.5 w-3.5 text-destructive" title="Заблокирована" />}
+                        {book.is_locked && (
+                          <span className="inline-flex" title="Заблокирована">
+                            <Lock className="h-3.5 w-3.5 text-destructive" />
+                          </span>
+                        )}
                       </span>
                     </td>
                     <td className="px-4 py-3">

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { ChevronRight, Search } from "lucide-react"
+import { ChevronRight, Lock, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { ProgressBar } from "@/components/ui/progress-bar"
@@ -114,7 +114,12 @@ export function BookListPage() {
                         className="cursor-pointer border-b transition-all duration-200 hover:bg-primary/5"
                         onClick={() => navigate(`/books/${book.id}/pages`)}
                       >
-                        <td className="px-4 py-3 font-medium">{book.name}</td>
+                        <td className="px-4 py-3 font-medium">
+                          <span className="inline-flex items-center gap-1.5">
+                            {book.name}
+                            {book.is_locked && <Lock className="h-3.5 w-3.5 text-destructive" title="Заблокирована" />}
+                          </span>
+                        </td>
                         <td className="px-4 py-3 text-muted-foreground">{book.author}</td>
                         <td className="px-4 py-3">
                           <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${status.className}`}>

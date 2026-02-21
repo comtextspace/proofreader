@@ -58,7 +58,7 @@ class AuthorViewSet(
 
 
 class BooksViewset(ParentViewSet):
-    queryset = Book.objects.all()
+    queryset = Book.objects.filter(is_hidden=False)
     permission_classes = [IsAuthenticated]
     lookup_field = 'id'
 
@@ -105,7 +105,7 @@ class BookListViewSet(
         return BookListSerializer
 
     def get_queryset(self):
-        return Book.objects.select_related('author').annotate(
+        return Book.objects.filter(is_hidden=False).select_related('author').annotate(
             pages_count=Count('pages'),
             pages_done_count=Count('pages', filter=Q(pages__status=Page.Status.DONE)),
             pages_processing_count=Count('pages', filter=Q(pages__status=Page.Status.PROCESSING)),

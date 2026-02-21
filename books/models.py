@@ -69,6 +69,7 @@ class Book(LifecycleModelMixin, models.Model):
         help_text=_("Интервал страниц для экспорта (например, 4-15). Пустое значение - экспорт всех страниц."),
     )
     is_locked = models.BooleanField(default=False, verbose_name=_("Заблокирована"))
+    is_hidden = models.BooleanField(default=False, verbose_name=_("Скрыта"))
 
     class Meta:
         db_table = '"book"."book"'

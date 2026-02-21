@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { fetchBook, fetchBooks } from "@/api/books"
+import { fetchBook, fetchBookHistory, fetchBooks } from "@/api/books"
 import type { BookListParams } from "@/api/books"
 
 export function useBooks(params?: BookListParams) {
@@ -14,5 +14,13 @@ export function useBook(id: string) {
     queryKey: ["books", id],
     queryFn: () => fetchBook(id),
     enabled: !!id,
+  })
+}
+
+export function useBookHistory(bookId: string, params?: { limit?: number; offset?: number }) {
+  return useQuery({
+    queryKey: ["book-history", bookId, params],
+    queryFn: () => fetchBookHistory(bookId, params),
+    enabled: !!bookId,
   })
 }

@@ -6,6 +6,7 @@ import {
   BookmarkCheck,
   ChevronLeft,
   ChevronRight,
+  History,
   Loader2,
   Save,
 } from "lucide-react"
@@ -128,6 +129,16 @@ export function UnifiedBottomBar({
         ) : (
           <Bookmark className="h-3.5 w-3.5" />
         )}
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-7 w-7 shrink-0 p-0 text-muted-foreground hover:text-foreground"
+        onClick={() => navigate(`/pages/${page.id}/history`)}
+        title="История изменений"
+      >
+        <History className="h-3.5 w-3.5" />
       </Button>
 
       <div className="mx-1 h-4 w-px bg-border" />

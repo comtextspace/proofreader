@@ -13,6 +13,9 @@ import { PageEditPage } from "@/pages/page-edit"
 import { PageListPage } from "@/pages/page-list"
 import { AssignmentsPage } from "@/pages/assignments"
 import { SettingsPage } from "@/pages/settings"
+import { BookHistoryPage } from "@/pages/book-history"
+import { PageHistoryPage } from "@/pages/page-history"
+import { UserHistoryPage } from "@/pages/user-history"
 import { useAuthStore } from "@/stores/auth-store"
 import { useUIStore } from "@/stores/ui-store"
 import { fetchProfile } from "@/api/users"
@@ -75,6 +78,9 @@ export default function App() {
               <Route path="/pages/:id/edit" element={<PageEditPage />} />
               <Route path="/assignments" element={<AssignmentsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/books/:bookId/history" element={<BookHistoryPage />} />
+              <Route path="/pages/:id/history" element={<PageHistoryPage />} />
+              <Route path="/my-history" element={<UserHistoryPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/books" replace />} />
           </Routes>

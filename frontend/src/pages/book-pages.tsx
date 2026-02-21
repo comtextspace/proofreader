@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import {
   ChevronRight,
   Download,
+  History,
   Loader2 as LoaderIcon,
   Lock,
   Search,
@@ -99,22 +100,28 @@ export function BookPagesPage() {
                 </span>
               )}
             </div>
-            {user?.is_admin && !book?.is_locked && (
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => handleDownload("text")}>
-                  <Download className="mr-1 h-3.5 w-3.5" />
-                  Текст
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => handleDownload("pdf")}>
-                  <Download className="mr-1 h-3.5 w-3.5" />
-                  PDF
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => handleDownload("epub")}>
-                  <Download className="mr-1 h-3.5 w-3.5" />
-                  EPUB
-                </Button>
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => navigate(`/books/${bookId}/history`)}>
+                <History className="mr-1 h-3.5 w-3.5" />
+                История
+              </Button>
+              {user?.is_admin && !book?.is_locked && (
+                <>
+                  <Button variant="outline" size="sm" onClick={() => handleDownload("text")}>
+                    <Download className="mr-1 h-3.5 w-3.5" />
+                    Текст
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => handleDownload("pdf")}>
+                    <Download className="mr-1 h-3.5 w-3.5" />
+                    PDF
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => handleDownload("epub")}>
+                    <Download className="mr-1 h-3.5 w-3.5" />
+                    EPUB
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
 
           {book && (

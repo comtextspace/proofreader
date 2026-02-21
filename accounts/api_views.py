@@ -1,4 +1,6 @@
+from django.db.models import OuterRef, Subquery
 from rest_framework import generics, mixins, permissions, status, viewsets
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
 from accounts.models import Assignment
@@ -8,6 +10,8 @@ from accounts.serializers import (
     RegisterSerializer,
     UserProfileSerializer,
 )
+from books.models import Book, Page
+from books.serializers import UserHistorySerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -48,3 +52,17 @@ class UserAssignmentsViewSet(
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class UserHistoryView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserHistorySerializer
+    pagination_class = LimitOffsetPagination
+
+    def get_queryset(self):
+        return (
+            Page.history.filter(history_user=self.request.user)
+            .annotate(book_name=Subquery(Book.objects.filter(id=OuterRef('book_id')).values('name')[:1]))
+            .select_related('history_user')
+            .order_by('-history_date')
+        )

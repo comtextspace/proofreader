@@ -7,7 +7,7 @@ import {
   triggerLLMCorrection,
   updatePage,
 } from "@/api/pages"
-import type { PageListParams } from "@/api/pages"
+import type { PageListParams, PaginationParams } from "@/api/pages"
 
 export function usePages(params: PageListParams) {
   return useQuery({
@@ -32,10 +32,10 @@ export function usePageAdjacent(id: string) {
   })
 }
 
-export function usePageHistory(id: string) {
+export function usePageHistory(id: string, params?: PaginationParams) {
   return useQuery({
-    queryKey: ["page-history", id],
-    queryFn: () => fetchPageHistory(id),
+    queryKey: ["page-history", id, params],
+    queryFn: () => fetchPageHistory(id, params),
     enabled: !!id,
   })
 }

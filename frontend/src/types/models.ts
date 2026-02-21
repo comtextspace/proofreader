@@ -86,8 +86,19 @@ export interface PageHistory {
   history_id: number
   history_date: string
   history_user: string | null
+  history_type: string
   text: string
   status: string
+}
+
+export interface BookPageHistory extends PageHistory {
+  page_number: number
+  page_id: string
+}
+
+export interface UserHistory extends BookPageHistory {
+  book_name: string
+  book_id: string
 }
 
 export interface Assignment {

@@ -194,5 +194,16 @@ class PageHistorySerializer(serializers.Serializer):
     history_id = serializers.IntegerField()
     history_date = serializers.DateTimeField()
     history_user = serializers.CharField(source='history_user.username', default=None)
+    history_type = serializers.CharField()
     text = serializers.CharField()
     status = serializers.CharField()
+
+
+class BookPageHistorySerializer(PageHistorySerializer):
+    page_number = serializers.IntegerField(source='number')
+    page_id = serializers.UUIDField(source='id')
+
+
+class UserHistorySerializer(BookPageHistorySerializer):
+    book_name = serializers.CharField()
+    book_id = serializers.UUIDField()

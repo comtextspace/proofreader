@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { BookOpen, ChevronDown, FileText, LogOut, Moon, Settings, Sun } from "lucide-react"
+import { BookOpen, ChevronDown, FileText, History, LogOut, Moon, Settings, Sun } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { useAuthStore } from "@/stores/auth-store"
@@ -59,6 +59,13 @@ export function Header() {
                   >
                     <FileText className="h-4 w-4" />
                     Мои назначения
+                  </button>
+                  <button
+                    className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-popover-foreground transition-colors hover:bg-accent"
+                    onClick={() => { navigate("/my-history"); setDropdownOpen(false) }}
+                  >
+                    <History className="h-4 w-4" />
+                    Мои изменения
                   </button>
                   <button
                     className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-popover-foreground transition-colors hover:bg-accent"

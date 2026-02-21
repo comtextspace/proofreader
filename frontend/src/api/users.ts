@@ -1,5 +1,5 @@
 import apiClient from "./client"
-import type { Assignment, User } from "@/types/models"
+import type { Assignment, PaginatedResponse, User, UserHistory } from "@/types/models"
 
 export async function fetchProfile(): Promise<User> {
   const response = await apiClient.get("/users/me/")
@@ -23,4 +23,11 @@ export async function createAssignment(data: { book: string; pages: string }): P
 
 export async function deleteAssignment(id: number): Promise<void> {
   await apiClient.delete(`/users/me/assignments/${id}`)
+}
+
+export async function fetchUserHistory(
+  params?: { limit?: number; offset?: number }
+): Promise<PaginatedResponse<UserHistory>> {
+  const response = await apiClient.get("/users/me/history/", { params: { limit: 50, ...params } })
+  return response.data
 }

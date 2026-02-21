@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django_filters import rest_framework as django_filters
 from rest_framework import filters, mixins, viewsets
 from rest_framework.decorators import action
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
@@ -21,6 +22,7 @@ from books.serializers import (
     BookListSerializer,
     BookmarkCreateSerializer,
     BookmarkSerializer,
+    BookPageHistorySerializer,
     PageAdjacentSerializer,
     PageDetailSerializer,
     PageHistorySerializer,
@@ -105,15 +107,19 @@ class BookListViewSet(
         return BookListSerializer
 
     def get_queryset(self):
-        return Book.objects.filter(is_hidden=False).select_related('author').annotate(
-            pages_count=Count('pages'),
-            pages_done_count=Count('pages', filter=Q(pages__status=Page.Status.DONE)),
-            pages_processing_count=Count('pages', filter=Q(pages__status=Page.Status.PROCESSING)),
-            pages_recognized_count=Count('pages', filter=Q(pages__status=Page.Status.READY)),
-            pages_in_work_count=Count(
-                'pages',
-                filter=Q(pages__status__in=[Page.Status.IN_PROGRESS, Page.Status.FORMATTING, Page.Status.CHECK]),
-            ),
+        return (
+            Book.objects.filter(is_hidden=False)
+            .select_related('author')
+            .annotate(
+                pages_count=Count('pages'),
+                pages_done_count=Count('pages', filter=Q(pages__status=Page.Status.DONE)),
+                pages_processing_count=Count('pages', filter=Q(pages__status=Page.Status.PROCESSING)),
+                pages_recognized_count=Count('pages', filter=Q(pages__status=Page.Status.READY)),
+                pages_in_work_count=Count(
+                    'pages',
+                    filter=Q(pages__status__in=[Page.Status.IN_PROGRESS, Page.Status.FORMATTING, Page.Status.CHECK]),
+                ),
+            )
         )
 
     @action(detail=True, methods=['get'], url_path='download-text')
@@ -145,6 +151,16 @@ class BookListViewSet(
         response = HttpResponse(content, content_type='application/epub+zip')
         response['Content-Disposition'] = f'attachment; filename="{book.name}.epub"'
         return response
+
+    @action(detail=True, methods=['get'])
+    def history(self, request, id=None):
+        book = self.get_object()
+        history = Page.history.filter(book_id=book.id).select_related('history_user').order_by('-history_date')
+        paginator = LimitOffsetPagination()
+        paginator.default_limit = 50
+        page = paginator.paginate_queryset(history, request)
+        serializer = BookPageHistorySerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class PageFilter(django_filters.FilterSet):
@@ -241,9 +257,12 @@ class PagesViewSet(
     @action(detail=True, methods=['get'])
     def history(self, request, id=None):
         page = self.get_object()
-        history = page.history.select_related('history_user').order_by('-history_date')[:50]
-        serializer = PageHistorySerializer(history, many=True)
-        return Response(serializer.data)
+        history = page.history.select_related('history_user').order_by('-history_date')
+        paginator = LimitOffsetPagination()
+        paginator.default_limit = 50
+        result_page = paginator.paginate_queryset(history, request)
+        serializer = PageHistorySerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     @action(detail=True, methods=['get'])
     def preview(self, request, id=None):

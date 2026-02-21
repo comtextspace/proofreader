@@ -55,10 +55,10 @@ export function Header() {
                 <div className="absolute right-0 mt-1.5 w-48 overflow-hidden rounded-lg border bg-popover shadow-lg">
                   <button
                     className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-popover-foreground transition-colors hover:bg-accent"
-                    onClick={() => { navigate("/pages?assigned=true"); setDropdownOpen(false) }}
+                    onClick={() => { navigate("/assignments"); setDropdownOpen(false) }}
                   >
                     <FileText className="h-4 w-4" />
-                    Мои страницы
+                    Мои назначения
                   </button>
                   <button
                     className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-popover-foreground transition-colors hover:bg-accent"

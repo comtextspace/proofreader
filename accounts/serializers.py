@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from accounts.models import Assignment, CustomUser
+from books.models import Book
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -49,3 +50,12 @@ class AssignmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assignment
         fields = ['id', 'book_id', 'book_name', 'pages']
+
+
+class AssignmentCreateSerializer(serializers.ModelSerializer):
+    book = serializers.PrimaryKeyRelatedField(queryset=Book.objects.all())
+
+    class Meta:
+        model = Assignment
+        fields = ['id', 'book', 'pages']
+        read_only_fields = ['id']

@@ -148,7 +148,7 @@ export function BookPagesPage() {
               size="sm"
               onClick={() => setAssigned(!assigned)}
             >
-              Мои страницы
+              Мои назначения
             </Button>
           </div>
         </div>

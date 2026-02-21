@@ -15,3 +15,12 @@ export async function fetchAssignments(): Promise<Assignment[]> {
   const response = await apiClient.get("/users/me/assignments/")
   return response.data.results ?? response.data
 }
+
+export async function createAssignment(data: { book: string; pages: string }): Promise<Assignment> {
+  const response = await apiClient.post("/users/me/assignments/", data)
+  return response.data
+}
+
+export async function deleteAssignment(id: number): Promise<void> {
+  await apiClient.delete(`/users/me/assignments/${id}`)
+}

@@ -71,7 +71,7 @@ export function PageFilters({
         size="sm"
         onClick={() => onAssignedChange(!assigned)}
       >
-        Мои страницы
+        Мои назначения
       </Button>
     </div>
   )

@@ -1,8 +1,13 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.response import Response
 
 from accounts.models import Assignment
-from accounts.serializers import AssignmentSerializer, RegisterSerializer, UserProfileSerializer
+from accounts.serializers import (
+    AssignmentCreateSerializer,
+    AssignmentSerializer,
+    RegisterSerializer,
+    UserProfileSerializer,
+)
 
 
 class RegisterView(generics.CreateAPIView):
@@ -24,9 +29,22 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-class UserAssignmentsView(generics.ListAPIView):
+class UserAssignmentsViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = AssignmentSerializer
+    lookup_field = "id"
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return AssignmentCreateSerializer
+        return AssignmentSerializer
 
     def get_queryset(self):
         return Assignment.objects.filter(user=self.request.user).select_related('book')
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

@@ -11,6 +11,7 @@ import { BookListPage } from "@/pages/book-list"
 import { BookPagesPage } from "@/pages/book-pages"
 import { PageEditPage } from "@/pages/page-edit"
 import { PageListPage } from "@/pages/page-list"
+import { AssignmentsPage } from "@/pages/assignments"
 import { SettingsPage } from "@/pages/settings"
 import { useAuthStore } from "@/stores/auth-store"
 import { useUIStore } from "@/stores/ui-store"
@@ -72,6 +73,7 @@ export default function App() {
               <Route path="/books/:bookId/pages" element={<BookPagesPage />} />
               <Route path="/pages" element={<PageListPage />} />
               <Route path="/pages/:id/edit" element={<PageEditPage />} />
+              <Route path="/assignments" element={<AssignmentsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/books" replace />} />

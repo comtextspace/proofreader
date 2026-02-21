@@ -64,6 +64,7 @@ export function BookHistoryPage() {
           )}
         </>
       )}
+      </div>
     </div>
   )
 }

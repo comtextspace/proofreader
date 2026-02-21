@@ -17,7 +17,8 @@ export function PageHistoryPage() {
   const { data, isLoading } = usePageHistory(id!, { limit: LIMIT, offset })
 
   return (
-    <div className="h-full overflow-auto scrollbar-thin mx-auto max-w-5xl px-6 py-6">
+    <div className="h-full overflow-auto scrollbar-thin">
+      <div className="mx-auto max-w-5xl px-6 py-6">
       <div className="mb-6 flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate(`/pages/${id}/edit`)}>
           <ArrowLeft className="h-4 w-4" />
@@ -38,6 +39,7 @@ export function PageHistoryPage() {
           )}
         </>
       )}
+      </div>
     </div>
   )
 }

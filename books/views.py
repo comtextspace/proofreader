@@ -13,6 +13,9 @@ class BookListView(ListView):
     model = Book
     template_name = "book/book_list.html"
 
+    def get_queryset(self):
+        return super().get_queryset().filter(is_hidden=False)
+
 
 class BookView(DetailView):
     model = Book

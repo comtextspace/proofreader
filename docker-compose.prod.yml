@@ -107,8 +107,8 @@ services:
       - project-media:/media
       - project-static:/staticfiles
       - frontend-dist:/frontend
+      - ./conf/nginx.prod.conf:/etc/nginx/conf.d/default.conf
       - /etc/letsencrypt:/etc/letsencrypt:ro
-      - ./conf/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - web
       - frontend

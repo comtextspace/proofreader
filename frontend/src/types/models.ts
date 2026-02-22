@@ -64,6 +64,8 @@ export interface PageDetail {
   total_pages: number
   modified: string
   created: string
+  is_bookmarked: boolean
+  bookmark_id: string | null
 }
 
 export interface StatusOption {
@@ -84,8 +86,19 @@ export interface PageHistory {
   history_id: number
   history_date: string
   history_user: string | null
+  history_type: string
   text: string
   status: string
+}
+
+export interface BookPageHistory extends PageHistory {
+  page_number: number
+  page_id: string
+}
+
+export interface UserHistory extends BookPageHistory {
+  book_name: string
+  book_id: string
 }
 
 export interface Assignment {
@@ -108,6 +121,15 @@ export interface PaginatedResponse<T> {
   next: string | null
   previous: string | null
   results: T[]
+}
+
+export interface Bookmark {
+  id: string
+  page: string
+  page_number: number
+  book_id: string
+  book_name: string
+  created: string
 }
 
 export interface TokenPair {

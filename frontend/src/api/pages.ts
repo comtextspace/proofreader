@@ -40,8 +40,16 @@ export async function fetchAdjacent(id: string): Promise<PageAdjacent> {
   return response.data
 }
 
-export async function fetchPageHistory(id: string): Promise<PageHistory[]> {
-  const response = await apiClient.get(`/pages/${id}/history`)
+export interface PaginationParams {
+  limit?: number
+  offset?: number
+}
+
+export async function fetchPageHistory(
+  id: string,
+  params?: PaginationParams
+): Promise<PaginatedResponse<PageHistory>> {
+  const response = await apiClient.get(`/pages/${id}/history`, { params: { limit: 50, ...params } })
   return response.data
 }
 

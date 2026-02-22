@@ -69,6 +69,7 @@ class Book(LifecycleModelMixin, models.Model):
         help_text=_("Интервал страниц для экспорта (например, 4-15). Пустое значение - экспорт всех страниц."),
     )
     is_locked = models.BooleanField(default=False, verbose_name=_("Заблокирована"))
+    is_hidden = models.BooleanField(default=False, verbose_name=_("Скрыта"))
 
     class Meta:
         db_table = '"book"."book"'
@@ -120,3 +121,21 @@ class Page(LifecycleModelMixin, TimeStampedModel, models.Model):
     @hook(AFTER_CREATE, on_commit=True, when="image", is_not=None)
     def extract_text_from_image(self):
         extract_text_from_image_task.delay(self.id)
+
+
+class Bookmark(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey("accounts.CustomUser", on_delete=models.CASCADE, related_name="bookmarks")
+    page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name="bookmarks")
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} → {self.page}"
+
+    class Meta:
+        db_table = '"book"."bookmark"'
+        verbose_name = _("Закладка")
+        verbose_name_plural = _("Закладки")
+        constraints = [
+            models.UniqueConstraint(fields=["user", "page"], name="unique_user_page_bookmark"),
+        ]

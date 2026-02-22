@@ -157,6 +157,7 @@ class BookAdmin(admin.ModelAdmin):
         "name",
         "author",
         "is_locked",
+        "is_hidden",
         "export_source",
         "export_name",
         'status',
@@ -167,8 +168,8 @@ class BookAdmin(admin.ModelAdmin):
         'pages_done_count',
         'view_pages_link',
     ]
-    list_editable = ["export_source", "export_name", "is_locked"]
-    list_filter = ['author', 'is_locked']
+    list_editable = ["export_source", "export_name", "is_locked", "is_hidden"]
+    list_filter = ['author', 'is_locked', 'is_hidden']
     search_fields = ['name', 'author__name']
     readonly_fields = [
         'status',
@@ -179,7 +180,7 @@ class BookAdmin(admin.ModelAdmin):
         'view_pages_link',
     ]
     fieldsets = (
-        (None, {'fields': ('name', 'author', 'pdf', 'is_locked', 'export_source', 'export_name')}),
+        (None, {'fields': ('name', 'author', 'pdf', 'is_locked', 'is_hidden', 'export_source', 'export_name')}),
         (
             _('Страницы'),
             {

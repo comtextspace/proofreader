@@ -142,6 +142,7 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
         }
       }),
       EditorView.lineWrapping,
+      EditorView.contentAttributes.of({ spellcheck: "true" }),
       EditorView.theme({
         "&": { height: "100%", fontSize: `${textSize}px` },
         ".cm-scroller": { overflow: "auto", fontFamily: "monospace" },

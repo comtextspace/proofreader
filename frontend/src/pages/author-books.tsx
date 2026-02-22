@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom"
-import { BookOpen, CheckCircle2, ChevronRight, FileText } from "lucide-react"
+import { BookOpen, CheckCircle2, ChevronRight, FileText, Lock } from "lucide-react"
 import { useAuthor } from "@/hooks/use-authors"
 import { useBooks } from "@/hooks/use-books"
 import { StatsCard } from "@/components/ui/stats-card"
@@ -74,7 +74,16 @@ export function AuthorBooksPage() {
                     className="cursor-pointer border-b transition-all duration-200 hover:bg-primary/5"
                     onClick={() => navigate(`/books/${book.id}/pages`)}
                   >
-                    <td className="px-4 py-3 font-medium">{book.name}</td>
+                    <td className="px-4 py-3 font-medium">
+                      <span className="inline-flex items-center gap-1.5">
+                        {book.name}
+                        {book.is_locked && (
+                          <span className="inline-flex" title="Заблокирована">
+                            <Lock className="h-3.5 w-3.5 text-destructive" />
+                          </span>
+                        )}
+                      </span>
+                    </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${status.className}`}>
                         {status.label}

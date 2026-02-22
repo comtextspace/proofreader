@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { AppLayout } from "@/components/layout/app-layout"
 import { ProtectedRoute } from "@/components/layout/protected-route"
+import { HomePage } from "@/pages/home"
 import { LoginPage } from "@/pages/login"
 import { RegisterPage } from "@/pages/register"
 import { AuthorListPage } from "@/pages/author-list"
@@ -61,6 +62,7 @@ export default function App() {
       <BrowserRouter>
         <AppInitializer>
           <Routes>
+            <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route
@@ -82,7 +84,7 @@ export default function App() {
               <Route path="/pages/:id/history" element={<PageHistoryPage />} />
               <Route path="/my-history" element={<UserHistoryPage />} />
             </Route>
-            <Route path="*" element={<Navigate to="/books" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AppInitializer>
       </BrowserRouter>

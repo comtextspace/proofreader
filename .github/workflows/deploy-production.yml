@@ -219,9 +219,6 @@ jobs:
           # Compile messages (if using internationalization)
           docker compose -f docker-compose.prod.yml exec -T web python manage.py compilemessages || echo "Message compilation failed"
 
-          # Backfill OCR bounding box data for pages missing it
-          docker compose -f docker-compose.prod.yml exec -T web python manage.py backfill_ocr_data || echo "OCR backfill failed"
-
           # Clean up old images after successful deployment
           docker image prune -f
 

@@ -109,6 +109,7 @@ class PageDetailSerializer(serializers.ModelSerializer):
             'total_pages',
             'modified',
             'created',
+            'ocr_data',
             'is_bookmarked',
             'bookmark_id',
             'bookmark_name',

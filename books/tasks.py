@@ -42,10 +42,12 @@ def extract_text_from_image_task(page_id):
     from books.models import Page
 
     page = Page.objects.get(id=page_id)
-    page.text = extract_text_from_image(page.image)
+    text, ocr_data = extract_text_from_image(page.image)
+    page.text = text
+    page.ocr_data = ocr_data
 
     if settings.LLM_CORRECTION_ENABLED:
-        page.save(update_fields=['text'])
+        page.save(update_fields=['text', 'ocr_data'])
         correct_text_with_llm_task.delay(page.id)
     else:
         page.status = Page.Status.READY

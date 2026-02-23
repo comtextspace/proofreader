@@ -66,6 +66,7 @@ export interface PageDetail {
   created: string
   is_bookmarked: boolean
   bookmark_id: string | null
+  bookmark_name: string | null
 }
 
 export interface StatusOption {
@@ -129,6 +130,7 @@ export interface Bookmark {
   page_number: number
   book_id: string
   book_name: string
+  name: string
   created: string
 }
 

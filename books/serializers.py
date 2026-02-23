@@ -92,6 +92,7 @@ class PageDetailSerializer(serializers.ModelSerializer):
     total_pages = serializers.SerializerMethodField()
     is_bookmarked = serializers.SerializerMethodField()
     bookmark_id = serializers.SerializerMethodField()
+    bookmark_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Page
@@ -110,6 +111,7 @@ class PageDetailSerializer(serializers.ModelSerializer):
             'created',
             'is_bookmarked',
             'bookmark_id',
+            'bookmark_name',
         ]
 
     def get_available_statuses(self, obj):
@@ -144,6 +146,10 @@ class PageDetailSerializer(serializers.ModelSerializer):
         bookmark = self._get_bookmark(obj)
         return str(bookmark.id) if bookmark else None
 
+    def get_bookmark_name(self, obj):
+        bookmark = self._get_bookmark(obj)
+        return bookmark.name if bookmark else None
+
 
 class PageUpdateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -174,14 +180,21 @@ class BookmarkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bookmark
-        fields = ["id", "page", "page_number", "book_id", "book_name", "created"]
+        fields = ["id", "page", "page_number", "book_id", "book_name", "name", "created"]
         read_only_fields = ["id", "created"]
 
 
 class BookmarkCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bookmark
-        fields = ["id", "page"]
+        fields = ["id", "page", "name"]
+        read_only_fields = ["id"]
+
+
+class BookmarkUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bookmark
+        fields = ["id", "name"]
         read_only_fields = ["id"]
 
 

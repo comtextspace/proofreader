@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Bookmark, ChevronLeft, ChevronRight, X } from "lucide-react"
+import { Bookmark, ChevronLeft, ChevronRight, Pencil, X, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useBookmarks, useDeleteBookmark } from "@/hooks/use-bookmarks"
+import { Input } from "@/components/ui/input"
+import { useBookmarks, useDeleteBookmark, useUpdateBookmark } from "@/hooks/use-bookmarks"
 import type { Bookmark as BookmarkType } from "@/types/models"
 
 interface BookmarksSidebarProps {
@@ -26,6 +27,7 @@ export function BookmarksSidebar({ bookId }: BookmarksSidebarProps) {
   const [collapsed, setCollapsed] = useState(isMobile)
   const { data } = useBookmarks(bookId)
   const deleteMutation = useDeleteBookmark()
+  const updateMutation = useUpdateBookmark()
 
   const bookmarks = data?.results ?? []
 
@@ -93,6 +95,7 @@ export function BookmarksSidebar({ bookId }: BookmarksSidebarProps) {
                 bookmark={bm}
                 onNavigate={() => navigate(`/pages/${bm.page}/edit`)}
                 onDelete={() => deleteMutation.mutate(bm.id)}
+                onRename={(name) => updateMutation.mutate({ id: bm.id, name })}
                 showBook={false}
               />
             ))}
@@ -109,6 +112,7 @@ export function BookmarksSidebar({ bookId }: BookmarksSidebarProps) {
                   bookmark={bm}
                   onNavigate={() => navigate(`/pages/${bm.page}/edit`)}
                   onDelete={() => deleteMutation.mutate(bm.id)}
+                  onRename={(name) => updateMutation.mutate({ id: bm.id, name })}
                   showBook={false}
                 />
               ))}
@@ -124,24 +128,92 @@ function BookmarkItem({
   bookmark,
   onNavigate,
   onDelete,
+  onRename,
   showBook,
 }: {
   bookmark: BookmarkType
   onNavigate: () => void
   onDelete: () => void
+  onRename: (name: string) => void
   showBook: boolean
 }) {
+  const [editing, setEditing] = useState(false)
+  const [editValue, setEditValue] = useState(bookmark.name)
+
+  const displayLabel = bookmark.name || `Стр. ${bookmark.page_number}`
+
+  function handleStartEdit(e: React.MouseEvent) {
+    e.stopPropagation()
+    setEditValue(bookmark.name)
+    setEditing(true)
+  }
+
+  function handleSave() {
+    const trimmed = editValue.trim()
+    if (trimmed !== bookmark.name) {
+      onRename(trimmed)
+    }
+    setEditing(false)
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter") {
+      handleSave()
+    } else if (e.key === "Escape") {
+      setEditing(false)
+      setEditValue(bookmark.name)
+    }
+  }
+
+  if (editing) {
+    return (
+      <div className="flex items-center gap-1 px-3 py-1">
+        <Input
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={handleSave}
+          className="h-6 flex-1 text-xs"
+          placeholder={`Стр. ${bookmark.page_number}`}
+          autoFocus
+        />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-5 w-5 shrink-0 p-0"
+          onClick={handleSave}
+          title="Сохранить"
+        >
+          <Check className="h-3 w-3" />
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <div className="group flex items-center gap-1 px-3 py-1 hover:bg-muted/50">
       <button
-        className="flex-1 text-left text-xs hover:text-primary"
+        className="flex-1 truncate text-left text-xs hover:text-primary"
         onClick={onNavigate}
+        title={bookmark.name ? `${bookmark.name} (Стр. ${bookmark.page_number})` : `Стр. ${bookmark.page_number}`}
       >
-        <span>Стр. {bookmark.page_number}</span>
+        <span>{displayLabel}</span>
+        {bookmark.name && (
+          <span className="ml-1 text-muted-foreground">({bookmark.page_number})</span>
+        )}
         {showBook && (
           <span className="ml-1 text-muted-foreground">({bookmark.book_name})</span>
         )}
       </button>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-5 w-5 shrink-0 p-0 opacity-0 group-hover:opacity-100"
+        onClick={handleStartEdit}
+        title="Переименовать"
+      >
+        <Pencil className="h-3 w-3" />
+      </Button>
       <Button
         variant="ghost"
         size="sm"

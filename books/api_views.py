@@ -22,6 +22,7 @@ from books.serializers import (
     BookListSerializer,
     BookmarkCreateSerializer,
     BookmarkSerializer,
+    BookmarkUpdateSerializer,
     BookPageHistorySerializer,
     PageAdjacentSerializer,
     PageDetailSerializer,
@@ -293,6 +294,7 @@ class BookmarkFilter(django_filters.FilterSet):
 class BookmarkViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
@@ -305,6 +307,8 @@ class BookmarkViewSet(
     def get_serializer_class(self):
         if self.action == "create":
             return BookmarkCreateSerializer
+        if self.action in ("update", "partial_update"):
+            return BookmarkUpdateSerializer
         return BookmarkSerializer
 
     def get_queryset(self):

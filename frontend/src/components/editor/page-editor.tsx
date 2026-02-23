@@ -20,6 +20,7 @@ export function PageEditor({ page }: PageEditorProps) {
   const isLocked = page.book.is_locked
 
   const [text, setText] = useState(page.text)
+  const [selection, setSelection] = useState<{ from: number; to: number } | null>(null)
   const [status, setStatus] = useState<string>(page.status)
   const [numberInBook, setNumberInBook] = useState(page.number_in_book ?? "")
 
@@ -86,8 +87,9 @@ export function PageEditor({ page }: PageEditorProps) {
           onNavigateNext={() => {
             if (adjacent?.next_id) navigate(`/pages/${adjacent.next_id}/edit`)
           }}
+          onSelectionChange={setSelection}
         />
-        <ImagePanel imageUrl={page.image} />
+        <ImagePanel imageUrl={page.image} ocrData={page.ocr_data} selection={selection} />
       </div>
 
       <UnifiedBottomBar

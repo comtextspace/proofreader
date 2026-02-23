@@ -18,9 +18,10 @@ interface TextPanelProps {
   readOnly?: boolean
   onNavigatePrev?: () => void
   onNavigateNext?: () => void
+  onSelectionChange?: (sel: { from: number; to: number } | null) => void
 }
 
-export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, isDark, readOnly, onNavigatePrev, onNavigateNext }: TextPanelProps) {
+export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, isDark, readOnly, onNavigatePrev, onNavigateNext, onSelectionChange }: TextPanelProps) {
   const editorRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const viewRef = useRef<EditorView | null>(null)
@@ -37,6 +38,9 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
   onNavigateNextRef.current = onNavigateNext
   const onSelectionChangeRef = useRef(setSelection)
   onSelectionChangeRef.current = setSelection
+  const onParentSelectionChangeRef = useRef(onSelectionChange)
+  onParentSelectionChangeRef.current = onSelectionChange
+  const selectionDebounceRef = useRef<number>(0)
 
   const createEditor = useCallback(() => {
     if (!editorRef.current) return
@@ -139,6 +143,14 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
           } else {
             onSelectionChangeRef.current(null)
           }
+          clearTimeout(selectionDebounceRef.current)
+          selectionDebounceRef.current = window.setTimeout(() => {
+            if (from !== to) {
+              onParentSelectionChangeRef.current?.({ from, to })
+            } else {
+              onParentSelectionChangeRef.current?.(null)
+            }
+          }, 50)
         }
       }),
       EditorView.lineWrapping,

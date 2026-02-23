@@ -281,6 +281,17 @@ class PagesViewSet(
         correct_text_with_llm_task.delay(page.id)
         return Response({'detail': 'LLM correction task started.'})
 
+    @action(detail=False, methods=['post'])
+    def spellcheck(self, request):
+        text = request.data.get('text', '')
+        if not isinstance(text, str):
+            return Response({'detail': 'text must be a string'}, status=400)
+
+        from books.services.spellcheck import check_spelling
+
+        errors = check_spelling(text)
+        return Response(errors)
+
 
 class BookmarkFilter(django_filters.FilterSet):
     book = django_filters.UUIDFilter(field_name="page__book__id")

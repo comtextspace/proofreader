@@ -5,6 +5,7 @@ import type {
   PageHistory,
   PageListItem,
   PaginatedResponse,
+  SpellError,
 } from "@/types/models"
 
 export interface PageListParams {
@@ -60,5 +61,10 @@ export async function fetchPagePreview(id: string): Promise<{ text_preview: stri
 
 export async function triggerLLMCorrection(id: string): Promise<{ detail: string }> {
   const response = await apiClient.post(`/pages/${id}/correct`)
+  return response.data
+}
+
+export async function spellcheckText(text: string): Promise<SpellError[]> {
+  const response = await apiClient.post("/pages/spellcheck", { text })
   return response.data
 }

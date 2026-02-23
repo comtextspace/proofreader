@@ -3,15 +3,16 @@ import { Contrast, Maximize2, ZoomIn, ZoomOut } from "lucide-react"
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch"
 import { Button } from "@/components/ui/button"
 import { findHighlightedWords } from "@/lib/ocr-mapping"
-import type { OcrData } from "@/types/models"
+import type { OcrData, SpellError } from "@/types/models"
 
 interface ImagePanelProps {
   imageUrl: string | null
   ocrData?: OcrData | null
   selection?: { from: number; to: number } | null
+  spellErrors?: SpellError[]
 }
 
-export function ImagePanel({ imageUrl, ocrData, selection }: ImagePanelProps) {
+export function ImagePanel({ imageUrl, ocrData, selection, spellErrors }: ImagePanelProps) {
   const [inverted, setInverted] = useState(false)
   const [imgRect, setImgRect] = useState<{ left: number; top: number; width: number; height: number } | null>(null)
   const imgRef = useRef<HTMLImageElement>(null)
@@ -21,6 +22,22 @@ export function ImagePanel({ imageUrl, ocrData, selection }: ImagePanelProps) {
     if (!ocrData || !selection) return []
     return findHighlightedWords(ocrData, selection.from, selection.to)
   }, [ocrData, selection])
+
+  const spellErrorWords = useMemo(() => {
+    if (!ocrData || !spellErrors || spellErrors.length === 0) return []
+    const words = new Set<number>()
+    const result: typeof ocrData.words = []
+    for (const error of spellErrors) {
+      for (const word of findHighlightedWords(ocrData, error.from, error.to)) {
+        const idx = ocrData.words.indexOf(word)
+        if (!words.has(idx)) {
+          words.add(idx)
+          result.push(word)
+        }
+      }
+    }
+    return result
+  }, [ocrData, spellErrors])
 
   const updateImgRect = useCallback(() => {
     if (imgRef.current && containerRef.current) {
@@ -96,7 +113,7 @@ export function ImagePanel({ imageUrl, ocrData, selection }: ImagePanelProps) {
                   onLoad={updateImgRect}
                 />
               </TransformComponent>
-              {highlightedWords.length > 0 && ocrData && imgRect && (
+              {(highlightedWords.length > 0 || spellErrorWords.length > 0) && ocrData && imgRect && (
                 <svg
                   style={{
                     position: "absolute",
@@ -108,9 +125,22 @@ export function ImagePanel({ imageUrl, ocrData, selection }: ImagePanelProps) {
                   }}
                   viewBox={`0 0 ${ocrData.image_width} ${ocrData.image_height}`}
                 >
+                  {spellErrorWords.map((word, i) => (
+                    <rect
+                      key={`spell-${i}`}
+                      x={word.left}
+                      y={word.top}
+                      width={word.width}
+                      height={word.height}
+                      fill="rgba(239, 68, 68, 0.2)"
+                      stroke="rgba(239, 68, 68, 0.5)"
+                      strokeWidth={2}
+                      rx={2}
+                    />
+                  ))}
                   {highlightedWords.map((word, i) => (
                     <rect
-                      key={i}
+                      key={`sel-${i}`}
                       x={word.left}
                       y={word.top}
                       width={word.width}

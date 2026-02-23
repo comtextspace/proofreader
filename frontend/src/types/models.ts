@@ -149,6 +149,12 @@ export interface Bookmark {
   created: string
 }
 
+export interface SpellError {
+  from: number
+  to: number
+  word: string
+}
+
 export interface TokenPair {
   access: string
   refresh: string

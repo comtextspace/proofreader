@@ -14,7 +14,7 @@ export function LoginPage() {
   const [password, setPassword] = useState("")
 
   if (isAuthenticated) {
-    return <Navigate to="/pages" replace />
+    return <Navigate to="/books" replace />
   }
 
   async function handleSubmit(e: React.FormEvent) {

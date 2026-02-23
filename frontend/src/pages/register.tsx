@@ -19,7 +19,7 @@ export function RegisterPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   if (isAuthenticated) {
-    return <Navigate to="/pages" replace />
+    return <Navigate to="/books" replace />
   }
 
   async function handleSubmit(e: React.FormEvent) {

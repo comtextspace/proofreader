@@ -51,6 +51,22 @@ export interface PageListItem {
   modified: string
 }
 
+export interface OcrWord {
+  text: string
+  left: number
+  top: number
+  width: number
+  height: number
+  conf: number
+  char_offset: number
+}
+
+export interface OcrData {
+  image_width: number
+  image_height: number
+  words: OcrWord[]
+}
+
 export interface PageDetail {
   id: string
   book: Book
@@ -58,6 +74,7 @@ export interface PageDetail {
   number_in_book: string | null
   image: string | null
   text: string
+  ocr_data: OcrData | null
   status: PageStatus
   status_display: string
   available_statuses: StatusOption[]
@@ -66,6 +83,7 @@ export interface PageDetail {
   created: string
   is_bookmarked: boolean
   bookmark_id: string | null
+  bookmark_name: string | null
 }
 
 export interface StatusOption {
@@ -129,7 +147,14 @@ export interface Bookmark {
   page_number: number
   book_id: string
   book_name: string
+  name: string
   created: string
+}
+
+export interface SpellError {
+  from: number
+  to: number
+  word: string
 }
 
 export interface TokenPair {

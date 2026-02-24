@@ -10,8 +10,13 @@ export async function fetchBookmarks(params?: BookmarkListParams): Promise<Pagin
   return response.data
 }
 
-export async function createBookmark(pageId: string): Promise<Bookmark> {
-  const response = await apiClient.post("/bookmarks/", { page: pageId })
+export async function createBookmark(pageId: string, name?: string): Promise<Bookmark> {
+  const response = await apiClient.post("/bookmarks/", { page: pageId, ...(name ? { name } : {}) })
+  return response.data
+}
+
+export async function updateBookmark(id: string, name: string): Promise<Bookmark> {
+  const response = await apiClient.patch(`/bookmarks/${id}`, { name })
   return response.data
 }
 

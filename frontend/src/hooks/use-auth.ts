@@ -19,7 +19,7 @@ export function useAuth() {
       setTokens(tokens.access, tokens.refresh)
       const profile = await fetchProfile()
       setUser(profile)
-      navigate("/pages")
+      navigate("/books")
     } catch (err: unknown) {
       let message = "Неверные данные"
       if (axios.isAxiosError(err)) {

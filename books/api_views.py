@@ -22,6 +22,7 @@ from books.serializers import (
     BookListSerializer,
     BookmarkCreateSerializer,
     BookmarkSerializer,
+    BookmarkUpdateSerializer,
     BookPageHistorySerializer,
     PageAdjacentSerializer,
     PageDetailSerializer,
@@ -281,6 +282,17 @@ class PagesViewSet(
         correct_text_with_llm_task.delay(page.id)
         return Response({'detail': 'LLM correction task started.'})
 
+    @action(detail=False, methods=['post'])
+    def spellcheck(self, request):
+        text = request.data.get('text', '')
+        if not isinstance(text, str):
+            return Response({'detail': 'text must be a string'}, status=400)
+
+        from books.services.spellcheck import check_spelling
+
+        errors = check_spelling(text)
+        return Response(errors)
+
 
 class BookmarkFilter(django_filters.FilterSet):
     book = django_filters.UUIDFilter(field_name="page__book__id")
@@ -293,6 +305,7 @@ class BookmarkFilter(django_filters.FilterSet):
 class BookmarkViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
@@ -305,6 +318,8 @@ class BookmarkViewSet(
     def get_serializer_class(self):
         if self.action == "create":
             return BookmarkCreateSerializer
+        if self.action in ("update", "partial_update"):
+            return BookmarkUpdateSerializer
         return BookmarkSerializer
 
     def get_queryset(self):

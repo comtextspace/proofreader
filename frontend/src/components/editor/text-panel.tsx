@@ -1,12 +1,35 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import { EditorState, Prec } from "@codemirror/state"
-import { EditorView, keymap, lineNumbers } from "@codemirror/view"
+import { EditorState, Prec, StateEffect, StateField } from "@codemirror/state"
+import { Decoration, type DecorationSet, EditorView, keymap, lineNumbers } from "@codemirror/view"
 import { defaultKeymap, history, historyKeymap, redo } from "@codemirror/commands"
 import { markdown } from "@codemirror/lang-markdown"
 import { oneDark } from "@codemirror/theme-one-dark"
 import { FormattingToolbar } from "./formatting-toolbar"
 import { FloatingToolbar } from "./floating-toolbar"
 import { useUIStore } from "@/stores/ui-store"
+import type { SpellError } from "@/types/models"
+
+const setSpellErrorsEffect = StateEffect.define<SpellError[]>()
+
+const spellErrorField = StateField.define<DecorationSet>({
+  create() {
+    return Decoration.none
+  },
+  update(decorations, tr) {
+    for (const effect of tr.effects) {
+      if (effect.is(setSpellErrorsEffect)) {
+        const marks = effect.value
+          .filter((e) => e.from < tr.state.doc.length && e.to <= tr.state.doc.length)
+          .map((e) =>
+            Decoration.mark({ class: "cm-spell-error" }).range(e.from, e.to)
+          )
+        return Decoration.set(marks, true)
+      }
+    }
+    return decorations.map(tr.changes)
+  },
+  provide: (f) => EditorView.decorations.from(f),
+})
 
 interface TextPanelProps {
   text: string
@@ -18,9 +41,11 @@ interface TextPanelProps {
   readOnly?: boolean
   onNavigatePrev?: () => void
   onNavigateNext?: () => void
+  onSelectionChange?: (sel: { from: number; to: number } | null) => void
+  spellErrors?: SpellError[]
 }
 
-export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, isDark, readOnly, onNavigatePrev, onNavigateNext }: TextPanelProps) {
+export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, isDark, readOnly, onNavigatePrev, onNavigateNext, onSelectionChange, spellErrors }: TextPanelProps) {
   const editorRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const viewRef = useRef<EditorView | null>(null)
@@ -37,6 +62,9 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
   onNavigateNextRef.current = onNavigateNext
   const onSelectionChangeRef = useRef(setSelection)
   onSelectionChangeRef.current = setSelection
+  const onParentSelectionChangeRef = useRef(onSelectionChange)
+  onParentSelectionChangeRef.current = onSelectionChange
+  const selectionDebounceRef = useRef<number>(0)
 
   const createEditor = useCallback(() => {
     if (!editorRef.current) return
@@ -139,14 +167,23 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
           } else {
             onSelectionChangeRef.current(null)
           }
+          clearTimeout(selectionDebounceRef.current)
+          selectionDebounceRef.current = window.setTimeout(() => {
+            if (from !== to) {
+              onParentSelectionChangeRef.current?.({ from, to })
+            } else {
+              onParentSelectionChangeRef.current?.(null)
+            }
+          }, 50)
         }
       }),
+      spellErrorField,
       EditorView.lineWrapping,
-      EditorView.contentAttributes.of({ spellcheck: "true" }),
       EditorView.theme({
         "&": { height: "100%", fontSize: `${textSize}px` },
         ".cm-scroller": { overflow: "auto", fontFamily: "monospace" },
         ".cm-content": { minHeight: "300px" },
+        ".cm-spell-error": { textDecoration: "underline wavy red", textUnderlineOffset: "3px" },
       }),
     ]
 
@@ -187,6 +224,15 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
       })
     }
   }, [text])
+
+  useEffect(() => {
+    const view = viewRef.current
+    if (view && spellErrors) {
+      view.dispatch({
+        effects: setSpellErrorsEffect.of(spellErrors),
+      })
+    }
+  }, [spellErrors])
 
   return (
     <div ref={containerRef} className="relative h-full">

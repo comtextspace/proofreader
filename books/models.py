@@ -99,6 +99,7 @@ class Page(LifecycleModelMixin, TimeStampedModel, models.Model):
     image_url = models.TextField(blank=True)
     image = models.FileField(upload_to="pages/", null=True, blank=True)
     text = models.TextField(blank=True)
+    ocr_data = models.JSONField(null=True, blank=True, verbose_name=_("OCR данные"))
     status = models.CharField(
         max_length=100, choices=Status.choices, default=Status.PROCESSING, verbose_name=_("Статус")
     )
@@ -127,6 +128,7 @@ class Bookmark(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey("accounts.CustomUser", on_delete=models.CASCADE, related_name="bookmarks")
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name="bookmarks")
+    name = models.CharField(max_length=200, blank=True, default="", verbose_name=_("Название"))
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

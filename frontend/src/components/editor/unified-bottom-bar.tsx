@@ -55,7 +55,7 @@ export function UnifiedBottomBar({
     if (page.is_bookmarked && page.bookmark_id) {
       deleteBookmark.mutate(page.bookmark_id)
     } else {
-      createBookmark.mutate(page.id)
+      createBookmark.mutate({ pageId: page.id })
     }
   }
 

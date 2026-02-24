@@ -8,6 +8,8 @@ import {
   Wand2,
   Undo2,
   Redo2,
+  SpellCheck,
+  Highlighter,
 } from "lucide-react"
 import { undo, redo } from "@codemirror/commands"
 import { Button } from "@/components/ui/button"
@@ -19,6 +21,7 @@ import {
   PARAGRAPH_ITEMS,
   FOOTNOTE_ITEMS,
 } from "./formatting-actions"
+import { useUIStore } from "@/stores/ui-store"
 import type { EditorView } from "@codemirror/view"
 
 interface FormattingToolbarProps {
@@ -79,6 +82,11 @@ function ToolbarDropdown({ icon, title, items, onAction }: DropdownProps) {
 }
 
 export function FormattingToolbar({ editorView }: FormattingToolbarProps) {
+  const spellcheckEnabled = useUIStore((s) => s.spellcheckEnabled)
+  const imageHighlightEnabled = useUIStore((s) => s.imageHighlightEnabled)
+  const toggleSpellcheck = useUIStore((s) => s.toggleSpellcheck)
+  const toggleImageHighlight = useUIStore((s) => s.toggleImageHighlight)
+
   if (!editorView) return null
 
   return (
@@ -114,6 +122,29 @@ export function FormattingToolbar({ editorView }: FormattingToolbarProps) {
         onClick={() => correctText(editorView)}>
         <Wand2 className="h-3.5 w-3.5" />
       </Button>
+
+      <fieldset className="relative ml-1 flex items-center gap-0.5 rounded-md border border-blue-400/50 px-0.5 shadow-[0_0_6px_rgba(96,165,250,0.4)]">
+        <legend className="mx-auto px-1 text-[9px] font-semibold leading-none text-blue-400">beta</legend>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={`h-7 w-7 ${spellcheckEnabled ? "" : "text-muted-foreground opacity-50"}`}
+          title="Проверка орфографии"
+          onClick={toggleSpellcheck}
+        >
+          <SpellCheck className="h-3.5 w-3.5" />
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className={`h-7 w-7 ${imageHighlightEnabled ? "" : "text-muted-foreground opacity-50"}`}
+          title="Подсветка на изображении"
+          onClick={toggleImageHighlight}
+        >
+          <Highlighter className="h-3.5 w-3.5" />
+        </Button>
+      </fieldset>
 
       <div className="ml-auto flex items-center gap-0.5">
         <Button variant="ghost" size="icon" className="h-7 w-7" title="Отменить (Ctrl+Z)"

@@ -17,6 +17,8 @@ interface PageEditorProps {
 export function PageEditor({ page }: PageEditorProps) {
   const navigate = useNavigate()
   const theme = useUIStore((s) => s.theme)
+  const spellcheckEnabled = useUIStore((s) => s.spellcheckEnabled)
+  const imageHighlightEnabled = useUIStore((s) => s.imageHighlightEnabled)
   const isDark = theme === "dark"
   const isLocked = page.book.is_locked
 
@@ -85,20 +87,23 @@ export function PageEditor({ page }: PageEditorProps) {
   useEffect(() => {
     setSpellErrors([])
     setSelection(null)
-    runSpellcheck(page.text)
+    if (spellcheckEnabled) {
+      runSpellcheck(page.text)
+    }
 
     return () => { clearTimeout(spellDebounceRef.current) }
-  }, [page.id]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [page.id, spellcheckEnabled]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTextChange = useCallback(
     (newText: string) => {
       setText(newText)
+      if (!spellcheckEnabled) return
       clearTimeout(spellDebounceRef.current)
       spellDebounceRef.current = window.setTimeout(() => {
         runSpellcheck(newText)
       }, 1500)
     },
-    [runSpellcheck]
+    [runSpellcheck, spellcheckEnabled]
   )
 
   useKeyboardShortcuts(shortcuts)
@@ -121,9 +126,9 @@ export function PageEditor({ page }: PageEditorProps) {
             if (adjacent?.next_id) navigate(`/pages/${adjacent.next_id}/edit`)
           }}
           onSelectionChange={setSelection}
-          spellErrors={spellErrors}
+          spellErrors={spellcheckEnabled ? spellErrors : []}
         />
-        <ImagePanel imageUrl={page.image} ocrData={page.ocr_data} selection={selection} spellErrors={spellErrors} />
+        <ImagePanel imageUrl={page.image} ocrData={page.ocr_data} selection={selection} spellErrors={spellcheckEnabled && imageHighlightEnabled ? spellErrors : []} />
       </div>
 
       <UnifiedBottomBar

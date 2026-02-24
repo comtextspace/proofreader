@@ -5,8 +5,12 @@ type Theme = "light" | "dark" | "system"
 interface UIState {
   theme: Theme
   textSize: number
+  spellcheckEnabled: boolean
+  imageHighlightEnabled: boolean
   setTheme: (theme: Theme) => void
   setTextSize: (size: number) => void
+  toggleSpellcheck: () => void
+  toggleImageHighlight: () => void
   initializeTheme: () => void
 }
 
@@ -23,6 +27,8 @@ function applyTheme(theme: Theme) {
 export const useUIStore = create<UIState>((set) => ({
   theme: (localStorage.getItem("theme") as Theme) || "system",
   textSize: Number(localStorage.getItem("text_size")) || 14,
+  spellcheckEnabled: localStorage.getItem("spellcheck_enabled") !== "false",
+  imageHighlightEnabled: localStorage.getItem("image_highlight_enabled") !== "false",
 
   setTheme: (theme) => {
     localStorage.setItem("theme", theme)
@@ -33,6 +39,22 @@ export const useUIStore = create<UIState>((set) => ({
   setTextSize: (size) => {
     localStorage.setItem("text_size", String(size))
     set({ textSize: size })
+  },
+
+  toggleSpellcheck: () => {
+    set((state) => {
+      const next = !state.spellcheckEnabled
+      localStorage.setItem("spellcheck_enabled", String(next))
+      return { spellcheckEnabled: next }
+    })
+  },
+
+  toggleImageHighlight: () => {
+    set((state) => {
+      const next = !state.imageHighlightEnabled
+      localStorage.setItem("image_highlight_enabled", String(next))
+      return { imageHighlightEnabled: next }
+    })
   },
 
   initializeTheme: () => {

@@ -2,17 +2,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Contrast, Maximize2, ZoomIn, ZoomOut } from "lucide-react"
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch"
 import { Button } from "@/components/ui/button"
-import { findHighlightedWords } from "@/lib/ocr-mapping"
 import type { OcrData, SpellError } from "@/types/models"
 
 interface ImagePanelProps {
   imageUrl: string | null
   ocrData?: OcrData | null
-  selection?: { from: number; to: number } | null
+  selection?: { from: number; to: number; text?: string } | null
   spellErrors?: SpellError[]
+  editorText?: string
 }
 
-export function ImagePanel({ imageUrl, ocrData, selection, spellErrors }: ImagePanelProps) {
+export function ImagePanel({ imageUrl, ocrData, selection, spellErrors, editorText }: ImagePanelProps) {
   const [inverted, setInverted] = useState(false)
   const [imgRect, setImgRect] = useState<{ left: number; top: number; width: number; height: number } | null>(null)
   const imgRef = useRef<HTMLImageElement>(null)
@@ -20,8 +20,74 @@ export function ImagePanel({ imageUrl, ocrData, selection, spellErrors }: ImageP
 
   const highlightedWords = useMemo(() => {
     if (!ocrData || !selection) return []
-    return findHighlightedWords(ocrData, selection.from, selection.to)
-  }, [ocrData, selection])
+    const selText = (selection.text || "").trim()
+    if (!selText) return []
+    const strip = (s: string) => s.toLowerCase().replace(/^[^a-zа-яё]+|[^a-zа-яё]+$/gi, "")
+    const selTokens = selText.toLowerCase().split(/\s+/).map(strip).filter((w) => w.length >= 2)
+    if (selTokens.length === 0) return []
+
+    // For single-word selection, use surrounding context to find the right OCR word
+    if (selTokens.length === 1 && editorText) {
+      const word = selTokens[0]
+
+      // Extract context words around the selection from editor text
+      const beforeText = editorText.slice(Math.max(0, selection.from - 80), selection.from)
+      const afterText = editorText.slice(selection.to, selection.to + 80)
+      const contextBefore = beforeText.toLowerCase().split(/\s+/).map(strip).filter((w) => w.length >= 2).slice(-3)
+      const contextAfter = afterText.toLowerCase().split(/\s+/).map(strip).filter((w) => w.length >= 2).slice(0, 3)
+
+      // Find all OCR word indices that match the selected word (including hyphen-split pairs)
+      const candidates: { ocrWords: typeof ocrData.words[number][]; ocrIndex: number }[] = []
+      for (let i = 0; i < ocrData.words.length; i++) {
+        if (strip(ocrData.words[i].text) === word) {
+          candidates.push({ ocrWords: [ocrData.words[i]], ocrIndex: i })
+        }
+        // Check for hyphen-split word pairs: "Народ-" + "ной" = "Народной"
+        if (i + 1 < ocrData.words.length) {
+          const w1 = ocrData.words[i].text
+          if (w1.endsWith("-")) {
+            const joined = strip(w1.slice(0, -1) + ocrData.words[i + 1].text)
+            if (joined === word) {
+              candidates.push({ ocrWords: [ocrData.words[i], ocrData.words[i + 1]], ocrIndex: i })
+            }
+          }
+        }
+      }
+
+      if (candidates.length === 1) return candidates[0].ocrWords
+      if (candidates.length > 1) {
+        // Score each candidate by how many context words appear nearby in OCR
+        let bestCandidate = candidates[0]
+        let bestScore = -1
+        for (const c of candidates) {
+          let score = 0
+          const lastIdx = c.ocrIndex + c.ocrWords.length - 1
+          const nearbyBefore = ocrData.words.slice(Math.max(0, c.ocrIndex - 5), c.ocrIndex)
+            .map((w) => strip(w.text))
+          const nearbyAfter = ocrData.words.slice(lastIdx + 1, lastIdx + 6)
+            .map((w) => strip(w.text))
+          for (const ctx of contextBefore) {
+            if (nearbyBefore.includes(ctx)) score++
+          }
+          for (const ctx of contextAfter) {
+            if (nearbyAfter.includes(ctx)) score++
+          }
+          if (score > bestScore) {
+            bestScore = score
+            bestCandidate = c
+          }
+        }
+        return bestCandidate.ocrWords
+      }
+    }
+
+    // Multi-word selection or fallback: highlight all matching words
+    const selWordSet = new Set(selTokens)
+    return ocrData.words.filter((w) => {
+      const cleaned = strip(w.text)
+      return cleaned.length >= 2 && selWordSet.has(cleaned)
+    })
+  }, [ocrData, selection, editorText])
 
   const spellErrorWords = useMemo(() => {
     if (!ocrData || !spellErrors || spellErrors.length === 0) return []

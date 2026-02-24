@@ -43,7 +43,7 @@ interface TextPanelProps {
   onNavigateNext?: () => void
   onSelectionChange?: (sel: { from: number; to: number } | null) => void
   spellErrors?: SpellError[]
-  onFormatApplied?: () => void
+  onFormatApplied?: (newText: string) => void
 }
 
 export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, isDark, readOnly, onNavigatePrev, onNavigateNext, onSelectionChange, spellErrors, onFormatApplied }: TextPanelProps) {

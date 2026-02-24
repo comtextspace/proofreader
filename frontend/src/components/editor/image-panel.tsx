@@ -25,18 +25,12 @@ export function ImagePanel({ imageUrl, ocrData, selection, spellErrors }: ImageP
 
   const spellErrorWords = useMemo(() => {
     if (!ocrData || !spellErrors || spellErrors.length === 0) return []
-    const words = new Set<number>()
-    const result: typeof ocrData.words = []
-    for (const error of spellErrors) {
-      for (const word of findHighlightedWords(ocrData, error.from, error.to)) {
-        const idx = ocrData.words.indexOf(word)
-        if (!words.has(idx)) {
-          words.add(idx)
-          result.push(word)
-        }
-      }
-    }
-    return result
+    const strip = (s: string) => s.toLowerCase().replace(/^[^a-zа-яё]+|[^a-zа-яё]+$/gi, "")
+    const errorWordTexts = new Set(spellErrors.map((e) => strip(e.word)))
+    return ocrData.words.filter((w) => {
+      const cleaned = strip(w.text)
+      return cleaned.length >= 2 && errorWordTexts.has(cleaned)
+    })
   }, [ocrData, spellErrors])
 
   const updateImgRect = useCallback(() => {

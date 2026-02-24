@@ -28,7 +28,7 @@ interface FormattingToolbarProps {
   editorView: EditorView | null
   onCorrect: () => void
   isCorrectingLLM: boolean
-  onFormatApplied?: () => void
+  onFormatApplied?: (newText: string) => void
 }
 
 interface DropdownProps {
@@ -120,7 +120,7 @@ export function FormattingToolbar({ editorView, onFormatApplied }: FormattingToo
       />
 
       <Button variant="ghost" size="icon" className="h-7 w-7" title="Улучшить форматирование"
-        onClick={() => { correctText(editorView); onFormatApplied?.() }}>
+        onClick={() => { correctText(editorView); onFormatApplied?.(editorView.state.doc.toString()) }}>
         <Wand2 className="h-3.5 w-3.5" />
       </Button>
 

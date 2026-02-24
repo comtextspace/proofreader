@@ -100,6 +100,7 @@ export function PageEditor({ page }: PageEditorProps) {
   const handleTextChange = useCallback(
     (newText: string) => {
       setText(newText)
+      setSpellErrors([])
       if (!spellcheckEnabled) return
       clearTimeout(spellDebounceRef.current)
       spellDebounceRef.current = window.setTimeout(() => {

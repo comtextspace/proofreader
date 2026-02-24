@@ -43,9 +43,10 @@ interface TextPanelProps {
   onNavigateNext?: () => void
   onSelectionChange?: (sel: { from: number; to: number } | null) => void
   spellErrors?: SpellError[]
+  onFormatApplied?: () => void
 }
 
-export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, isDark, readOnly, onNavigatePrev, onNavigateNext, onSelectionChange, spellErrors }: TextPanelProps) {
+export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, isDark, readOnly, onNavigatePrev, onNavigateNext, onSelectionChange, spellErrors, onFormatApplied }: TextPanelProps) {
   const editorRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const viewRef = useRef<EditorView | null>(null)
@@ -241,6 +242,7 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
           editorView={editorView}
           onCorrect={onCorrect}
           isCorrectingLLM={isCorrectingLLM}
+          onFormatApplied={onFormatApplied}
         />
         <div ref={editorRef} className="min-h-0 flex-1 overflow-hidden" />
       </div>

@@ -28,6 +28,7 @@ interface FormattingToolbarProps {
   editorView: EditorView | null
   onCorrect: () => void
   isCorrectingLLM: boolean
+  onFormatApplied?: () => void
 }
 
 interface DropdownProps {
@@ -81,7 +82,7 @@ function ToolbarDropdown({ icon, title, items, onAction }: DropdownProps) {
   )
 }
 
-export function FormattingToolbar({ editorView }: FormattingToolbarProps) {
+export function FormattingToolbar({ editorView, onFormatApplied }: FormattingToolbarProps) {
   const spellcheckEnabled = useUIStore((s) => s.spellcheckEnabled)
   const imageHighlightEnabled = useUIStore((s) => s.imageHighlightEnabled)
   const toggleSpellcheck = useUIStore((s) => s.toggleSpellcheck)
@@ -119,7 +120,7 @@ export function FormattingToolbar({ editorView }: FormattingToolbarProps) {
       />
 
       <Button variant="ghost" size="icon" className="h-7 w-7" title="Улучшить форматирование"
-        onClick={() => correctText(editorView)}>
+        onClick={() => { correctText(editorView); onFormatApplied?.() }}>
         <Wand2 className="h-3.5 w-3.5" />
       </Button>
 

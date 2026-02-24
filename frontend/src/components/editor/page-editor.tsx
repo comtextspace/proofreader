@@ -25,7 +25,7 @@ export function PageEditor({ page }: PageEditorProps) {
   const [text, setText] = useState(page.text)
   const textRef = useRef(text)
   textRef.current = text
-  const [selection, setSelection] = useState<{ from: number; to: number } | null>(null)
+  const [selection, setSelection] = useState<{ from: number; to: number; text?: string } | null>(null)
   const [status, setStatus] = useState<string>(page.status)
   const [numberInBook, setNumberInBook] = useState(page.number_in_book ?? "")
 
@@ -140,7 +140,7 @@ export function PageEditor({ page }: PageEditorProps) {
           spellErrors={spellcheckEnabled ? spellErrors : []}
           onFormatApplied={handleFormatApplied}
         />
-        <ImagePanel imageUrl={page.image} ocrData={page.ocr_data} selection={selection} spellErrors={spellcheckEnabled && imageHighlightEnabled ? spellErrors : []} />
+        <ImagePanel imageUrl={page.image} ocrData={page.ocr_data} selection={selection} spellErrors={spellcheckEnabled && imageHighlightEnabled ? spellErrors : []} editorText={text} />
       </div>
 
       <UnifiedBottomBar

@@ -41,7 +41,7 @@ interface TextPanelProps {
   readOnly?: boolean
   onNavigatePrev?: () => void
   onNavigateNext?: () => void
-  onSelectionChange?: (sel: { from: number; to: number } | null) => void
+  onSelectionChange?: (sel: { from: number; to: number; text?: string } | null) => void
   spellErrors?: SpellError[]
   onFormatApplied?: (newText: string) => void
 }
@@ -171,7 +171,8 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
           clearTimeout(selectionDebounceRef.current)
           selectionDebounceRef.current = window.setTimeout(() => {
             if (from !== to) {
-              onParentSelectionChangeRef.current?.({ from, to })
+              const selectedText = update.state.sliceDoc(from, to)
+              onParentSelectionChangeRef.current?.({ from, to, text: selectedText })
             } else {
               onParentSelectionChangeRef.current?.(null)
             }

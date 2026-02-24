@@ -27,6 +27,15 @@
   --success-foreground: oklch(0.985 0 0);
   --warning: oklch(0.80 0.12 80);
   --warning-foreground: oklch(0.25 0.02 80);
+
+  --pastel-lavender: oklch(0.85 0.06 290);
+  --pastel-rose: oklch(0.85 0.06 350);
+  --pastel-peach: oklch(0.87 0.06 60);
+  --pastel-mint: oklch(0.87 0.06 160);
+  --pastel-sky: oklch(0.85 0.06 230);
+  --pastel-sage: oklch(0.85 0.04 140);
+  --pastel-cream: oklch(0.92 0.03 80);
+  --pastel-lilac: oklch(0.82 0.08 310);
 }
 
 .dark {
@@ -53,6 +62,15 @@
   --success-foreground: oklch(0.985 0 0);
   --warning: oklch(0.78 0.12 80);
   --warning-foreground: oklch(0.15 0 0);
+
+  --pastel-lavender: oklch(0.40 0.06 290);
+  --pastel-rose: oklch(0.40 0.06 350);
+  --pastel-peach: oklch(0.42 0.06 60);
+  --pastel-mint: oklch(0.42 0.06 160);
+  --pastel-sky: oklch(0.40 0.06 230);
+  --pastel-sage: oklch(0.40 0.04 140);
+  --pastel-cream: oklch(0.35 0.03 80);
+  --pastel-lilac: oklch(0.38 0.08 310);
 }
 
 @theme inline {
@@ -83,6 +101,15 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --color-pastel-lavender: var(--pastel-lavender);
+  --color-pastel-rose: var(--pastel-rose);
+  --color-pastel-peach: var(--pastel-peach);
+  --color-pastel-mint: var(--pastel-mint);
+  --color-pastel-sky: var(--pastel-sky);
+  --color-pastel-sage: var(--pastel-sage);
+  --color-pastel-cream: var(--pastel-cream);
+  --color-pastel-lilac: var(--pastel-lilac);
 }
 
 @layer base {

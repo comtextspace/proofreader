@@ -132,8 +132,8 @@ export function ImagePanel({ imageUrl, ocrData, selection, spellErrors }: ImageP
                       y={word.top}
                       width={word.width}
                       height={word.height}
-                      fill="rgba(239, 68, 68, 0.2)"
-                      stroke="rgba(239, 68, 68, 0.5)"
+                      fill="oklch(0.70 0.14 15 / 0.2)"
+                      stroke="oklch(0.70 0.14 15 / 0.5)"
                       strokeWidth={2}
                       rx={2}
                     />

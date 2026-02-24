@@ -23,6 +23,8 @@ export function PageEditor({ page }: PageEditorProps) {
   const isLocked = page.book.is_locked
 
   const [text, setText] = useState(page.text)
+  const textRef = useRef(text)
+  textRef.current = text
   const [selection, setSelection] = useState<{ from: number; to: number } | null>(null)
   const [status, setStatus] = useState<string>(page.status)
   const [numberInBook, setNumberInBook] = useState(page.number_in_book ?? "")
@@ -35,13 +37,23 @@ export function PageEditor({ page }: PageEditorProps) {
   const updateMutation = useUpdatePage(page.id)
   const llmMutation = useLLMCorrection(page.id)
 
+  const runSpellcheck = useCallback((textToCheck: string) => {
+    const requestId = ++spellRequestRef.current
+    spellcheckText(textToCheck).then((errors) => {
+      if (spellRequestRef.current === requestId) {
+        setSpellErrors(errors)
+      }
+    }).catch(() => {})
+  }, [])
+
   const handleSave = useCallback(async () => {
     await updateMutation.mutateAsync({
       text,
       status,
       number_in_book: numberInBook || null,
     })
-  }, [text, status, numberInBook, updateMutation])
+    if (spellcheckEnabled) runSpellcheck(text)
+  }, [text, status, numberInBook, updateMutation, spellcheckEnabled, runSpellcheck])
 
   const handleSaveAndNext = useCallback(async () => {
     await handleSave()
@@ -75,15 +87,6 @@ export function PageEditor({ page }: PageEditorProps) {
     [handleSave, adjacent, navigate]
   )
 
-  const runSpellcheck = useCallback((textToCheck: string) => {
-    const requestId = ++spellRequestRef.current
-    spellcheckText(textToCheck).then((errors) => {
-      if (spellRequestRef.current === requestId) {
-        setSpellErrors(errors)
-      }
-    }).catch(() => {})
-  }, [])
-
   useEffect(() => {
     setSpellErrors([])
     setSelection(null)
@@ -106,6 +109,13 @@ export function PageEditor({ page }: PageEditorProps) {
     [runSpellcheck, spellcheckEnabled]
   )
 
+  const handleFormatApplied = useCallback(() => {
+    if (spellcheckEnabled) {
+      clearTimeout(spellDebounceRef.current)
+      setTimeout(() => runSpellcheck(textRef.current), 50)
+    }
+  }, [spellcheckEnabled, runSpellcheck])
+
   useKeyboardShortcuts(shortcuts)
 
   return (
@@ -127,6 +137,7 @@ export function PageEditor({ page }: PageEditorProps) {
           }}
           onSelectionChange={setSelection}
           spellErrors={spellcheckEnabled ? spellErrors : []}
+          onFormatApplied={handleFormatApplied}
         />
         <ImagePanel imageUrl={page.image} ocrData={page.ocr_data} selection={selection} spellErrors={spellcheckEnabled && imageHighlightEnabled ? spellErrors : []} />
       </div>

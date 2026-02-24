@@ -29,7 +29,10 @@ export function ImagePanel({ imageUrl, ocrData, selection, spellErrors }: ImageP
     const errorWordTexts = new Set(spellErrors.map((e) => strip(e.word)))
     return ocrData.words.filter((w) => {
       const cleaned = strip(w.text)
-      return cleaned.length >= 2 && errorWordTexts.has(cleaned)
+      if (cleaned.length < 2) return false
+      if (errorWordTexts.has(cleaned)) return true
+      const parts = cleaned.split("-")
+      return parts.length > 1 && parts.some((p) => p.length >= 2 && errorWordTexts.has(p))
     })
   }, [ocrData, spellErrors])
 

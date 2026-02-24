@@ -17,6 +17,7 @@ import { SettingsPage } from "@/pages/settings"
 import { BookHistoryPage } from "@/pages/book-history"
 import { PageHistoryPage } from "@/pages/page-history"
 import { UserHistoryPage } from "@/pages/user-history"
+import { DebugPage } from "@/pages/debug"
 import { useAuthStore } from "@/stores/auth-store"
 import { useUIStore } from "@/stores/ui-store"
 import { fetchProfile } from "@/api/users"
@@ -83,6 +84,7 @@ export default function App() {
               <Route path="/books/:bookId/history" element={<BookHistoryPage />} />
               <Route path="/pages/:id/history" element={<PageHistoryPage />} />
               <Route path="/my-history" element={<UserHistoryPage />} />
+              <Route path="/debug" element={<DebugPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

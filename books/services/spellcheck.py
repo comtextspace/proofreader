@@ -23,6 +23,14 @@ def check_spelling(text: str) -> list[dict]:
         word = match.group()
         if len(word) < 2:
             continue
+        if word[0].isupper():
+            continue
+        end = match.end()
+        start = match.start()
+        if end < len(text) and text[end] == "-" and (end + 1 >= len(text) or text[end + 1] == "\n"):
+            continue
+        if start >= 2 and text[start - 1] == "\n" and text[start - 2] == "-":
+            continue
         with _lock:
             correct = d.check(word)
         if correct:

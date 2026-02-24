@@ -183,7 +183,7 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
         "&": { height: "100%", fontSize: `${textSize}px` },
         ".cm-scroller": { overflow: "auto", fontFamily: "monospace" },
         ".cm-content": { minHeight: "300px" },
-        ".cm-spell-error": { textDecoration: "underline wavy red", textUnderlineOffset: "3px" },
+        ".cm-spell-error": { textDecoration: "underline wavy oklch(0.70 0.14 15)", textUnderlineOffset: "3px" },
       }),
     ]
 

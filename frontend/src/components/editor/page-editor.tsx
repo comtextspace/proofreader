@@ -121,7 +121,7 @@ export function PageEditor({ page }: PageEditorProps) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="grid flex-1 grid-cols-1 gap-4 overflow-hidden p-4 lg:grid-cols-2">
+      <div className="grid flex-1 grid-cols-1 grid-rows-2 gap-4 overflow-hidden p-4 lg:grid-cols-2 lg:grid-rows-1">
         <TextPanel
           text={text}
           onChange={handleTextChange}

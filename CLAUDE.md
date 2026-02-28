@@ -16,6 +16,18 @@ Proofreader is a Django-based collaborative text digitization and proofreading p
 - Poetry for Python dependency management
 - Pre-commit hooks for code quality
 
+**Frontend Tech Stack (`frontend/`):**
+- React 19 + TypeScript with Vite 7
+- Tailwind CSS v4 (via `@tailwindcss/vite` plugin)
+- Zustand for state management
+- TanStack React Query for server state/data fetching
+- React Router DOM v7 for routing
+- CodeMirror 6 for text editing in page editor
+- react-zoom-pan-pinch for image panel viewing
+- react-hook-form + Zod for form validation
+- Axios HTTP client with JWT auth interceptor
+- Lucide React for icons
+
 ## Essential Development Commands
 
 ### Local Development
@@ -76,6 +88,18 @@ flake8 .
 pre-commit run --all-files
 ```
 
+### Frontend Development
+```bash
+# Start frontend dev server
+cd frontend && npm run dev
+
+# Build frontend
+cd frontend && npm run build
+
+# Lint frontend
+cd frontend && npm run lint
+```
+
 ### Celery Task Management
 ```bash
 # Monitor active tasks
@@ -109,6 +133,19 @@ docker compose exec celery_worker celery -A taskapp.celery:app purge
 - `templatetags/`: Custom template tags for i18n and admin customization
 - `admin_filter.py`: Custom admin filters
 - `admin_utils.py`: Admin interface utilities
+
+### Frontend Architecture (`frontend/src/`)
+
+- `api/` - API client layer (axios): `client.ts` (base config + JWT interceptor), per-resource modules (`pages.ts`, `books.ts`, `auth.ts`, etc.)
+- `components/editor/` - Page editor: `page-editor.tsx` (main), `text-panel.tsx` (CodeMirror), `image-panel.tsx` (image viewer), `unified-bottom-bar.tsx`, `formatting-toolbar.tsx`
+- `components/ui/` - Reusable UI primitives (button, card, input, badge, select, pagination)
+- `components/layout/` - App shell: header, protected routes, auto-hide header
+- `components/pages/` - Page list views: table, filters, heatmap, status badge
+- `hooks/` - Custom React hooks wrapping TanStack Query (`use-pages.ts`, `use-books.ts`, etc.)
+- `stores/` - Zustand stores: `auth-store.ts`, `ui-store.ts`
+- `pages/` - Route-level page components
+- `types/models.ts` - Shared TypeScript interfaces
+- `lib/` - Utilities: `utils.ts`, `constants.ts`, `diff.ts`, `ocr-mapping.ts`
 
 ### Key Architectural Patterns
 

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   ArrowLeft,
@@ -6,6 +6,7 @@ import {
   BookmarkCheck,
   ChevronLeft,
   ChevronRight,
+  Check,
   History,
   Loader2,
   Save,
@@ -45,6 +46,17 @@ export function UnifiedBottomBar({
 }: UnifiedBottomBarProps) {
   const navigate = useNavigate()
   const [goToPage, setGoToPage] = useState("")
+  const [justSaved, setJustSaved] = useState(false)
+  const wasSavingRef = useRef(false)
+
+  useEffect(() => {
+    if (wasSavingRef.current && !isSaving) {
+      setJustSaved(true)
+      const timer = setTimeout(() => setJustSaved(false), 1500)
+      return () => clearTimeout(timer)
+    }
+    wasSavingRef.current = isSaving
+  }, [isSaving])
 
   const createBookmark = useCreateBookmark()
   const deleteBookmark = useDeleteBookmark()
@@ -175,12 +187,12 @@ export function UnifiedBottomBar({
           <>
             <Button
               size="sm"
-              className="h-7 text-xs bg-gradient-primary shadow-primary-sm hover:shadow-primary-lg"
+              className={`h-7 text-xs transition-all duration-300 ${justSaved ? "bg-gradient-success" : "bg-gradient-primary shadow-primary-sm hover:shadow-primary-lg"}`}
               onClick={onSave}
               disabled={isSaving}
             >
-              {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-              Сохранить
+              {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : justSaved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
+              {justSaved ? "Сохранено" : "Сохранить"}
             </Button>
             {adjacent?.next_id && (
               <Button

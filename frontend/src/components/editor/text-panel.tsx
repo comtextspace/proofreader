@@ -183,7 +183,27 @@ export function TextPanel({ text, onChange, onSave, onCorrect, isCorrectingLLM, 
       EditorView.lineWrapping,
       EditorView.theme({
         "&": { height: "100%", fontSize: `${textSize}px` },
-        ".cm-scroller": { overflow: "auto", fontFamily: "monospace" },
+        ".cm-scroller": {
+          overflow: "auto",
+          fontFamily: "monospace",
+          scrollbarWidth: "thin",
+          scrollbarColor: "transparent transparent",
+        },
+        ".cm-scroller:hover": {
+          scrollbarColor: "rgba(167, 139, 218, 0.4) transparent",
+        },
+        ".cm-scroller::-webkit-scrollbar": { width: "6px" },
+        ".cm-scroller::-webkit-scrollbar-track": { background: "transparent" },
+        ".cm-scroller::-webkit-scrollbar-thumb": {
+          backgroundColor: "transparent",
+          borderRadius: "3px",
+        },
+        ".cm-scroller:hover::-webkit-scrollbar-thumb": {
+          backgroundColor: "rgba(167, 139, 218, 0.4)",
+        },
+        ".cm-scroller:hover::-webkit-scrollbar-thumb:hover": {
+          backgroundColor: "rgba(167, 139, 218, 0.6)",
+        },
         ".cm-content": { minHeight: "300px" },
         ".cm-spell-error": { textDecoration: "underline wavy oklch(0.70 0.14 15)", textUnderlineOffset: "3px" },
       }),

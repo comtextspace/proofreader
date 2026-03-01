@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useState } from "react"
 import { Contrast, Maximize2, ZoomIn, ZoomOut } from "lucide-react"
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch"
 import { Button } from "@/components/ui/button"
@@ -14,9 +14,6 @@ interface ImagePanelProps {
 
 export function ImagePanel({ imageUrl, ocrData, selection, spellErrors, editorText }: ImagePanelProps) {
   const [inverted, setInverted] = useState(false)
-  const [imgRect, setImgRect] = useState<{ left: number; top: number; width: number; height: number } | null>(null)
-  const imgRef = useRef<HTMLImageElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
 
   const highlightedWords = useMemo(() => {
     if (!ocrData || !selection) return []
@@ -102,26 +99,6 @@ export function ImagePanel({ imageUrl, ocrData, selection, spellErrors, editorTe
     })
   }, [ocrData, spellErrors])
 
-  const updateImgRect = useCallback(() => {
-    if (imgRef.current && containerRef.current) {
-      const imgBounds = imgRef.current.getBoundingClientRect()
-      const containerBounds = containerRef.current.getBoundingClientRect()
-      setImgRect({
-        left: imgBounds.left - containerBounds.left,
-        top: imgBounds.top - containerBounds.top,
-        width: imgBounds.width,
-        height: imgBounds.height,
-      })
-    }
-  }, [])
-
-  useEffect(() => {
-    const observer = new ResizeObserver(updateImgRect)
-    if (containerRef.current) {
-      observer.observe(containerRef.current)
-    }
-    return () => observer.disconnect()
-  }, [updateImgRect])
 
   if (!imageUrl) {
     return (
@@ -162,60 +139,61 @@ export function ImagePanel({ imageUrl, ocrData, selection, spellErrors, editorTe
                 </Button>
               </div>
             </div>
-            <div ref={containerRef} className="relative flex-1 overflow-hidden bg-muted/10">
+            <div className="relative flex-1 overflow-hidden bg-muted/10">
               <TransformComponent
                 wrapperStyle={{ width: "100%", height: "100%" }}
-                contentStyle={{ width: "100%", height: "100%", display: "flex", justifyContent: "center" }}
+                contentStyle={{ width: "100%", height: "100%", position: "relative" }}
               >
                 <img
-                  ref={imgRef}
                   src={imageUrl}
                   alt="Page scan"
-                  className="max-h-full object-contain"
-                  style={inverted ? { filter: "invert(1) hue-rotate(180deg)" } : undefined}
-                  onLoad={updateImgRect}
-                />
-              </TransformComponent>
-              {(highlightedWords.length > 0 || spellErrorWords.length > 0) && ocrData && imgRect && (
-                <svg
                   style={{
-                    position: "absolute",
-                    left: imgRect.left,
-                    top: imgRect.top,
-                    width: imgRect.width,
-                    height: imgRect.height,
-                    pointerEvents: "none",
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    ...(inverted ? { filter: "invert(1) hue-rotate(180deg)" } : {}),
                   }}
-                  viewBox={`0 0 ${ocrData.image_width} ${ocrData.image_height}`}
-                >
-                  {spellErrorWords.map((word, i) => (
-                    <rect
-                      key={`spell-${i}`}
-                      x={word.left}
-                      y={word.top}
-                      width={word.width}
-                      height={word.height}
-                      fill="oklch(0.70 0.14 15 / 0.2)"
-                      stroke="oklch(0.70 0.14 15 / 0.5)"
-                      strokeWidth={2}
-                      rx={2}
-                    />
-                  ))}
-                  {highlightedWords.map((word, i) => (
-                    <rect
-                      key={`sel-${i}`}
-                      x={word.left}
-                      y={word.top}
-                      width={word.width}
-                      height={word.height}
-                      fill="rgba(59, 130, 246, 0.3)"
-                      stroke="rgba(59, 130, 246, 0.6)"
-                      strokeWidth={2}
-                      rx={2}
-                    />
-                  ))}
-                </svg>
-              )}
+                />
+                {(highlightedWords.length > 0 || spellErrorWords.length > 0) && ocrData && (
+                  <svg
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      pointerEvents: "none",
+                    }}
+                    viewBox={`0 0 ${ocrData.image_width} ${ocrData.image_height}`}
+                  >
+                    {spellErrorWords.map((word, i) => (
+                      <rect
+                        key={`spell-${i}`}
+                        x={word.left}
+                        y={word.top}
+                        width={word.width}
+                        height={word.height}
+                        fill="oklch(0.70 0.14 15 / 0.2)"
+                        stroke="oklch(0.70 0.14 15 / 0.5)"
+                        strokeWidth={2}
+                        rx={2}
+                      />
+                    ))}
+                    {highlightedWords.map((word, i) => (
+                      <rect
+                        key={`sel-${i}`}
+                        x={word.left}
+                        y={word.top}
+                        width={word.width}
+                        height={word.height}
+                        fill="rgba(59, 130, 246, 0.3)"
+                        stroke="rgba(59, 130, 246, 0.6)"
+                        strokeWidth={2}
+                        rx={2}
+                      />
+                    ))}
+                  </svg>
+                )}
+              </TransformComponent>
             </div>
           </>
         )}

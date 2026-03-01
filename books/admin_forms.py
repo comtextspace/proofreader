@@ -71,5 +71,14 @@ class PageAdminForm(forms.ModelForm):
             self.fields['status'].choices = Page.Status.choices
 
 
+class AddPagesForm(forms.Form):
+    insert_after = forms.IntegerField(
+        label=_('Вставить после страницы номер'),
+        min_value=0,
+        initial=0,
+        help_text=_('0 = вставить в начало книги'),
+    )
+
+
 class ActionValueForm(ActionForm):
     action_value = forms.CharField(label=_('значение'), required=False)

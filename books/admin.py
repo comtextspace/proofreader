@@ -4,16 +4,17 @@ from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
-from django.urls import reverse
+from django.template.response import TemplateResponse
+from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from accounts.models import Assignment
 from core.admin_filter import ForeignKeyFilter
 from core.admin_utils import CustomHistoryAdmin, add_request_object_to_admin_form
-from .admin_forms import ActionValueForm, PageAdminForm
+from .admin_forms import ActionValueForm, AddPagesForm, PageAdminForm
 from .models import Author, Book, ExportSource, Page
 from .services.book_export import export_book, export_book_as_epub, export_book_as_pdf
 from .services.github_upload import upload_books_to_github
@@ -137,6 +138,15 @@ def continue_pages_splittings(modeladmin, request, queryset):
     messages.add_message(request, messages.INFO, _('Задачи по разделению страниц запущены'))
 
 
+@admin.action(description=_("Добавить пропущенные страницы"))
+def add_missed_pages_action(modeladmin, request, queryset):
+    if queryset.count() != 1:
+        messages.error(request, _('Выберите ровно одну книгу'))
+        return
+    book = queryset.first()
+    return redirect(reverse('admin:books_book_add_pages', args=[book.pk]))
+
+
 class AssignmentAdminInline(admin.TabularInline):
     model = Assignment
     extra = 0
@@ -152,6 +162,7 @@ class BookAdmin(admin.ModelAdmin):
         upload_to_github,
         process_unprocessed_pages,
         continue_pages_splittings,
+        add_missed_pages_action,
     ]
     list_display = [
         "name",
@@ -263,6 +274,67 @@ class BookAdmin(admin.ModelAdmin):
             url = reverse('admin:books_page_changelist') + f'?book={obj.pk}'
             return mark_safe(f'<a href="{url}">{_("Просмотреть страницы")}</a>')
         return '-'
+
+    def get_urls(self):
+        custom_urls = [
+            path(
+                '<uuid:book_id>/add-pages/',
+                self.admin_site.admin_view(self.add_pages_view),
+                name='books_book_add_pages',
+            ),
+        ]
+        return custom_urls + super().get_urls()
+
+    def add_pages_view(self, request, book_id):
+        from books.services.page_insertion import insert_pages_for_book
+
+        book = self.get_object(request, str(book_id))
+        if book is None:
+            raise Http404
+
+        if request.method == 'POST':
+            form = AddPagesForm(request.POST, request.FILES)
+            files = request.FILES.getlist('images')
+
+            if form.is_valid() and files:
+                insert_after = form.cleaned_data['insert_after']
+                max_page = book.pages.aggregate(max_num=models.Max('number'))['max_num'] or 0
+
+                if insert_after > max_page:
+                    messages.error(
+                        request,
+                        _('Номер страницы %(num)d превышает максимальный номер %(max)d')
+                        % {'num': insert_after, 'max': max_page},
+                    )
+                else:
+                    files_sorted = sorted(files, key=lambda f: f.name)
+                    count = len(files_sorted)
+                    insert_pages_for_book(book, insert_after, files_sorted)
+
+                    messages.success(
+                        request,
+                        _('Добавлено %(count)d страниц после страницы %(after)d')
+                        % {'count': count, 'after': insert_after},
+                    )
+                    if book.pages.filter(book=book).exists():
+                        messages.warning(
+                            request,
+                            _('Проверьте назначения страниц — нумерация могла измениться.'),
+                        )
+                    return redirect(reverse('admin:books_page_changelist') + f'?book={book.pk}')
+            elif not files:
+                messages.error(request, _('Выберите хотя бы один файл'))
+        else:
+            form = AddPagesForm()
+
+        context = {
+            **self.admin_site.each_context(request),
+            'form': form,
+            'book': book,
+            'opts': self.model._meta,
+            'title': _('Добавить страницы: %(book)s') % {'book': book.name},
+        }
+        return TemplateResponse(request, 'admin/books/add_pages.html', context)
 
 
 class BookFilter(AutocompleteFilter):

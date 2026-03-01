@@ -1,0 +1,56 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static "admin/css/forms.css" %}">
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:books_book_changelist' %}">{% trans 'Книги' %}</a>
+    &rsaquo; <a href="{% url 'admin:books_book_change' book.pk %}">{{ book.name }}</a>
+    &rsaquo; {% trans "Добавить страницы" %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <fieldset class="module aligned">
+            <h2>{% trans "Параметры вставки" %}</h2>
+
+            <div class="form-row">
+                <div>
+                    <label for="id_insert_after">{{ form.insert_after.label }}:</label>
+                    {{ form.insert_after }}
+                    {% if form.insert_after.help_text %}
+                        <p class="help">{{ form.insert_after.help_text }}</p>
+                    {% endif %}
+                    {% for error in form.insert_after.errors %}
+                        <ul class="errorlist"><li>{{ error }}</li></ul>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="id_images">{% trans "Изображения страниц" %}:</label>
+                    <input type="file" name="images" id="id_images" multiple accept="image/*">
+                    <p class="help">{% trans "Выберите один или несколько файлов изображений. Файлы будут отсортированы по имени." %}</p>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="submit-row">
+            <input type="submit" value="{% trans 'Добавить страницы' %}" class="default">
+            <a href="{% url 'admin:books_book_changelist' %}" class="button cancel-link">
+                {% trans "Отмена" %}
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -30,7 +30,7 @@ from books.serializers import (
     PageListSerializer,
     PageUpdateSerializer,
 )
-from books.services.book_export import export_book, export_book_as_epub, export_book_as_pdf
+from books.services.book_export import export_book, export_book_as_epub, export_book_as_pdf, export_book_images_as_pdf
 from core.base_classes.views import ParentViewSet
 
 
@@ -151,6 +151,16 @@ class BookListViewSet(
         content = export_book_as_epub(book)
         response = HttpResponse(content, content_type='application/epub+zip')
         response['Content-Disposition'] = f'attachment; filename="{book.name}.epub"'
+        return response
+
+    @action(detail=True, methods=['get'], url_path='download-images')
+    def download_images(self, request, id=None):
+        book = self.get_object()
+        if book.is_locked:
+            return Response({'detail': 'Книга заблокирована для экспорта.'}, status=403)
+        content = export_book_images_as_pdf(book)
+        response = HttpResponse(content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{book.name} (сканы).pdf"'
         return response
 
     @action(detail=True, methods=['get'])

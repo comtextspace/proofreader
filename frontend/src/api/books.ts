@@ -34,6 +34,11 @@ export async function downloadBookEpub(id: string): Promise<Blob> {
   return response.data
 }
 
+export async function downloadBookImages(id: string): Promise<Blob> {
+  const response = await apiClient.get(`/book-list/${id}/download-images`, { responseType: "blob" })
+  return response.data
+}
+
 export async function fetchBookHistory(
   id: string,
   params?: { limit?: number; offset?: number }

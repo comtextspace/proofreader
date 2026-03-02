@@ -3,10 +3,13 @@ import os
 import re
 import tempfile
 
+from PIL import Image as PILImage
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 
 
@@ -375,3 +378,25 @@ def export_book_as_epub(book):
     os.unlink(tmp_path)
 
     return content
+
+
+def export_book_images_as_pdf(book):
+    """Export book page images combined into a single PDF."""
+    pages = _get_pages_for_export(book)
+    pages_with_images = [p for p in pages if p.image]
+
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer)
+
+    for page in pages_with_images:
+        img_data = io.BytesIO(page.image.read())
+        pil_img = PILImage.open(img_data)
+        img_width, img_height = pil_img.size
+
+        c.setPageSize((img_width, img_height))
+        c.drawImage(ImageReader(pil_img), 0, 0, width=img_width, height=img_height)
+        c.showPage()
+
+    c.save()
+    buffer.seek(0)
+    return buffer.getvalue()

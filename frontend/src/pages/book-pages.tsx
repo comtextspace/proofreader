@@ -4,6 +4,7 @@ import {
   ChevronRight,
   Download,
   History,
+  Image as ImageIcon,
   Loader2 as LoaderIcon,
   Lock,
   Search,
@@ -17,7 +18,7 @@ import { BookmarksSidebar } from "@/components/bookmarks/bookmarks-sidebar"
 import { useBook } from "@/hooks/use-books"
 import { usePages } from "@/hooks/use-pages"
 import { useAuthStore } from "@/stores/auth-store"
-import { downloadBookText, downloadBookPdf, downloadBookEpub } from "@/api/books"
+import { downloadBookText, downloadBookPdf, downloadBookEpub, downloadBookImages } from "@/api/books"
 import { ALL_STATUSES, STATUS_CONFIG } from "@/lib/constants"
 import type { PageStatus } from "@/types/models"
 
@@ -63,7 +64,7 @@ export function BookPagesPage() {
     return counts
   }, [data?.results])
 
-  async function handleDownload(format: "text" | "pdf" | "epub") {
+  async function handleDownload(format: "text" | "pdf" | "epub" | "images") {
     if (!book) return
     const name = book.export_name || book.name
     if (format === "text") {
@@ -72,6 +73,9 @@ export function BookPagesPage() {
     } else if (format === "pdf") {
       const blob = await downloadBookPdf(bookId!)
       triggerDownload(blob, `${name}.pdf`)
+    } else if (format === "images") {
+      const blob = await downloadBookImages(bookId!)
+      triggerDownload(blob, `${name} (сканы).pdf`)
     } else {
       const blob = await downloadBookEpub(bookId!)
       triggerDownload(blob, `${name}.epub`)
@@ -118,6 +122,10 @@ export function BookPagesPage() {
                   <Button variant="outline" size="sm" onClick={() => handleDownload("epub")}>
                     <Download className="mr-1 h-3.5 w-3.5" />
                     EPUB
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => handleDownload("images")}>
+                    <ImageIcon className="mr-1 h-3.5 w-3.5" />
+                    Сканы
                   </Button>
                 </>
               )}

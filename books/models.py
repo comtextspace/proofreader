@@ -68,6 +68,7 @@ class Book(LifecycleModelMixin, models.Model):
         verbose_name=_("Страницы для экспорта"),
         help_text=_("Интервал страниц для экспорта (например, 4-15). Пустое значение - экспорт всех страниц."),
     )
+    images_pdf = models.FileField(upload_to="exports/", null=True, blank=True, verbose_name=_("PDF сканов"))
     is_locked = models.BooleanField(default=False, verbose_name=_("Заблокирована"))
     is_hidden = models.BooleanField(default=False, verbose_name=_("Скрыта"))
 

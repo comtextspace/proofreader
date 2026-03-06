@@ -34,6 +34,10 @@ export async function downloadBookEpub(id: string): Promise<Blob> {
   return response.data
 }
 
+export async function generateBookImages(id: string): Promise<void> {
+  await apiClient.post(`/book-list/${id}/generate-images`)
+}
+
 export async function downloadBookImages(id: string): Promise<Blob> {
   const response = await apiClient.get(`/book-list/${id}/download-images`, { responseType: "blob" })
   return response.data

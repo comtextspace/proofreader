@@ -380,16 +380,29 @@ def export_book_as_epub(book):
     return content
 
 
-def export_book_images_as_pdf(book):
-    """Export book page images combined into a single PDF."""
+def export_book_images_as_pdf(book, output_path=None):
+    """Export book page images combined into a single PDF.
+
+    Processes images one at a time for memory efficiency.
+    If output_path is given, writes to that file; otherwise returns bytes.
+    """
     pages = _get_pages_for_export(book)
-    pages_with_images = [p for p in pages if p.image]
 
-    buffer = io.BytesIO()
-    c = canvas.Canvas(buffer)
+    if output_path:
+        c = canvas.Canvas(output_path)
+    else:
+        buffer = io.BytesIO()
+        c = canvas.Canvas(buffer)
 
-    for page in pages_with_images:
-        img_data = io.BytesIO(page.image.read())
+    for page in pages:
+        if not page.image:
+            continue
+        page.image.open('rb')
+        try:
+            img_data = io.BytesIO(page.image.read())
+        finally:
+            page.image.close()
+
         pil_img = PILImage.open(img_data)
         img_width, img_height = pil_img.size
 
@@ -397,6 +410,13 @@ def export_book_images_as_pdf(book):
         c.drawImage(ImageReader(pil_img), 0, 0, width=img_width, height=img_height)
         c.showPage()
 
+        pil_img.close()
+        img_data.close()
+
     c.save()
-    buffer.seek(0)
-    return buffer.getvalue()
+
+    if output_path:
+        return output_path
+    else:
+        buffer.seek(0)
+        return buffer.getvalue()

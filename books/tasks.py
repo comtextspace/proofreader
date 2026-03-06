@@ -1,6 +1,9 @@
 import logging
+import os
+import tempfile
 
 from django.conf import settings
+from django.core.files import File
 from django.core.files.base import ContentFile
 from PyPDF2 import PdfReader
 
@@ -80,3 +83,31 @@ def correct_text_with_llm_task(page_id):
     page.text = corrected
     page.status = Page.Status.READY
     page.save()
+
+
+@app.task(
+    acks_late=True,
+    trail=False,
+    soft_time_limit=600,
+    time_limit=660,
+)
+def generate_images_pdf_task(book_id):
+    from books.models import Book
+    from books.services.book_export import export_book_images_as_pdf
+
+    book = Book.objects.get(id=book_id)
+
+    with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp:
+        tmp_path = tmp.name
+
+    try:
+        export_book_images_as_pdf(book, output_path=tmp_path)
+
+        with open(tmp_path, 'rb') as f:
+            filename = f"{book.name} (сканы).pdf"
+            book.images_pdf.save(filename, File(f), save=True)
+
+        logger.info("Images PDF generated for book %s", book_id)
+    finally:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)

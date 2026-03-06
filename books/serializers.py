@@ -51,6 +51,7 @@ class BookDetailSerializer(serializers.ModelSerializer):
     pages_processing_count = serializers.IntegerField(read_only=True)
     pages_recognized_count = serializers.IntegerField(read_only=True)
     pages_in_work_count = serializers.IntegerField(read_only=True)
+    has_images_pdf = serializers.SerializerMethodField()
 
     class Meta:
         model = Book
@@ -66,7 +67,11 @@ class BookDetailSerializer(serializers.ModelSerializer):
             'total_pages_in_pdf',
             'export_name',
             'is_locked',
+            'has_images_pdf',
         ]
+
+    def get_has_images_pdf(self, obj):
+        return bool(obj.images_pdf)
 
 
 class BookCreateSerializer(serializers.ModelSerializer):

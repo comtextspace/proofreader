@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { useQueryClient } from "@tanstack/react-query"
 import {
   ChevronRight,
   Download,
@@ -18,7 +19,14 @@ import { BookmarksSidebar } from "@/components/bookmarks/bookmarks-sidebar"
 import { useBook } from "@/hooks/use-books"
 import { usePages } from "@/hooks/use-pages"
 import { useAuthStore } from "@/stores/auth-store"
-import { downloadBookText, downloadBookPdf, downloadBookEpub, downloadBookImages } from "@/api/books"
+import {
+  downloadBookText,
+  downloadBookPdf,
+  downloadBookEpub,
+  downloadBookImages,
+  generateBookImages,
+  fetchBook,
+} from "@/api/books"
 import { ALL_STATUSES, STATUS_CONFIG } from "@/lib/constants"
 import type { PageStatus } from "@/types/models"
 
@@ -35,12 +43,15 @@ export function BookPagesPage() {
   const { bookId } = useParams<{ bookId: string }>()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const user = useAuthStore((s) => s.user)
   const { data: book } = useBook(bookId!)
 
   const [status, setStatus] = useState("")
   const [assigned, setAssigned] = useState(searchParams.get("assigned") === "true")
   const [search, setSearch] = useState("")
+  const [imagesGenerating, setImagesGenerating] = useState(false)
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const { data, isLoading } = usePages({
     book: bookId,
@@ -64,7 +75,44 @@ export function BookPagesPage() {
     return counts
   }, [data?.results])
 
-  async function handleDownload(format: "text" | "pdf" | "epub" | "images") {
+  // Stop polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current)
+    }
+  }, [])
+
+  const handleGenerateImages = useCallback(async () => {
+    if (!book || !bookId) return
+    const name = book.export_name || book.name
+
+    // If already generated, just download
+    if (book.has_images_pdf) {
+      const blob = await downloadBookImages(bookId)
+      triggerDownload(blob, `${name} (сканы).pdf`)
+      return
+    }
+
+    setImagesGenerating(true)
+    await generateBookImages(bookId)
+
+    // Poll for completion every 5 seconds
+    pollRef.current = setInterval(async () => {
+      const updated = await fetchBook(bookId)
+      if (updated.has_images_pdf) {
+        if (pollRef.current) {
+          clearInterval(pollRef.current)
+          pollRef.current = null
+        }
+        setImagesGenerating(false)
+        queryClient.setQueryData(["books", bookId], updated)
+        const blob = await downloadBookImages(bookId)
+        triggerDownload(blob, `${name} (сканы).pdf`)
+      }
+    }, 5000)
+  }, [book, bookId, queryClient])
+
+  async function handleDownload(format: "text" | "pdf" | "epub") {
     if (!book) return
     const name = book.export_name || book.name
     if (format === "text") {
@@ -73,9 +121,6 @@ export function BookPagesPage() {
     } else if (format === "pdf") {
       const blob = await downloadBookPdf(bookId!)
       triggerDownload(blob, `${name}.pdf`)
-    } else if (format === "images") {
-      const blob = await downloadBookImages(bookId!)
-      triggerDownload(blob, `${name} (сканы).pdf`)
     } else {
       const blob = await downloadBookEpub(bookId!)
       triggerDownload(blob, `${name}.epub`)
@@ -123,9 +168,18 @@ export function BookPagesPage() {
                     <Download className="mr-1 h-3.5 w-3.5" />
                     EPUB
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleDownload("images")}>
-                    <ImageIcon className="mr-1 h-3.5 w-3.5" />
-                    Сканы
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleGenerateImages}
+                    disabled={imagesGenerating}
+                  >
+                    {imagesGenerating ? (
+                      <LoaderIcon className="mr-1 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <ImageIcon className="mr-1 h-3.5 w-3.5" />
+                    )}
+                    {imagesGenerating ? "Генерация..." : "Сканы"}
                   </Button>
                 </>
               )}

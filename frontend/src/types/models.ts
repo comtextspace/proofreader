@@ -38,6 +38,7 @@ export interface BookDetail {
   total_pages_in_pdf: number | null
   export_name: string
   is_locked: boolean
+  has_images_pdf: boolean
 }
 
 export interface PageListItem {

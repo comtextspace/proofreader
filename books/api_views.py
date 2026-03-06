@@ -30,7 +30,8 @@ from books.serializers import (
     PageListSerializer,
     PageUpdateSerializer,
 )
-from books.services.book_export import export_book, export_book_as_epub, export_book_as_pdf, export_book_images_as_pdf
+from books.services.book_export import export_book, export_book_as_epub, export_book_as_pdf
+from books.tasks import generate_images_pdf_task
 from core.base_classes.views import ParentViewSet
 
 
@@ -153,13 +154,24 @@ class BookListViewSet(
         response['Content-Disposition'] = f'attachment; filename="{book.name}.epub"'
         return response
 
+    @action(detail=True, methods=['post'], url_path='generate-images')
+    def generate_images(self, request, id=None):
+        book = self.get_object()
+        if book.is_locked:
+            return Response({'detail': 'Книга заблокирована для экспорта.'}, status=403)
+        if book.images_pdf:
+            return Response({'detail': 'PDF сканов уже сгенерирован.'})
+        generate_images_pdf_task.delay(book.id)
+        return Response({'detail': 'Генерация PDF сканов запущена.'}, status=202)
+
     @action(detail=True, methods=['get'], url_path='download-images')
     def download_images(self, request, id=None):
         book = self.get_object()
         if book.is_locked:
             return Response({'detail': 'Книга заблокирована для экспорта.'}, status=403)
-        content = export_book_images_as_pdf(book)
-        response = HttpResponse(content, content_type='application/pdf')
+        if not book.images_pdf:
+            return Response({'detail': 'PDF сканов ещё не сгенерирован.'}, status=404)
+        response = HttpResponse(book.images_pdf.read(), content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="{book.name} (сканы).pdf"'
         return response
 
